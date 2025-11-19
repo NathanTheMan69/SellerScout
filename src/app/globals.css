@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+:root {
+  --background: #f0f9ff;
+  /* Icy Blue / Sky 50 */
+  --foreground: #1e293b;
+  /* Slate 800 */
+
+  --card: #ffffff;
+  --card-foreground: #1e293b;
+
+  --popover: #ffffff;
+  --popover-foreground: #1e293b;
+
+  --primary: #0d9488;
+  /* Teal 600 */
+  --primary-foreground: #ffffff;
+
+  --secondary: #e0f2fe;
+  /* Sky 100 */
+  --secondary-foreground: #0f172a;
+
+  --muted: #e0f2fe;
+  /* Sky 100 - Blends with background */
+  --muted-foreground: #64748b;
+  /* Slate 500 */
+
+  --accent: #ccfbf1;
+  /* Teal 100 */
+  --accent-foreground: #0f766e;
+  /* Teal 700 */
+
+  --destructive: #ef4444;
+  /* Red 500 */
+  --destructive-foreground: #ffffff;
+
+  --border: #cbd5e1;
+  /* Slate 300 - Slightly darker for contrast */
+  --input: #cbd5e1;
+  --ring: #0d9488;
+  /* Teal 600 */
+
+  --radius: 0.75rem;
+}
+
+body {
+  background-image: linear-gradient(to bottom right, #ecfdf5, #ccfbf1);
+  /* Emerald-50 to Teal-100 */
+  background-attachment: fixed;
+  color: var(--foreground);
+  font-family: var(--font-sans), sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+/* Utility classes for layout */
+.layout-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  background-color: var(--muted);
+  /* Light gray background for dashboard area */
+}
+
+.dashboard-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
