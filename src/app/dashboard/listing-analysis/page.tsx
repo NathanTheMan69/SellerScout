@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Search, ShoppingBag, Heart } from 'lucide-react'
 import { Card, CardContent } from '@/components/Card'
 import { Button } from '@/components/Button'
@@ -35,7 +35,7 @@ interface SavedListing {
     created_at: string
 }
 
-export default function ListingAnalysisPage() {
+export default function ListingAnalysisPage(): React.JSX.Element {
     const [listingSearchQuery, setListingSearchQuery] = useState('')
     const [listingSearchResults, setListingSearchResults] = useState<any[]>([])
     const [selectedListing, setSelectedListing] = useState<any | null>(null)
