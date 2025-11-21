@@ -1,7 +1,7 @@
 import { DashboardLayout } from "@/components/DashboardLayout"
 import { StatsCard } from "@/components/StatsCard"
 import { SalesChart } from "@/components/SalesChart"
-import { RecentOrders } from "@/components/RecentOrders"
+import { TopListings } from "@/components/TopListings"
 import { DollarSign, ShoppingBag, Users, Activity } from "lucide-react"
 
 export default function Home() {
@@ -45,7 +45,7 @@ export default function Home() {
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <SalesChart />
-          <RecentOrders />
+          <TopListings />
         </div>
       </div>
     </DashboardLayout>

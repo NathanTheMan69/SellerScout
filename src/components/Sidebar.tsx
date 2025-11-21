@@ -11,17 +11,21 @@ import {
     ClipboardCheck,
     Settings,
     Menu,
-    X
+    X,
+    ShoppingBag,
+    Tag,
+    Store
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/Button"
 
 const sidebarItems = [
     { icon: Home, label: "Dashboard", href: "/" },
-    { icon: Search, label: "Keyword Research", href: "/keywords" },
+    { icon: Search, label: "Keyword Research", href: "/dashboard/keyword-research" },
     { icon: TrendingUp, label: "Trends", href: "/trends" },
-    { icon: Eye, label: "Competitor Analysis", href: "/competitors" },
-    { icon: ClipboardCheck, label: "Listing Optimizer", href: "/optimizer" },
+    { icon: Store, label: "Shop Tracker", href: "/dashboard/shops" },
+    { icon: Tag, label: "Listing Analysis", href: "/dashboard/listing-analysis" },
+    { icon: ClipboardCheck, label: "Listing Optimizer", href: "/dashboard/listing-optimizer" },
 ]
 
 export function Sidebar() {
@@ -30,20 +34,27 @@ export function Sidebar() {
 
     return (
         <>
-            {/* Mobile Menu Button */}
-            <Button
-                variant="ghost"
-                size="icon"
-                className="fixed top-4 left-4 z-50 md:hidden"
-                onClick={() => setIsOpen(!isOpen)}
-            >
-                {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </Button>
+            {/* Mobile Top Bar */}
+            <div className="fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-b border-emerald-50 z-50 flex items-center justify-between px-4 md:hidden">
+                <div className="flex items-center gap-2 text-teal-600">
+                    <TrendingUp className="h-6 w-6" />
+                    <span className="text-xl font-bold tracking-tight">SellerScout</span>
+                </div>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsOpen(!isOpen)}
+                >
+                    {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                </Button>
+            </div>
 
             {/* Sidebar Container */}
             <aside
                 className={cn(
-                    "fixed inset-y-0 left-0 z-40 w-64 transform bg-white border-r border-emerald-100 transition-transform duration-200 ease-in-out md:translate-x-0",
+                    "fixed inset-y-0 left-0 z-40 w-64 transform bg-white/70 backdrop-blur-md shadow-xl shadow-teal-900/5 transition-transform duration-200 ease-in-out",
+                    "h-full rounded-none border-r border-white/50", // Mobile styles
+                    "md:m-4 md:h-[calc(100vh-2rem)] md:rounded-2xl md:border md:translate-x-0", // Desktop styles
                     isOpen ? "translate-x-0" : "-translate-x-full"
                 )}
             >
@@ -76,6 +87,37 @@ export function Sidebar() {
                                 </Link>
                             )
                         })}
+
+                        {/* Saved Group */}
+                        <div className="pt-6 mt-2">
+                            <h3 className="px-4 text-sm font-bold text-teal-600 uppercase tracking-wider mb-2">
+                                Saved
+                            </h3>
+                            <Link
+                                href="/dashboard/saved-keywords"
+                                className={cn(
+                                    "flex items-center gap-3 rounded-r-full px-4 py-3 text-sm font-medium transition-all duration-200",
+                                    pathname === "/dashboard/saved-keywords"
+                                        ? "bg-teal-50 text-teal-700 border-l-4 border-teal-500"
+                                        : "text-slate-500 hover:bg-slate-50 hover:text-slate-900 border-l-4 border-transparent"
+                                )}
+                            >
+                                <Search className={cn("h-5 w-5", pathname === "/dashboard/saved-keywords" ? "text-teal-600" : "text-slate-400")} />
+                                Keywords
+                            </Link>
+                            <Link
+                                href="/dashboard/saved-listings"
+                                className={cn(
+                                    "flex items-center gap-3 rounded-r-full px-4 py-3 text-sm font-medium transition-all duration-200",
+                                    pathname === "/dashboard/saved-listings"
+                                        ? "bg-teal-50 text-teal-700 border-l-4 border-teal-500"
+                                        : "text-slate-500 hover:bg-slate-50 hover:text-slate-900 border-l-4 border-transparent"
+                                )}
+                            >
+                                <Tag className={cn("h-5 w-5", pathname === "/dashboard/saved-listings" ? "text-teal-600" : "text-slate-400")} />
+                                Listings
+                            </Link>
+                        </div>
                     </nav>
 
                     {/* Settings & Footer */}

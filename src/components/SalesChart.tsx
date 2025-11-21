@@ -47,13 +47,13 @@ export function SalesChart() {
                             </defs>
                             <XAxis
                                 dataKey="name"
-                                stroke="#64748b"
+                                stroke="#334155"
                                 fontSize={12}
                                 tickLine={false}
                                 axisLine={false}
                             />
                             <YAxis
-                                stroke="#64748b"
+                                stroke="#334155"
                                 fontSize={12}
                                 tickLine={false}
                                 axisLine={false}
