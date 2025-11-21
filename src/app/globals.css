@@ -49,9 +49,8 @@
 }
 
 body {
-  background-image: linear-gradient(to bottom right, #ecfdf5, #f0fdfa);
-  /* Emerald-50 to Teal-50 */
-  background-attachment: fixed;
+  background-color: #e2e8f0;
+  /* Slate-200 Solid */
   color: var(--foreground);
   font-family: var(--font-sans), sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -71,8 +70,8 @@ body {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  background-color: var(--muted);
-  /* Light gray background for dashboard area */
+  /* background-color: var(--muted); */
+  /* Light gray background for dashboard area - Removed to show body gradient */
 }
 
 .dashboard-grid {

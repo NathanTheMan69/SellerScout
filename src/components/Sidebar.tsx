@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import {
     Home,
     Search,
@@ -14,15 +14,17 @@ import {
     X,
     ShoppingBag,
     Tag,
-    Store
+    Store,
+    LogOut
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/Button"
+import { createClient } from "@/utils/supabase/client"
 
 const sidebarItems = [
     { icon: Home, label: "Dashboard", href: "/" },
     { icon: Search, label: "Keyword Research", href: "/dashboard/keyword-research" },
-    { icon: TrendingUp, label: "Trends", href: "/trends" },
+    { icon: TrendingUp, label: "Trends", href: "/dashboard/trends" },
     { icon: Store, label: "Shop Tracker", href: "/dashboard/shops" },
     { icon: Tag, label: "Listing Analysis", href: "/dashboard/listing-analysis" },
     { icon: ClipboardCheck, label: "Listing Optimizer", href: "/dashboard/listing-optimizer" },
@@ -30,7 +32,14 @@ const sidebarItems = [
 
 export function Sidebar() {
     const pathname = usePathname()
+    const router = useRouter()
     const [isOpen, setIsOpen] = React.useState(false)
+    const supabase = createClient()
+
+    const handleLogout = async () => {
+        await supabase.auth.signOut()
+        router.push('/login')
+    }
 
     return (
         <>
@@ -106,6 +115,18 @@ export function Sidebar() {
                                 Keywords
                             </Link>
                             <Link
+                                href="/dashboard/saved-shops"
+                                className={cn(
+                                    "flex items-center gap-3 rounded-r-full px-4 py-3 text-sm font-medium transition-all duration-200",
+                                    pathname === "/dashboard/saved-shops"
+                                        ? "bg-teal-50 text-teal-700 border-l-4 border-teal-500"
+                                        : "text-slate-500 hover:bg-slate-50 hover:text-slate-900 border-l-4 border-transparent"
+                                )}
+                            >
+                                <Store className={cn("h-5 w-5", pathname === "/dashboard/saved-shops" ? "text-teal-600" : "text-slate-400")} />
+                                Shops
+                            </Link>
+                            <Link
                                 href="/dashboard/saved-listings"
                                 className={cn(
                                     "flex items-center gap-3 rounded-r-full px-4 py-3 text-sm font-medium transition-all duration-200",
@@ -123,27 +144,31 @@ export function Sidebar() {
                     {/* Settings & Footer */}
                     <div className="p-3 border-t border-emerald-50">
                         <Link
-                            href="/settings"
+                            href="/dashboard/settings"
                             className={cn(
                                 "flex items-center gap-3 rounded-r-full px-4 py-3 text-sm font-medium transition-all duration-200",
-                                pathname === "/settings"
+                                pathname === "/dashboard/settings"
                                     ? "bg-teal-50 text-teal-700 border-l-4 border-teal-500"
                                     : "text-slate-500 hover:bg-slate-50 hover:text-slate-900 border-l-4 border-transparent"
                             )}
                         >
-                            <Settings className={cn("h-5 w-5", pathname === "/settings" ? "text-teal-600" : "text-slate-400")} />
+                            <Settings className={cn("h-5 w-5", pathname === "/dashboard/settings" ? "text-teal-600" : "text-slate-400")} />
                             Settings
                         </Link>
 
-                        <div className="mt-4 flex items-center gap-3 px-4 py-2">
-                            <div className="h-10 w-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-bold">
+                        <button
+                            onClick={handleLogout}
+                            className="mt-4 w-full flex items-center gap-3 px-4 py-2 hover:bg-slate-50 rounded-xl transition-colors text-left group"
+                        >
+                            <div className="h-10 w-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-bold group-hover:bg-teal-200 transition-colors">
                                 DU
                             </div>
-                            <div className="flex flex-col">
+                            <div className="flex flex-col flex-1">
                                 <span className="text-sm font-medium text-slate-900">Demo User</span>
                                 <span className="text-xs text-slate-500">Pro Plan</span>
                             </div>
-                        </div>
+                            <LogOut className="h-4 w-4 text-slate-400 group-hover:text-rose-500 transition-colors" />
+                        </button>
                     </div>
                 </div>
             </aside>
