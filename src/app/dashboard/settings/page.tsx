@@ -49,8 +49,8 @@ export default function SettingsPage() {
         <DashboardLayout>
             <div className="space-y-8 max-w-4xl mx-auto">
                 {/* Header */}
-                <div className="relative">
-                    <div className="absolute -left-4 top-0 h-full w-1 bg-gradient-to-b from-teal-500 to-emerald-500 rounded-full" />
+                <div className="relative pl-4">
+                    <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-teal-500 to-emerald-500 rounded-full" />
                     <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-800">Settings</h1>
                     <p className="text-muted-foreground">Manage your account preferences and subscription.</p>
                 </div>

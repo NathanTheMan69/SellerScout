@@ -70,8 +70,8 @@ export default function SavedKeywordsPage() {
         <DashboardLayout>
             <div className="space-y-8">
                 {/* Header */}
-                <div className="relative">
-                    <div className="absolute -left-4 top-0 h-full w-1 bg-gradient-to-b from-teal-500 to-emerald-500 rounded-full" />
+                <div className="relative pl-4">
+                    <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-teal-500 to-emerald-500 rounded-full" />
                     <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-800">Saved Keywords</h1>
                     <p className="text-muted-foreground">Manage your collection of potential product keywords.</p>
                 </div>

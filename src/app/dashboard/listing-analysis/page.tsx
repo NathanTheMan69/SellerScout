@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react'
-import { Search, ShoppingBag, Heart } from 'lucide-react'
+import { Search, ShoppingBag, Heart, AlertCircle } from 'lucide-react'
 import { Card, CardContent } from '@/components/Card'
 import { Button } from '@/components/Button'
 import { DashboardLayout } from '@/components/DashboardLayout'
@@ -42,6 +42,8 @@ export default function ListingAnalysisPage(): React.JSX.Element {
     const [hasListingSearched, setHasListingSearched] = useState(false)
     const [savedListings, setSavedListings] = useState<SavedListing[]>([])
     const [recentListings, setRecentListings] = useState<SavedListing[]>([])
+    const [isLoading, setIsLoading] = useState(false)
+    const [apiError, setApiError] = useState<string | null>(null)
     const supabase = createClient()
 
     useEffect(() => {
@@ -70,20 +72,75 @@ export default function ListingAnalysisPage(): React.JSX.Element {
         }
     }
 
-    const handleListingSearch = (e: React.FormEvent) => {
+    const handleListingSearch = async (e: React.FormEvent) => {
         e.preventDefault()
+        if (!listingSearchQuery.trim()) return
+
+        setIsLoading(true)
+        setApiError(null)
         setHasListingSearched(true)
         setSelectedListing(null)
         setListingSearchResults([])
 
-        if (!listingSearchQuery.trim()) return
+        try {
+            const response = await fetch('/api/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: listingSearchQuery }),
+            })
 
-        // Smart Logic: Check if URL
-        if (listingSearchQuery.includes('etsy.com') || listingSearchQuery.startsWith('http')) {
-            setSelectedListing(MOCK_DETAILED_STATS)
-        } else {
-            // Assume Keyword
-            setListingSearchResults(MOCK_LISTING_RESULTS)
+            if (!response.ok) {
+                throw new Error(`API Error: ${response.status}`)
+            }
+
+            const result = await response.json()
+
+            if (result.type === 'listing') {
+                // Map API Listing Data
+                const data = result.data
+                const price = data.price ? (data.price.amount / data.price.divisor) : 0
+                const image = data.images && data.images.length > 0 ? data.images[0].url_fullxfull : null
+
+                setSelectedListing({
+                    id: data.listing_id,
+                    title: data.title,
+                    price: price,
+                    views: data.views || 0,
+                    favorites: data.num_favorers || 0,
+                    revenue: 'N/A', // Not available in public API
+                    image: image,
+                    tags: data.tags || []
+                })
+            } else if (result.type === 'search') {
+                // Map API Search Results
+                const mappedResults = result.data.results.map((item: any) => {
+                    const price = item.price ? (item.price.amount / item.price.divisor) : 0
+                    const image = item.images && item.images.length > 0 ? item.images[0].url_570xN : null
+                    return {
+                        id: item.listing_id,
+                        title: item.title,
+                        price: price,
+                        views: item.views || 0,
+                        favorites: item.num_favorers || 0,
+                        revenue: 'N/A',
+                        image: image
+                    }
+                })
+                setListingSearchResults(mappedResults)
+            }
+
+        } catch (error) {
+            console.error('Analysis failed:', error)
+            setApiError('API Key Pending - Showing Demo Data')
+
+            // Fallback to Mock Data
+            if (listingSearchQuery.includes('etsy.com') || listingSearchQuery.startsWith('http')) {
+                setSelectedListing(MOCK_DETAILED_STATS)
+            } else {
+                setListingSearchResults(MOCK_LISTING_RESULTS)
+            }
+        } finally {
+            setIsLoading(false)
         }
     }
 
@@ -170,8 +227,8 @@ export default function ListingAnalysisPage(): React.JSX.Element {
         <DashboardLayout>
             <div className="space-y-8">
                 {/* Header */}
-                <div className="relative">
-                    <div className="absolute -left-4 top-0 h-full w-1 bg-gradient-to-b from-teal-500 to-emerald-500 rounded-full" />
+                <div className="relative pl-4">
+                    <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-teal-500 to-emerald-500 rounded-full" />
                     <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-800">Listing Analysis</h1>
                     <p className="text-muted-foreground">Analyze specific listings or find top performers.</p>
                 </div>
@@ -195,13 +252,22 @@ export default function ListingAnalysisPage(): React.JSX.Element {
                             />
                             <Button
                                 type="submit"
-                                className="absolute right-2 h-10 bg-teal-600 hover:bg-teal-700 text-white px-6 rounded-lg"
+                                disabled={isLoading}
+                                className="absolute right-2 h-10 bg-teal-600 hover:bg-teal-700 text-white px-6 rounded-lg disabled:opacity-50"
                             >
-                                Analyze
+                                {isLoading ? 'Analyzing...' : 'Analyze'}
                             </Button>
                         </form>
                     </CardContent>
                 </Card>
+
+                {/* API Error Toast / Banner */}
+                {apiError && (
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-center gap-3 text-amber-800">
+                        <AlertCircle className="h-5 w-5" />
+                        <p className="font-medium">{apiError}</p>
+                    </div>
+                )}
 
                 {/* Results Area */}
                 {hasListingSearched ? (
@@ -229,8 +295,11 @@ export default function ListingAnalysisPage(): React.JSX.Element {
                                         {/* Image Section */}
                                         <div className="bg-slate-100 relative h-64 md:h-auto">
                                             <div className="absolute inset-0 flex items-center justify-center text-slate-400 bg-slate-200">
-                                                {/* Placeholder for Image */}
-                                                <ShoppingBag className="h-16 w-16 opacity-20" />
+                                                {selectedListing.image ? (
+                                                    <img src={selectedListing.image} alt={selectedListing.title} className="h-full w-full object-cover" />
+                                                ) : (
+                                                    <ShoppingBag className="h-16 w-16 opacity-20" />
+                                                )}
                                             </div>
                                         </div>
 
@@ -256,7 +325,9 @@ export default function ListingAnalysisPage(): React.JSX.Element {
                                                 </div>
                                                 <div className="space-y-1">
                                                     <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Est. Revenue/Mo</p>
-                                                    <p className="text-xl font-bold text-teal-600">${selectedListing.revenue}</p>
+                                                    <p className="text-xl font-bold text-teal-600">
+                                                        {typeof selectedListing.revenue === 'number' ? `$${selectedListing.revenue}` : selectedListing.revenue}
+                                                    </p>
                                                 </div>
                                             </div>
 
@@ -285,12 +356,16 @@ export default function ListingAnalysisPage(): React.JSX.Element {
                                             <Card
                                                 key={item.id}
                                                 className="border-white/50 bg-white/70 backdrop-blur-md shadow-lg shadow-teal-900/5 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer group relative"
-                                                onClick={() => setSelectedListing({ ...MOCK_DETAILED_STATS, title: item.title, price: item.price })}
+                                                onClick={() => setSelectedListing({ ...MOCK_DETAILED_STATS, title: item.title, price: item.price, image: item.image })}
                                             >
                                                 <CardContent className="p-0">
                                                     <div className="h-48 bg-slate-200 relative overflow-hidden">
                                                         <div className="absolute inset-0 flex items-center justify-center text-slate-400">
-                                                            <ShoppingBag className="h-12 w-12 opacity-20" />
+                                                            {item.image ? (
+                                                                <img src={item.image} alt={item.title} className="h-full w-full object-cover" />
+                                                            ) : (
+                                                                <ShoppingBag className="h-12 w-12 opacity-20" />
+                                                            )}
                                                         </div>
                                                         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
                                                             <p className="text-white font-bold truncate">{item.title}</p>
@@ -313,11 +388,11 @@ export default function ListingAnalysisPage(): React.JSX.Element {
                                                     <div className="p-6 grid grid-cols-2 gap-4">
                                                         <div className="space-y-1">
                                                             <p className="text-xs text-slate-400 uppercase font-bold">Views</p>
-                                                            <p className="font-semibold text-slate-700">{item.views}</p>
+                                                            <p className="font-semibold text-slate-700">{item.views || '-'}</p>
                                                         </div>
                                                         <div className="space-y-1">
                                                             <p className="text-xs text-slate-400 uppercase font-bold">Revenue</p>
-                                                            <p className="font-semibold text-teal-600">${item.revenue}</p>
+                                                            <p className="font-semibold text-teal-600">{typeof item.revenue === 'number' ? `$${item.revenue}` : item.revenue}</p>
                                                         </div>
                                                     </div>
                                                 </CardContent>
@@ -340,7 +415,7 @@ export default function ListingAnalysisPage(): React.JSX.Element {
                                         <Card
                                             key={item.id}
                                             className="border-white/50 bg-white/70 backdrop-blur-md shadow-lg shadow-teal-900/5 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer group relative"
-                                            onClick={() => setSelectedListing({ ...MOCK_DETAILED_STATS, title: item.listing_title, price: item.price })}
+                                            onClick={() => setSelectedListing({ ...MOCK_DETAILED_STATS, title: item.listing_title, price: item.price, image: item.image_url })}
                                         >
                                             <CardContent className="p-0">
                                                 <div className="h-48 bg-slate-200 relative overflow-hidden">
