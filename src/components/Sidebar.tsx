@@ -30,6 +30,25 @@ const sidebarItems = [
     { icon: ClipboardCheck, label: "Listing Optimizer", href: "/dashboard/listing-optimizer" },
 ]
 
+function SellerScoutLogo({ className }: { className?: string }) {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={className}
+        >
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.3-4.3" />
+            <path d="M7 14l3-3 2 2 4-5" />
+        </svg>
+    )
+}
+
 export function Sidebar() {
     const pathname = usePathname()
     const router = useRouter()
@@ -46,7 +65,7 @@ export function Sidebar() {
             {/* Mobile Top Bar */}
             <div className="fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-b border-emerald-50 z-50 flex items-center justify-between px-4 md:hidden">
                 <div className="flex items-center gap-2 text-teal-600">
-                    <TrendingUp className="h-6 w-6" />
+                    <SellerScoutLogo className="h-6 w-6" />
                     <span className="text-xl font-bold tracking-tight">SellerScout</span>
                 </div>
                 <Button
@@ -71,7 +90,7 @@ export function Sidebar() {
                     {/* Logo / Header */}
                     <div className="flex h-20 items-center px-6 border-b border-emerald-50">
                         <div className="flex items-center gap-2 text-teal-600">
-                            <TrendingUp className="h-8 w-8" />
+                            <SellerScoutLogo className="h-8 w-8" />
                             <span className="text-2xl font-bold tracking-tight">SellerScout</span>
                         </div>
                     </div>

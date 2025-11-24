@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react'
-import { Search, ShoppingBag, Heart, AlertCircle } from 'lucide-react'
+import { Search, ShoppingBag, Heart, AlertCircle, ImageOff } from 'lucide-react'
 import { Card, CardContent } from '@/components/Card'
 import { Button } from '@/components/Button'
 import { DashboardLayout } from '@/components/DashboardLayout'
@@ -33,6 +33,80 @@ interface SavedListing {
     image_url: string
     total_sales: number
     created_at: string
+}
+
+interface ListingAnalysisCardProps {
+    item: any;
+    onClick: (item: any) => void;
+    onTrack: (e: React.MouseEvent, item: any) => void;
+    isSaved: boolean;
+}
+
+function ListingAnalysisCard({ item, onClick, onTrack, isSaved }: ListingAnalysisCardProps) {
+    const [imageError, setImageError] = useState(false);
+    const title = item.listing_title || item.title;
+    const price = item.price;
+    const image = item.image_url || item.image;
+
+    return (
+        <Card
+            className="border-white/50 bg-white/70 backdrop-blur-md shadow-lg shadow-teal-900/5 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer group relative"
+            onClick={() => onClick(item)}
+        >
+            <CardContent className="p-0">
+                <div className="h-48 bg-slate-200 relative overflow-hidden">
+                    <div className="absolute inset-0 flex items-center justify-center text-slate-400">
+                        {image && !imageError ? (
+                            <img
+                                src={image}
+                                alt={title}
+                                className="h-full w-full object-cover"
+                                onError={() => setImageError(true)}
+                            />
+                        ) : (
+                            <div className="w-full h-48 bg-slate-100 flex flex-col items-center justify-center gap-2">
+                                {imageError ? (
+                                    <>
+                                        <ImageOff className="w-8 h-8 text-slate-400" />
+                                        <span className="text-xs text-slate-500 font-medium">Preview unavailable</span>
+                                    </>
+                                ) : (
+                                    <ShoppingBag className="h-12 w-12 opacity-20" />
+                                )}
+                            </div>
+                        )}
+                    </div>
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+                        <p className="text-white font-bold truncate">{title}</p>
+                        <p className="text-teal-200 font-medium">${price?.toFixed(2)}</p>
+                    </div>
+
+                    {/* Heart Button */}
+                    <button
+                        onClick={(e) => onTrack(e, item)}
+                        className={cn(
+                            "absolute top-3 right-3 p-2 rounded-full shadow-sm transition-all duration-200 z-10",
+                            isSaved
+                                ? "bg-white text-rose-500 hover:bg-rose-50"
+                                : "bg-white/80 text-slate-400 hover:bg-white hover:text-rose-500"
+                        )}
+                    >
+                        <Heart className={cn("h-5 w-5", isSaved && "fill-rose-500")} />
+                    </button>
+                </div>
+                <div className="p-6 grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                        <p className="text-xs text-slate-400 uppercase font-bold">Views</p>
+                        <p className="font-semibold text-slate-700">{item.views || '-'}</p>
+                    </div>
+                    <div className="space-y-1">
+                        <p className="text-xs text-slate-400 uppercase font-bold">Revenue</p>
+                        <p className="font-semibold text-teal-600">{typeof item.revenue === 'number' ? `$${item.revenue}` : (item.revenue || '-')}</p>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    );
 }
 
 export default function ListingAnalysisPage(): React.JSX.Element {
@@ -353,50 +427,13 @@ export default function ListingAnalysisPage(): React.JSX.Element {
                                     {listingSearchResults.map((item) => {
                                         const isSaved = savedListings.some(l => l.listing_title === item.title)
                                         return (
-                                            <Card
+                                            <ListingAnalysisCard
                                                 key={item.id}
-                                                className="border-white/50 bg-white/70 backdrop-blur-md shadow-lg shadow-teal-900/5 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer group relative"
+                                                item={item}
                                                 onClick={() => setSelectedListing({ ...MOCK_DETAILED_STATS, title: item.title, price: item.price, image: item.image })}
-                                            >
-                                                <CardContent className="p-0">
-                                                    <div className="h-48 bg-slate-200 relative overflow-hidden">
-                                                        <div className="absolute inset-0 flex items-center justify-center text-slate-400">
-                                                            {item.image ? (
-                                                                <img src={item.image} alt={item.title} className="h-full w-full object-cover" />
-                                                            ) : (
-                                                                <ShoppingBag className="h-12 w-12 opacity-20" />
-                                                            )}
-                                                        </div>
-                                                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-                                                            <p className="text-white font-bold truncate">{item.title}</p>
-                                                            <p className="text-teal-200 font-medium">${item.price.toFixed(2)}</p>
-                                                        </div>
-
-                                                        {/* Heart Button */}
-                                                        <button
-                                                            onClick={(e) => handleTrackItem(e, item)}
-                                                            className={cn(
-                                                                "absolute top-3 right-3 p-2 rounded-full shadow-sm transition-all duration-200 z-10",
-                                                                isSaved
-                                                                    ? "bg-white text-rose-500 hover:bg-rose-50"
-                                                                    : "bg-white/80 text-slate-400 hover:bg-white hover:text-rose-500"
-                                                            )}
-                                                        >
-                                                            <Heart className={cn("h-5 w-5", isSaved && "fill-rose-500")} />
-                                                        </button>
-                                                    </div>
-                                                    <div className="p-6 grid grid-cols-2 gap-4">
-                                                        <div className="space-y-1">
-                                                            <p className="text-xs text-slate-400 uppercase font-bold">Views</p>
-                                                            <p className="font-semibold text-slate-700">{item.views || '-'}</p>
-                                                        </div>
-                                                        <div className="space-y-1">
-                                                            <p className="text-xs text-slate-400 uppercase font-bold">Revenue</p>
-                                                            <p className="font-semibold text-teal-600">{typeof item.revenue === 'number' ? `$${item.revenue}` : item.revenue}</p>
-                                                        </div>
-                                                    </div>
-                                                </CardContent>
-                                            </Card>
+                                                onTrack={handleTrackItem}
+                                                isSaved={isSaved}
+                                            />
                                         )
                                     })}
                                 </div>
@@ -412,48 +449,13 @@ export default function ListingAnalysisPage(): React.JSX.Element {
                                 {recentListings.map((item) => {
                                     const isSaved = true // It's in recentListings, so it's saved
                                     return (
-                                        <Card
+                                        <ListingAnalysisCard
                                             key={item.id}
-                                            className="border-white/50 bg-white/70 backdrop-blur-md shadow-lg shadow-teal-900/5 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer group relative"
+                                            item={item}
                                             onClick={() => setSelectedListing({ ...MOCK_DETAILED_STATS, title: item.listing_title, price: item.price, image: item.image_url })}
-                                        >
-                                            <CardContent className="p-0">
-                                                <div className="h-48 bg-slate-200 relative overflow-hidden">
-                                                    <div className="absolute inset-0 flex items-center justify-center text-slate-400">
-                                                        {item.image_url ? (
-                                                            <img src={item.image_url} alt={item.listing_title} className="h-full w-full object-cover" />
-                                                        ) : (
-                                                            <ShoppingBag className="h-12 w-12 opacity-20" />
-                                                        )}
-                                                    </div>
-                                                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-                                                        <p className="text-white font-bold truncate">{item.listing_title}</p>
-                                                        <p className="text-teal-200 font-medium">${item.price?.toFixed(2)}</p>
-                                                    </div>
-
-                                                    {/* Heart Button */}
-                                                    <button
-                                                        onClick={(e) => handleTrackItem(e, item)}
-                                                        className={cn(
-                                                            "absolute top-3 right-3 p-2 rounded-full shadow-sm transition-all duration-200 z-10",
-                                                            "bg-white text-rose-500 hover:bg-rose-50"
-                                                        )}
-                                                    >
-                                                        <Heart className={cn("h-5 w-5 fill-rose-500")} />
-                                                    </button>
-                                                </div>
-                                                <div className="p-6 grid grid-cols-2 gap-4">
-                                                    <div className="space-y-1">
-                                                        <p className="text-xs text-slate-400 uppercase font-bold">Views</p>
-                                                        <p className="font-semibold text-slate-700">-</p>
-                                                    </div>
-                                                    <div className="space-y-1">
-                                                        <p className="text-xs text-slate-400 uppercase font-bold">Revenue</p>
-                                                        <p className="font-semibold text-teal-600">-</p>
-                                                    </div>
-                                                </div>
-                                            </CardContent>
-                                        </Card>
+                                            onTrack={handleTrackItem}
+                                            isSaved={isSaved}
+                                        />
                                     )
                                 })}
                             </div>
