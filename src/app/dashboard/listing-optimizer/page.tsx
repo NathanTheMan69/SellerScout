@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/Button"
 import { cn } from "@/lib/utils"
 import { DashboardLayout } from "@/components/DashboardLayout"
-import { Plus, Loader2, AlertCircle, Eye, Heart, X, Search, Sparkles, ShoppingBag, ImageOff } from "lucide-react"
+import { Plus, Loader2, AlertCircle, Eye, Heart, X, Search, Sparkles, ShoppingBag, ImageOff, Copy, Check } from "lucide-react"
 
 interface Listing {
     listing_id: number;
@@ -35,6 +35,35 @@ interface Suggestion {
 interface OptimizationResult {
     grades: TagGrade[];
     suggestions: Suggestion[];
+}
+
+function CopyButton({ text }: { text: string }) {
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        try {
+            await navigator.clipboard.writeText(text);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch (err) {
+            console.error('Failed to copy text: ', err);
+        }
+    };
+
+    return (
+        <button
+            onClick={handleCopy}
+            className="p-1.5 hover:bg-teal-100 rounded-md transition-colors group/copy"
+            title="Copy to clipboard"
+        >
+            {copied ? (
+                <Check className="h-3.5 w-3.5 text-green-500" />
+            ) : (
+                <Copy className="h-3.5 w-3.5 text-teal-400 group-hover/copy:text-teal-600 transition-colors" />
+            )}
+        </button>
+    );
 }
 
 interface OptimizerListingCardProps {
@@ -418,7 +447,12 @@ export default function ListingOptimizerPage() {
                                                             .filter(s => !tentativeTags.includes(s.tag))
                                                             .map((suggestion) => (
                                                                 <tr key={suggestion.tag} className="group hover:bg-teal-50/30 transition-colors">
-                                                                    <td className="px-4 py-3 font-medium text-slate-700">{suggestion.tag}</td>
+                                                                    <td className="px-4 py-3 font-medium text-slate-700">
+                                                                        <div className="flex items-center justify-between gap-2">
+                                                                            <span>{suggestion.tag}</span>
+                                                                            <CopyButton text={suggestion.tag} />
+                                                                        </div>
+                                                                    </td>
                                                                     <td className="px-4 py-3 text-slate-500 text-xs">
                                                                         <div className="flex items-center gap-1.5">
                                                                             <div className={cn("h-1.5 w-1.5 rounded-full",

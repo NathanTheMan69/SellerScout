@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from 'react'
-import { Search, ShoppingBag, Heart, AlertCircle, ImageOff } from 'lucide-react'
+import { Search, ShoppingBag, Heart, AlertCircle, ImageOff, ArrowLeft } from 'lucide-react'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { Card, CardContent } from '@/components/Card'
 import { Button } from '@/components/Button'
 import { DashboardLayout } from '@/components/DashboardLayout'
@@ -9,21 +10,12 @@ import { cn } from '@/lib/utils'
 import { createClient } from '@/utils/supabase/client'
 
 const MOCK_LISTING_RESULTS = [
-    { id: 'l1', title: 'Handmade Silver Ring', price: 45.00, views: 120, favorites: 450, revenue: 1200, image: 'https://placehold.co/400x400/e2e8f0/1e293b?text=Ring' },
-    { id: 'l2', title: 'Vintage Gold Necklace', price: 120.00, views: 85, favorites: 320, revenue: 2400, image: 'https://placehold.co/400x400/e2e8f0/1e293b?text=Necklace' },
-    { id: 'l3', title: 'Boho Gemstone Earrings', price: 35.00, views: 200, favorites: 600, revenue: 1500, image: 'https://placehold.co/400x400/e2e8f0/1e293b?text=Earrings' },
+    { id: 'l1', title: 'Handmade Silver Ring', price: 45.00, views: 120, favorites: 450, revenue: 1200, image: 'https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&w=400&q=80' },
+    { id: 'l2', title: 'Vintage Gold Necklace', price: 120.00, views: 85, favorites: 320, revenue: 2400, image: 'https://images.unsplash.com/photo-1599643478518-17488fbbcd75?auto=format&fit=crop&w=400&q=80' },
+    { id: 'l3', title: 'Boho Gemstone Earrings', price: 35.00, views: 200, favorites: 600, revenue: 1500, image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=400&q=80' },
 ]
 
-const MOCK_DETAILED_STATS = {
-    id: 'l_detail',
-    title: 'Custom Engraved Leather Wallet',
-    price: 55.00,
-    views: 350,
-    favorites: 1200,
-    revenue: 4500,
-    image: 'https://placehold.co/600x400/e2e8f0/1e293b?text=Wallet',
-    tags: ['Leather', 'Gift for Him', 'Custom', 'Wallet']
-}
+
 
 interface SavedListing {
     id: string
@@ -48,6 +40,9 @@ function ListingAnalysisCard({ item, onClick, onTrack, isSaved }: ListingAnalysi
     const price = item.price;
     const image = item.image_url || item.image;
 
+    // Treat placehold.co images as "fallback candidates" if user dislikes them
+    const isPlaceholder = image?.includes('placehold.co');
+
     return (
         <Card
             className="border-white/50 bg-white/70 backdrop-blur-md shadow-lg shadow-teal-900/5 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer group relative"
@@ -56,7 +51,7 @@ function ListingAnalysisCard({ item, onClick, onTrack, isSaved }: ListingAnalysi
             <CardContent className="p-0">
                 <div className="h-48 bg-slate-200 relative overflow-hidden">
                     <div className="absolute inset-0 flex items-center justify-center text-slate-400">
-                        {image && !imageError ? (
+                        {image && !imageError && !isPlaceholder ? (
                             <img
                                 src={image}
                                 alt={title}
@@ -65,7 +60,7 @@ function ListingAnalysisCard({ item, onClick, onTrack, isSaved }: ListingAnalysi
                             />
                         ) : (
                             <div className="w-full h-48 bg-slate-100 flex flex-col items-center justify-center gap-2">
-                                {imageError ? (
+                                {imageError || isPlaceholder ? (
                                     <>
                                         <ImageOff className="w-8 h-8 text-slate-400" />
                                         <span className="text-xs text-slate-500 font-medium">Preview unavailable</span>
@@ -109,19 +104,62 @@ function ListingAnalysisCard({ item, onClick, onTrack, isSaved }: ListingAnalysi
     );
 }
 
+function EmptyState({ onSearch }: { onSearch: (term: string) => void }) {
+    const examples = [
+        { icon: '🌱', text: 'Handmade Soap' },
+        { icon: '💍', text: 'Silver Ring' },
+        { icon: '📅', text: 'Digital Planner' }
+    ];
+
+    return (
+        <div className="flex flex-col items-center justify-center py-16 px-4 animate-in fade-in zoom-in-95 duration-500">
+            <div className="bg-teal-50/50 p-6 rounded-full mb-6 ring-1 ring-teal-100 shadow-lg shadow-teal-900/5">
+                <Search className="h-12 w-12 text-teal-500/80" />
+            </div>
+            <h2 className="text-2xl font-bold text-slate-800 mb-2 text-center">Start Your Investigation</h2>
+            <p className="text-slate-500 text-center max-w-md mb-8">
+                Paste an Etsy listing URL above to unlock hidden data, or try one of these examples:
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+                {examples.map((example) => (
+                    <button
+                        key={example.text}
+                        onClick={() => onSearch(example.text)}
+                        className="flex items-center gap-2 px-4 py-2 bg-white/60 hover:bg-white border border-teal-100 hover:border-teal-300 rounded-full shadow-sm hover:shadow-md transition-all duration-200 text-slate-700 hover:text-teal-700 group"
+                    >
+                        <span className="grayscale group-hover:grayscale-0 transition-all">{example.icon}</span>
+                        <span className="font-medium">{example.text}</span>
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
+}
+
 export default function ListingAnalysisPage(): React.JSX.Element {
     const [listingSearchQuery, setListingSearchQuery] = useState('')
     const [listingSearchResults, setListingSearchResults] = useState<any[]>([])
-    const [selectedListing, setSelectedListing] = useState<any | null>(null)
     const [hasListingSearched, setHasListingSearched] = useState(false)
     const [savedListings, setSavedListings] = useState<SavedListing[]>([])
     const [recentListings, setRecentListings] = useState<SavedListing[]>([])
     const [isLoading, setIsLoading] = useState(false)
     const [apiError, setApiError] = useState<string | null>(null)
+    const [imageError, setImageError] = useState(false)
     const supabase = createClient()
+
+
+    const searchParams = useSearchParams()
+    const router = useRouter()
+    const returnTo = searchParams.get('returnTo')
 
     useEffect(() => {
         fetchSavedListings()
+
+        const query = searchParams.get('query')
+        if (query) {
+            setListingSearchQuery(query)
+            executeSearch(query)
+        }
     }, [])
 
     const fetchSavedListings = async () => {
@@ -146,21 +184,20 @@ export default function ListingAnalysisPage(): React.JSX.Element {
         }
     }
 
-    const handleListingSearch = async (e: React.FormEvent) => {
-        e.preventDefault()
-        if (!listingSearchQuery.trim()) return
+    const executeSearch = async (query: string) => {
+        if (!query.trim()) return
 
         setIsLoading(true)
         setApiError(null)
         setHasListingSearched(true)
-        setSelectedListing(null)
+        setImageError(false)
         setListingSearchResults([])
 
         try {
             const response = await fetch('/api/analyze', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ query: listingSearchQuery }),
+                body: JSON.stringify({ query: query }),
             })
 
             if (!response.ok) {
@@ -175,16 +212,9 @@ export default function ListingAnalysisPage(): React.JSX.Element {
                 const price = data.price ? (data.price.amount / data.price.divisor) : 0
                 const image = data.images && data.images.length > 0 ? data.images[0].url_fullxfull : null
 
-                setSelectedListing({
-                    id: data.listing_id,
-                    title: data.title,
-                    price: price,
-                    views: data.views || 0,
-                    favorites: data.num_favorers || 0,
-                    revenue: 'N/A', // Not available in public API
-                    image: image,
-                    tags: data.tags || []
-                })
+                // Redirect to Report Page
+                router.push(`/dashboard/listing-analysis/report?query=${encodeURIComponent(data.title)}&returnTo=/dashboard/listing-analysis`)
+                return
             } else if (result.type === 'search') {
                 // Map API Search Results
                 const mappedResults = result.data.results.map((item: any) => {
@@ -208,14 +238,24 @@ export default function ListingAnalysisPage(): React.JSX.Element {
             setApiError('API Key Pending - Showing Demo Data')
 
             // Fallback to Mock Data
-            if (listingSearchQuery.includes('etsy.com') || listingSearchQuery.startsWith('http')) {
-                setSelectedListing(MOCK_DETAILED_STATS)
+            if (query.includes('etsy.com') || query.startsWith('http')) {
+                router.push(`/dashboard/listing-analysis/report?query=${encodeURIComponent(query)}&returnTo=/dashboard/listing-analysis`)
             } else {
                 setListingSearchResults(MOCK_LISTING_RESULTS)
             }
         } finally {
             setIsLoading(false)
         }
+    }
+
+    const handleListingSearch = async (e: React.FormEvent) => {
+        e.preventDefault()
+        executeSearch(listingSearchQuery)
+    }
+
+    const handleChipSearch = (term: string) => {
+        setListingSearchQuery(term)
+        executeSearch(term)
     }
 
     const handleTrackItem = async (e: React.MouseEvent, item: any) => {
@@ -295,16 +335,27 @@ export default function ListingAnalysisPage(): React.JSX.Element {
         }
     }
 
-    const isSelectedSaved = selectedListing ? savedListings.some(l => l.listing_title === selectedListing.title) : false
+
 
     return (
         <DashboardLayout>
             <div className="space-y-8">
                 {/* Header */}
-                <div className="relative pl-4">
-                    <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-teal-500 to-emerald-500 rounded-full" />
-                    <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-800">Listing Analysis</h1>
-                    <p className="text-muted-foreground">Analyze specific listings or find top performers.</p>
+                <div>
+                    {returnTo && (
+                        <Button
+                            variant="ghost"
+                            className="mb-6 rounded-full bg-white border border-slate-200 text-slate-700 shadow-sm hover:border-teal-500 hover:text-teal-600 gap-2 px-4"
+                            onClick={() => router.push(returnTo)}
+                        >
+                            <ArrowLeft className="h-4 w-4" /> Back to Shop Analysis
+                        </Button>
+                    )}
+                    <div className="relative pl-4">
+                        <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-teal-500 to-emerald-500 rounded-full" />
+                        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-800">Listing Analysis</h1>
+                        <p className="text-muted-foreground">Analyze specific listings or find top performers.</p>
+                    </div>
                 </div>
 
                 {/* Search Section */}
@@ -346,103 +397,30 @@ export default function ListingAnalysisPage(): React.JSX.Element {
                 {/* Results Area */}
                 {hasListingSearched ? (
                     <div className="space-y-6">
-                        {selectedListing ? (
-                            // Detailed Stats Card
-                            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                <div className="flex justify-between items-center mb-4">
-                                    <h2 className="text-xl font-semibold text-slate-800">Detailed Analysis</h2>
-                                    <Button
-                                        onClick={(e) => handleTrackItem(e, selectedListing)}
-                                        className={cn(
-                                            "flex items-center gap-2 transition-all duration-200",
-                                            isSelectedSaved
-                                                ? "bg-rose-50 text-rose-500 hover:bg-rose-100 border border-rose-200"
-                                                : "bg-white text-slate-500 hover:bg-slate-50 border border-slate-200"
-                                        )}
-                                    >
-                                        <Heart className={cn("h-4 w-4", isSelectedSaved && "fill-rose-500")} />
-                                        {isSelectedSaved ? 'Tracked' : 'Track Listing'}
-                                    </Button>
-                                </div>
-                                <Card className="border-white/50 bg-white/80 backdrop-blur-md shadow-xl shadow-teal-900/10 overflow-hidden">
-                                    <div className="grid md:grid-cols-3 gap-0">
-                                        {/* Image Section */}
-                                        <div className="bg-slate-100 relative h-64 md:h-auto">
-                                            <div className="absolute inset-0 flex items-center justify-center text-slate-400 bg-slate-200">
-                                                {selectedListing.image ? (
-                                                    <img src={selectedListing.image} alt={selectedListing.title} className="h-full w-full object-cover" />
-                                                ) : (
-                                                    <ShoppingBag className="h-16 w-16 opacity-20" />
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        {/* Content Section */}
-                                        <div className="col-span-2 p-8 space-y-6">
-                                            <div>
-                                                <div className="flex items-center gap-2 mb-2">
-                                                    <span className="bg-teal-100 text-teal-700 text-xs font-bold px-2 py-1 rounded-full uppercase tracking-wide">Active Listing</span>
-                                                    <span className="text-slate-400 text-sm">ID: {selectedListing.id}</span>
-                                                </div>
-                                                <h3 className="text-2xl font-bold text-slate-800">{selectedListing.title}</h3>
-                                                <p className="text-3xl font-light text-teal-600 mt-2">${selectedListing.price.toFixed(2)}</p>
-                                            </div>
-
-                                            <div className="grid grid-cols-3 gap-6">
-                                                <div className="space-y-1">
-                                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Daily Views</p>
-                                                    <p className="text-xl font-bold text-slate-800">{selectedListing.views}</p>
-                                                </div>
-                                                <div className="space-y-1">
-                                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Favorites</p>
-                                                    <p className="text-xl font-bold text-slate-800">{selectedListing.favorites}</p>
-                                                </div>
-                                                <div className="space-y-1">
-                                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Est. Revenue/Mo</p>
-                                                    <p className="text-xl font-bold text-teal-600">
-                                                        {typeof selectedListing.revenue === 'number' ? `$${selectedListing.revenue}` : selectedListing.revenue}
-                                                    </p>
-                                                </div>
-                                            </div>
-
-                                            <div className="pt-6 border-t border-slate-100">
-                                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Tags</p>
-                                                <div className="flex flex-wrap gap-2">
-                                                    {selectedListing.tags?.map((tag: string) => (
-                                                        <span key={tag} className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-sm font-medium">
-                                                            {tag}
-                                                        </span>
-                                                    )) || <span className="text-slate-400 text-sm">No tags available</span>}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </Card>
+                        {/* Top Results Cards */}
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <h2 className="text-xl font-semibold text-slate-800 mb-4">Top Results for "{listingSearchQuery}"</h2>
+                            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                                {listingSearchResults.map((item) => {
+                                    const isSaved = savedListings.some(l => l.listing_title === item.title)
+                                    return (
+                                        <ListingAnalysisCard
+                                            key={item.id}
+                                            item={item}
+                                            onClick={() => {
+                                                router.push(`/dashboard/listing-analysis/report?query=${encodeURIComponent(item.title)}&returnTo=/dashboard/listing-analysis`)
+                                            }}
+                                            onTrack={handleTrackItem}
+                                            isSaved={isSaved}
+                                        />
+                                    )
+                                })}
                             </div>
-                        ) : (
-                            // Top Results Cards
-                            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                <h2 className="text-xl font-semibold text-slate-800 mb-4">Top Results for "{listingSearchQuery}"</h2>
-                                <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                                    {listingSearchResults.map((item) => {
-                                        const isSaved = savedListings.some(l => l.listing_title === item.title)
-                                        return (
-                                            <ListingAnalysisCard
-                                                key={item.id}
-                                                item={item}
-                                                onClick={() => setSelectedListing({ ...MOCK_DETAILED_STATS, title: item.title, price: item.price, image: item.image })}
-                                                onTrack={handleTrackItem}
-                                                isSaved={isSaved}
-                                            />
-                                        )
-                                    })}
-                                </div>
-                            </div>
-                        )}
+                        </div>
                     </div>
                 ) : (
-                    // Recently Tracked Listings
-                    recentListings.length > 0 && (
+                    // Recently Tracked Listings OR Empty State
+                    recentListings.length > 0 ? (
                         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <h2 className="text-xl font-semibold text-slate-800 mb-4">Recently Tracked Listings</h2>
                             <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -452,7 +430,9 @@ export default function ListingAnalysisPage(): React.JSX.Element {
                                         <ListingAnalysisCard
                                             key={item.id}
                                             item={item}
-                                            onClick={() => setSelectedListing({ ...MOCK_DETAILED_STATS, title: item.listing_title, price: item.price, image: item.image_url })}
+                                            onClick={() => {
+                                                router.push(`/dashboard/listing-analysis/report?query=${encodeURIComponent(item.listing_title)}&returnTo=/dashboard/listing-analysis`)
+                                            }}
                                             onTrack={handleTrackItem}
                                             isSaved={isSaved}
                                         />
@@ -460,6 +440,8 @@ export default function ListingAnalysisPage(): React.JSX.Element {
                                 })}
                             </div>
                         </div>
+                    ) : (
+                        <EmptyState onSearch={handleChipSearch} />
                     )
                 )}
             </div>

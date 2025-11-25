@@ -73,6 +73,38 @@ function ListingCard({ item }: ListingCardProps) {
     )
 }
 
+function EmptyState({ onSearch }: { onSearch: (term: string) => void }) {
+    const examples = [
+        { text: 'ArtPrintsStudio', icon: '🎨' },
+        { text: 'VintageFinds', icon: '💍' },
+        { text: 'CozyCandleCo', icon: '🕯️' }
+    ];
+
+    return (
+        <div className="flex flex-col items-center justify-center py-16 px-4 animate-in fade-in zoom-in-95 duration-500">
+            <div className="bg-teal-50/50 p-6 rounded-full mb-6 ring-1 ring-teal-100 shadow-lg shadow-teal-900/5">
+                <Store className="h-12 w-12 text-teal-500/80" />
+            </div>
+            <h2 className="text-2xl font-bold text-slate-800 mb-2 text-center">Build Your Watchlist</h2>
+            <p className="text-slate-500 text-center max-w-md mb-8">
+                Track competitors to reveal their bestsellers, total sales, and pricing strategies.
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+                {examples.map((example) => (
+                    <button
+                        key={example.text}
+                        onClick={() => onSearch(example.text)}
+                        className="flex items-center gap-2 px-4 py-2 bg-white/60 hover:bg-white border border-teal-100 hover:border-teal-300 rounded-full shadow-sm hover:shadow-md transition-all duration-200 text-slate-700 hover:text-teal-700 group"
+                    >
+                        <span className="grayscale group-hover:grayscale-0 transition-all">{example.icon}</span>
+                        <span className="font-medium">{example.text}</span>
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
+}
+
 export default function ShopsPage() {
     const [searchQuery, setSearchQuery] = useState('')
     const [searchResults, setSearchResults] = useState<typeof MOCK_SEARCH_RESULTS>([])
@@ -122,14 +154,23 @@ export default function ShopsPage() {
         }
     }
 
-    const handleSearch = (e: React.FormEvent) => {
-        e.preventDefault()
+    const executeSearch = (term: string) => {
         setHasSearched(true)
-        if (!searchQuery.trim()) {
+        if (!term.trim()) {
             setSearchResults([])
             return
         }
         setSearchResults(MOCK_SEARCH_RESULTS)
+    }
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault()
+        executeSearch(searchQuery)
+    }
+
+    const handleChipSearch = (term: string) => {
+        setSearchQuery(term)
+        executeSearch(term)
     }
 
     const handleTrack = async (e: React.MouseEvent, shop: typeof MOCK_SEARCH_RESULTS[0]) => {
@@ -336,25 +377,25 @@ export default function ShopsPage() {
                 {/* Saved Shops List */}
                 <div className="space-y-4">
                     <h2 className="text-xl font-semibold text-slate-800">Your Tracked Shops</h2>
-                    <Card className="border-white/50 bg-white/70 backdrop-blur-md shadow-lg shadow-teal-900/5 overflow-hidden">
-                        <CardContent className="p-0">
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-left text-sm">
-                                    <thead className="bg-teal-50/50 text-slate-600">
-                                        <tr>
-                                            <th className="px-6 py-4 font-semibold">Shop Name</th>
-                                            <th className="px-6 py-4 font-semibold">Total Sales</th>
-                                            <th className="px-6 py-4 font-semibold">Listings</th>
-                                            <th className="px-6 py-4 font-semibold text-right">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-100">
-                                        {loading ? (
+                    {loading ? (
+                        <div className="flex justify-center py-12">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
+                        </div>
+                    ) : savedShops.length > 0 ? (
+                        <Card className="border-white/50 bg-white/70 backdrop-blur-md shadow-lg shadow-teal-900/5 overflow-hidden">
+                            <CardContent className="p-0">
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left text-sm">
+                                        <thead className="bg-teal-50/50 text-slate-600">
                                             <tr>
-                                                <td colSpan={4} className="px-6 py-12 text-center text-slate-500">Loading...</td>
+                                                <th className="px-6 py-4 font-semibold">Shop Name</th>
+                                                <th className="px-6 py-4 font-semibold">Total Sales</th>
+                                                <th className="px-6 py-4 font-semibold">Listings</th>
+                                                <th className="px-6 py-4 font-semibold text-right">Actions</th>
                                             </tr>
-                                        ) : savedShops.length > 0 ? (
-                                            savedShops.map((shop) => (
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-100">
+                                            {savedShops.map((shop) => (
                                                 <tr
                                                     key={shop.id}
                                                     className="hover:bg-teal-50/30 transition-colors cursor-pointer"
@@ -401,19 +442,15 @@ export default function ShopsPage() {
                                                         </button>
                                                     </td>
                                                 </tr>
-                                            ))
-                                        ) : (
-                                            <tr>
-                                                <td colSpan={4} className="px-6 py-12 text-center text-slate-500">
-                                                    No tracked shops yet. Use the search above to find some!
-                                                </td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </CardContent>
-                    </Card>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ) : (
+                        <EmptyState onSearch={handleChipSearch} />
+                    )}
                 </div>
             </div>
 
@@ -523,9 +560,17 @@ export default function ShopsPage() {
 
                         {/* Bestsellers */}
                         <div>
-                            <div className="flex items-center gap-2 mb-4">
-                                <TrendingUp className="h-5 w-5 text-teal-600" />
-                                <h4 className="text-lg font-bold text-slate-800">Most Popular Listings</h4>
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="flex items-center gap-2">
+                                    <TrendingUp className="h-5 w-5 text-teal-600" />
+                                    <h4 className="text-lg font-bold text-slate-800">Most Popular Listings</h4>
+                                </div>
+                                <a
+                                    href={`/dashboard/shops/${encodeURIComponent(shopDetails.details.shop_name)}`}
+                                    className="text-sm font-medium bg-white border border-slate-200 text-slate-700 shadow-sm px-4 py-1.5 rounded-full hover:border-teal-500 hover:text-teal-600 flex items-center gap-2 transition-all"
+                                >
+                                    View Full Report <ExternalLink className="h-3 w-3" />
+                                </a>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 {shopDetails.bestsellers.map((item) => (
