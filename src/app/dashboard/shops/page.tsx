@@ -1,4 +1,5 @@
 "use client";
+import { useToast } from '@/components/Toast'
 
 import { useState, useEffect } from 'react'
 import { Search, Heart, ShoppingBag, Tag, ExternalLink, Trash2, Star, Calendar, TrendingUp, ImageOff, Store } from 'lucide-react'
@@ -15,6 +16,19 @@ const MOCK_SEARCH_RESULTS = [
     { id: 'shop_1', name: 'UrbanCrafts', url: 'https://etsy.com/shop/UrbanCrafts', sales: 12500, listings: 142 },
     { id: 'shop_2', name: 'BohoDreams', url: 'https://etsy.com/shop/BohoDreams', sales: 8200, listings: 85 },
     { id: 'shop_3', name: 'VintageVibes', url: 'https://etsy.com/shop/VintageVibes', sales: 22000, listings: 310 },
+]
+
+// Curated list of top-performing Etsy shops
+const TOP_ETSY_SHOPS = [
+    { name: 'CaitlynMinimalist', category: 'Jewelry',           sales: '2.1M+', listings: 1800, badge: '🥇' },
+    { name: 'ModParty',          category: 'Party Supplies',     sales: '1.9M+', listings: 2400, badge: '🥈' },
+    { name: 'TreetopStudio',     category: 'Wall Art',           sales: '1.4M+', listings: 920,  badge: '🥉' },
+    { name: 'Paperfairies',      category: 'Party Printables',   sales: '1.2M+', listings: 650,  badge: '⭐' },
+    { name: 'LittleHighbury',    category: 'Nursery Decor',      sales: '980K+', listings: 430,  badge: '⭐' },
+    { name: 'MagicFlairDesigns', category: 'Digital Downloads',  sales: '870K+', listings: 1100, badge: '⭐' },
+    { name: 'PlannerKate1',      category: 'Planner Stickers',   sales: '820K+', listings: 2100, badge: '⭐' },
+    { name: 'ThePaperWallFlower',category: 'Prints & Posters',   sales: '760K+', listings: 380,  badge: '⭐' },
+    { name: 'DesignAtelierArt',  category: 'Digital Art',        sales: '710K+', listings: 560,  badge: '⭐' },
 ]
 
 interface SavedShop {
@@ -73,36 +87,54 @@ function ListingCard({ item }: ListingCardProps) {
     )
 }
 
-function EmptyState({ onSearch }: { onSearch: (term: string) => void }) {
-    const examples = [
-        { text: 'ArtPrintsStudio', icon: '🎨' },
-        { text: 'VintageFinds', icon: '💍' },
-        { text: 'CozyCandleCo', icon: '🕯️' }
-    ];
-
+function TopShopsGrid({ onShopClick }: { onShopClick: (name: string) => void }) {
     return (
-        <div className="flex flex-col items-center justify-center py-16 px-4 animate-in fade-in zoom-in-95 duration-500">
-            <div className="bg-teal-50/50 p-6 rounded-full mb-6 ring-1 ring-teal-100 shadow-lg shadow-teal-900/5">
-                <Store className="h-12 w-12 text-teal-500/80" />
+        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="flex items-center gap-3">
+                <TrendingUp className="h-5 w-5 text-teal-600" />
+                <h2 className="text-xl font-semibold text-slate-800">Top Performing Etsy Shops</h2>
+                <span className="text-xs bg-teal-50 text-teal-600 border border-teal-100 px-2 py-0.5 rounded-full font-medium">By Total Sales</span>
             </div>
-            <h2 className="text-2xl font-bold text-slate-800 mb-2 text-center">Build Your Watchlist</h2>
-            <p className="text-slate-500 text-center max-w-md mb-8">
-                Track competitors to reveal their bestsellers, total sales, and pricing strategies.
-            </p>
-            <div className="flex flex-wrap justify-center gap-3">
-                {examples.map((example) => (
-                    <button
-                        key={example.text}
-                        onClick={() => onSearch(example.text)}
-                        className="flex items-center gap-2 px-4 py-2 bg-white/60 hover:bg-white border border-teal-100 hover:border-teal-300 rounded-full shadow-sm hover:shadow-md transition-all duration-200 text-slate-700 hover:text-teal-700 group"
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {TOP_ETSY_SHOPS.map((shop) => (
+                    <Card
+                        key={shop.name}
+                        className="border-white/50 bg-white/70 backdrop-blur-md shadow-md shadow-teal-900/5 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 group cursor-pointer"
+                        onClick={() => onShopClick(shop.name)}
                     >
-                        <span className="grayscale group-hover:grayscale-0 transition-all">{example.icon}</span>
-                        <span className="font-medium">{example.text}</span>
-                    </button>
+                        <CardContent className="p-5">
+                            <div className="flex items-start gap-4">
+                                <div className="relative flex-shrink-0">
+                                    <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-teal-50 to-emerald-100 flex items-center justify-center text-teal-700 font-bold text-lg border border-teal-100 shadow-inner">
+                                        {shop.name.substring(0, 2).toUpperCase()}
+                                    </div>
+                                    <span className="absolute -top-2 -right-2 text-lg">{shop.badge}</span>
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                    <h3 className="font-bold text-slate-800 group-hover:text-teal-600 transition-colors truncate">{shop.name}</h3>
+                                    <p className="text-xs text-slate-500 mb-3">{shop.category}</p>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div className="bg-slate-50 rounded-lg px-2 py-1.5">
+                                            <div className="text-xs text-slate-400 font-medium">Sales</div>
+                                            <div className="text-sm font-bold text-slate-700">{shop.sales}</div>
+                                        </div>
+                                        <div className="bg-slate-50 rounded-lg px-2 py-1.5">
+                                            <div className="text-xs text-slate-400 font-medium">Listings</div>
+                                            <div className="text-sm font-bold text-slate-700">{shop.listings.toLocaleString()}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center gap-1">
+                                <ExternalLink className="h-3 w-3 text-teal-600" />
+                                <span className="text-xs font-medium text-teal-600 group-hover:underline">Analyze this shop</span>
+                            </div>
+                        </CardContent>
+                    </Card>
                 ))}
             </div>
         </div>
-    );
+    )
 }
 
 export default function ShopsPage() {
@@ -125,6 +157,7 @@ export default function ShopsPage() {
         setTimeout(() => setCopiedTag(null), 2000)
     }
 
+    const { success, error: toastError } = useToast()
     const supabase = createClient()
 
     useEffect(() => {
@@ -180,6 +213,7 @@ export default function ShopsPage() {
         if (savedShop) {
             // Un-track (Remove)
             setSavedShops(prev => prev.filter(s => s.shop_name !== shop.name))
+            success('Shop removed', `${shop.name} has been removed from your watchlist.`)
 
             try {
                 const { error } = await supabase
@@ -190,11 +224,12 @@ export default function ShopsPage() {
                 if (error) throw error
             } catch (error) {
                 console.error('Error removing shop:', error)
-                alert('Failed to remove shop.')
+                toastError('Failed to remove shop', 'Please try again.')
                 setSavedShops(prev => [...prev, savedShop]) // Revert
             }
         } else {
             // Track (Add)
+            success('Shop tracked! 🎉', `${shop.name} has been added to your watchlist.`)
             const newShop: SavedShop = {
                 id: 'temp-' + Date.now(),
                 shop_name: shop.name,
@@ -229,7 +264,7 @@ export default function ShopsPage() {
                 }
             } catch (error) {
                 console.error('Error saving shop:', error)
-                alert('Failed to track shop. Please try again.')
+                toastError('Failed to track shop', 'Please try again.')
                 setSavedShops(prev => prev.filter(s => s.id !== newShop.id))
             }
         }
@@ -246,9 +281,10 @@ export default function ShopsPage() {
                 .eq('id', id)
 
             if (error) throw error
+            success('Shop deleted')
         } catch (error) {
             console.error('Error deleting shop:', error)
-            alert('Failed to delete shop.')
+            toastError('Failed to delete shop', 'Please try again.')
             fetchSavedShops()
         }
     }
@@ -374,14 +410,10 @@ export default function ShopsPage() {
                     </div>
                 )}
 
-                {/* Saved Shops List */}
-                <div className="space-y-4">
-                    <h2 className="text-xl font-semibold text-slate-800">Your Tracked Shops</h2>
-                    {loading ? (
-                        <div className="flex justify-center py-12">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
-                        </div>
-                    ) : savedShops.length > 0 ? (
+                {/* Tracked Shops — only shown if user has any */}
+                {!loading && savedShops.length > 0 && (
+                    <div className="space-y-4">
+                        <h2 className="text-xl font-semibold text-slate-800">Your Tracked Shops</h2>
                         <Card className="border-white/50 bg-white/70 backdrop-blur-md shadow-lg shadow-teal-900/5 overflow-hidden">
                             <CardContent className="p-0">
                                 <div className="overflow-x-auto">
@@ -448,10 +480,11 @@ export default function ShopsPage() {
                                 </div>
                             </CardContent>
                         </Card>
-                    ) : (
-                        <EmptyState onSearch={handleChipSearch} />
-                    )}
-                </div>
+                    </div>
+                )}
+
+                {/* Top Etsy Shops — always visible */}
+                <TopShopsGrid onShopClick={handleShopClick} />
             </div>
 
             {/* Shop Details Modal */}
@@ -517,20 +550,20 @@ export default function ShopsPage() {
 
                         {/* Metrics Grid */}
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div className="bg-teal-50/50 p-4 rounded-xl border border-teal-100">
+                            <div className="bg-teal-100/35 p-4 rounded-xl border border-teal-200">
                                 <div className="text-xs font-semibold text-teal-600 uppercase tracking-wider mb-1">Avg Price</div>
                                 <div className="text-2xl font-bold text-slate-800">${shopDetails.metrics.average_price.toFixed(2)}</div>
                             </div>
-                            <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+                            <div className="bg-blue-100/60 p-4 rounded-xl border border-blue-200">
                                 <div className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-1">Active Listings</div>
                                 <div className="text-2xl font-bold text-slate-800">{shopDetails.metrics.total_active_listings.toLocaleString()}</div>
                             </div>
-                            <div className="bg-purple-50/50 p-4 rounded-xl border border-purple-100">
+                            <div className="bg-purple-100/60 p-4 rounded-xl border border-purple-200">
                                 <div className="text-xs font-semibold text-purple-600 uppercase tracking-wider mb-1">Total Sales</div>
                                 <div className="text-2xl font-bold text-slate-800">{shopDetails.details.transaction_sold_count.toLocaleString()}</div>
                             </div>
-                            <div className="bg-amber-50/50 p-4 rounded-xl border border-amber-100">
-                                <div className="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-1">Shop Age</div>
+                            <div className="bg-orange-100/60 p-4 rounded-xl border border-orange-200">
+                                <div className="text-xs font-semibold text-orange-600 uppercase tracking-wider mb-1">Shop Age</div>
                                 <div className="text-2xl font-bold text-slate-800">{Math.floor(shopDetails.metrics.shop_age_months / 12)}y {shopDetails.metrics.shop_age_months % 12}m</div>
                             </div>
                         </div>

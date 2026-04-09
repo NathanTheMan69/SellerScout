@@ -26,7 +26,7 @@ export function Modal({ isOpen, onClose, title, children, className }: ModalProp
 
             {/* Modal Content */}
             <div className={cn(
-                "relative z-50 w-full max-w-3xl transform overflow-hidden rounded-2xl border border-white/50 bg-white/80 backdrop-blur-xl p-6 text-left shadow-2xl shadow-teal-900/20 transition-all animate-in fade-in zoom-in-95 duration-200",
+                "relative z-50 w-full max-w-3xl transform overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-50 p-6 text-left shadow-2xl shadow-slate-900/20 transition-all animate-in fade-in zoom-in-95 duration-200",
                 className
             )}>
                 <div className="flex items-center justify-between mb-6">

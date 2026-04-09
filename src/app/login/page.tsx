@@ -20,14 +20,13 @@ export default function LoginPage({
     async function handleLogin(formData: FormData) {
         setIsLoading(true)
         setClientError(null)
-        try {
-            await login(formData)
-        } catch (e) {
-            // Login action redirects on success, so we might catch redirect errors or actual errors
-            // But since login action redirects, we mostly rely on server redirect.
-            // If it throws, it's an error.
-        } finally {
-            setIsLoading(false)
+        const res = await login(formData)
+        setIsLoading(false)
+
+        if (res?.error) {
+            setClientError(res.error)
+        } else if (res?.success) {
+            router.push('/')
         }
     }
 
