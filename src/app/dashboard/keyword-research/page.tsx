@@ -344,35 +344,64 @@ export default function KeywordResearchPage() {
         setExpandedKeyword(prev => prev === id ? null : id)
     }
 
-    const renderKeywordRow = (item: any) => (
+    const renderKeywordRow = (item: any, index: number) => (
         <tr
             key={item.id}
             onClick={() => toggleExpand(item.id)}
-            className="group cursor-pointer hover:bg-teal-50/40 transition-colors"
+            className="group cursor-pointer transition-all duration-150 hover:bg-teal-50 hover:shadow-[inset_3px_0_0_0_#14b8a6]"
         >
-            <td className="px-5 py-3.5 font-semibold text-slate-800 group-hover:text-teal-700 transition-colors">
-                {item.keyword}
+            {/* Rank */}
+            <td className="w-10 pl-5 pr-2 py-3.5 text-xs font-bold text-slate-300 group-hover:text-teal-500 transition-colors tabular-nums">
+                {String(index + 1).padStart(2, '0')}
             </td>
-            <td className="px-5 py-3.5 font-bold text-teal-600">
-                {item.volume.toLocaleString()}
+            {/* Keyword */}
+            <td className="px-3 py-3.5">
+                <div className="flex items-center gap-2.5">
+                    <div className="h-7 w-7 rounded-lg bg-teal-50 border border-teal-100 flex items-center justify-center flex-shrink-0 group-hover:bg-teal-100 transition-colors">
+                        <Search className="h-3.5 w-3.5 text-teal-500" />
+                    </div>
+                    <span className="font-semibold text-slate-800 group-hover:text-teal-700 group-hover:font-bold transition-all">{item.keyword}</span>
+                </div>
             </td>
+            {/* Search Vol */}
             <td className="px-5 py-3.5">
-                <span className={cn("text-xs font-bold px-2.5 py-1 rounded-full border",
+                <span className="font-bold text-teal-600 tabular-nums">{item.volume.toLocaleString()}</span>
+                <span className="text-xs text-slate-400 ml-1">/mo</span>
+            </td>
+            {/* Competition */}
+            <td className="px-5 py-3.5">
+                <span className={cn("inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border",
                     item.competition === 'Low'    && "bg-emerald-50 text-emerald-700 border-emerald-200",
                     item.competition === 'Medium' && "bg-amber-50 text-amber-700 border-amber-200",
                     (item.competition === 'High' || item.competition === 'Very High') && "bg-rose-50 text-rose-700 border-rose-200"
                 )}>
+                    <span className={cn("h-1.5 w-1.5 rounded-full",
+                        item.competition === 'Low'    && "bg-emerald-500",
+                        item.competition === 'Medium' && "bg-amber-500",
+                        (item.competition === 'High' || item.competition === 'Very High') && "bg-rose-500"
+                    )} />
                     {item.competition}
                 </span>
             </td>
-            <td className="px-5 py-3.5 font-semibold text-slate-700">{item.ctr}</td>
+            {/* CTR */}
             <td className="px-5 py-3.5">
-                <div className="flex items-center gap-1.5">
-                    {item.trend === 'up'     && <><TrendingUp   className="h-4 w-4 text-emerald-500" /><span className="text-sm font-semibold text-emerald-600">Rising</span></>}
-                    {item.trend === 'down'   && <><TrendingDown  className="h-4 w-4 text-rose-500"    /><span className="text-sm font-semibold text-rose-600">Falling</span></>}
-                    {item.trend === 'stable' && <><Minus         className="h-4 w-4 text-slate-400"   /><span className="text-sm font-semibold text-slate-500">Stable</span></>}
+                <div className="flex items-center gap-2">
+                    <div className="h-1.5 w-16 rounded-full bg-slate-100 overflow-hidden">
+                        <div
+                            className="h-full rounded-full bg-teal-400"
+                            style={{ width: `${Math.min(100, parseFloat(item.ctr) * 16)}%` }}
+                        />
+                    </div>
+                    <span className="font-semibold text-slate-700 tabular-nums text-sm">{item.ctr}</span>
                 </div>
             </td>
+            {/* Trend */}
+            <td className="px-5 py-3.5">
+                {item.trend === 'up'     && <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full"><TrendingUp className="h-3.5 w-3.5" />Rising</span>}
+                {item.trend === 'down'   && <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-700 bg-rose-50 border border-rose-200 px-2.5 py-1 rounded-full"><TrendingDown className="h-3.5 w-3.5" />Falling</span>}
+                {item.trend === 'stable' && <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-full"><Minus className="h-3.5 w-3.5" />Stable</span>}
+            </td>
+            {/* Save */}
             <td className="px-5 py-3.5 text-right">
                 <button
                     onClick={(e) => { e.stopPropagation(); handleSave(item.keyword, item.volume, item.competition) }}
@@ -385,20 +414,21 @@ export default function KeywordResearchPage() {
     )
 
     const renderKeywordTable = (data: any[]) => (
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm shadow-teal-900/5">
             <table className="w-full text-sm text-left">
                 <thead>
-                    <tr className="bg-teal-50/60 border-b border-slate-200">
-                        <th className="px-5 py-3 text-xs font-bold uppercase tracking-wider text-slate-500">Keyword</th>
-                        <th className="px-5 py-3 text-xs font-bold uppercase tracking-wider text-slate-500">Search Vol</th>
-                        <th className="px-5 py-3 text-xs font-bold uppercase tracking-wider text-slate-500">Competition</th>
-                        <th className="px-5 py-3 text-xs font-bold uppercase tracking-wider text-slate-500">CTR</th>
-                        <th className="px-5 py-3 text-xs font-bold uppercase tracking-wider text-slate-500">Trend</th>
-                        <th className="px-5 py-3 text-xs font-bold uppercase tracking-wider text-slate-500 text-right">Save</th>
+                    <tr className="border-b border-teal-200/60 bg-teal-500/80">
+                        <th className="w-10 pl-5 pr-2 py-4" />
+                        <th className="px-3 py-4 text-sm font-medium uppercase tracking-wider text-white text-left">Keyword</th>
+                        <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white text-left">Search Vol</th>
+                        <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white text-left">Competition</th>
+                        <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white text-left">CTR</th>
+                        <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white text-left">Trend</th>
+                        <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white text-right">Save</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                    {data.map(renderKeywordRow)}
+                    {data.map((item, i) => renderKeywordRow(item, i))}
                 </tbody>
             </table>
         </div>
@@ -408,34 +438,41 @@ export default function KeywordResearchPage() {
         <DashboardLayout>
             <div className="space-y-8">
                 {/* Header */}
-                <div className="relative pl-4">
-                    <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-teal-500 to-emerald-500 rounded-full" />
-                    <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-800">Keyword Research</h1>
-                    <p className="text-muted-foreground">Analyze search volume and competition to find your next bestseller.</p>
+                <div className="flex items-center gap-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-500 shadow-md shadow-teal-900/20">
+                        <Search className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-800">Keyword Research</h1>
+                        <p className="text-sm text-slate-500 mt-0.5">Analyze search volume and competition to find your next bestseller.</p>
+                    </div>
                 </div>
 
                 {/* Search */}
-                <div className="relative group">
-                    <Card className="relative border border-slate-200/60 bg-white/80 backdrop-blur-xl shadow-sm hover:shadow-md transition-shadow duration-300">
-                        <CardContent className="p-2 sm:p-3">
-                            <form onSubmit={handleSearch} className="relative flex items-center">
-                                <div className="absolute left-3 flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 text-teal-600">
-                                    <Search className="h-5 w-5" />
-                                </div>
-                                <input
-                                    type="text"
-                                    placeholder="Discover your next bestseller (e.g. 'Silver Ring')..."
-                                    className="h-16 w-full rounded-xl bg-transparent pl-16 pr-36 text-lg font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none"
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                />
-                                <Button type="submit" disabled={isLoading} className="absolute right-3 h-12 rounded-xl bg-teal-600 px-8 text-sm font-bold shadow-md transition-all hover:bg-teal-700 hover:shadow-lg disabled:opacity-50">
-                                    {isLoading ? 'Analyzing...' : 'Explore'}
-                                </Button>
-                            </form>
-                        </CardContent>
-                    </Card>
-                </div>
+                <form onSubmit={handleSearch} className="flex items-center gap-3">
+                    <div className="relative flex-1">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none" />
+                        <input
+                            type="text"
+                            placeholder="Discover your next bestseller (e.g. 'Silver Ring')..."
+                            className="h-14 w-full pl-12 pr-5 rounded-xl border border-slate-200 bg-white text-lg font-medium text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent shadow-sm"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                        {searchQuery && (
+                            <button
+                                type="button"
+                                onClick={() => setSearchQuery('')}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                            >
+                                <X className="h-4 w-4" />
+                            </button>
+                        )}
+                    </div>
+                    <Button type="submit" disabled={isLoading} className="h-14 min-w-[120px] bg-teal-600 hover:bg-teal-700 text-white px-8 rounded-xl text-base font-semibold shadow-sm disabled:opacity-50">
+                        {isLoading ? 'Analyzing...' : 'Explore'}
+                    </Button>
+                </form>
 
                 {/* API Error Banner */}
                 {apiError && (

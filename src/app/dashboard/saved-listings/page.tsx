@@ -70,10 +70,14 @@ export default function SavedListingsPage() {
         <DashboardLayout>
             <div className="space-y-8">
                 {/* Header */}
-                <div className="relative pl-4">
-                    <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-teal-500 to-emerald-500 rounded-full" />
-                    <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-800">Saved Listings</h1>
-                    <p className="text-muted-foreground">Track performance of specific listings over time.</p>
+                <div className="flex items-center gap-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-500 shadow-md shadow-teal-900/20">
+                        <ShoppingBag className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-800">Saved Listings</h1>
+                        <p className="text-sm text-slate-500 mt-0.5">Track performance of specific listings over time.</p>
+                    </div>
                 </div>
 
                 {/* Saved Listings List */}

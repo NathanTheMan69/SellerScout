@@ -2,7 +2,7 @@
 import { useToast } from '@/components/Toast'
 
 import { useState, useEffect } from 'react'
-import { Search, Heart, ShoppingBag, Tag, ExternalLink, Trash2, Star, Calendar, TrendingUp, ImageOff, Store } from 'lucide-react'
+import { Search, Heart, ShoppingBag, Tag, ExternalLink, Trash2, Star, Calendar, TrendingUp, ImageOff, Store, X, Filter } from 'lucide-react'
 import { Card, CardContent } from '@/components/Card'
 import { Button } from '@/components/Button'
 import { cn } from '@/lib/utils'
@@ -20,15 +20,28 @@ const MOCK_SEARCH_RESULTS = [
 
 // Curated list of top-performing Etsy shops
 const TOP_ETSY_SHOPS = [
-    { name: 'CaitlynMinimalist', category: 'Jewelry',           sales: '2.1M+', listings: 1800, badge: '🥇' },
-    { name: 'ModParty',          category: 'Party Supplies',     sales: '1.9M+', listings: 2400, badge: '🥈' },
-    { name: 'TreetopStudio',     category: 'Wall Art',           sales: '1.4M+', listings: 920,  badge: '🥉' },
-    { name: 'Paperfairies',      category: 'Party Printables',   sales: '1.2M+', listings: 650,  badge: '⭐' },
-    { name: 'LittleHighbury',    category: 'Nursery Decor',      sales: '980K+', listings: 430,  badge: '⭐' },
-    { name: 'MagicFlairDesigns', category: 'Digital Downloads',  sales: '870K+', listings: 1100, badge: '⭐' },
-    { name: 'PlannerKate1',      category: 'Planner Stickers',   sales: '820K+', listings: 2100, badge: '⭐' },
-    { name: 'ThePaperWallFlower',category: 'Prints & Posters',   sales: '760K+', listings: 380,  badge: '⭐' },
-    { name: 'DesignAtelierArt',  category: 'Digital Art',        sales: '710K+', listings: 560,  badge: '⭐' },
+    { name: 'CaitlynMinimalist', category: 'Jewelry',           sales: '2.1M+', listings: 1800, revenue: '$71.4M+', convRate: '6.8%' },
+    { name: 'ModParty',          category: 'Party Supplies',     sales: '1.9M+', listings: 2400, revenue: '$28.5M+', convRate: '5.2%' },
+    { name: 'TreetopStudio',     category: 'Wall Art',           sales: '1.4M+', listings: 920,  revenue: '$19.6M+', convRate: '4.9%' },
+    { name: 'Paperfairies',      category: 'Party Printables',   sales: '1.2M+', listings: 650,  revenue: '$10.8M+', convRate: '7.1%' },
+    { name: 'LittleHighbury',    category: 'Nursery Decor',      sales: '980K+', listings: 430,  revenue: '$24.5M+', convRate: '5.5%' },
+    { name: 'MagicFlairDesigns', category: 'Digital Downloads',  sales: '870K+', listings: 1100, revenue: '$8.7M+',  convRate: '8.2%' },
+    { name: 'PlannerKate1',      category: 'Planner Stickers',   sales: '820K+', listings: 2100, revenue: '$7.4M+',  convRate: '6.4%' },
+    { name: 'ThePaperWallFlower',category: 'Prints & Posters',   sales: '760K+', listings: 380,  revenue: '$13.7M+', convRate: '4.7%' },
+    { name: 'DesignAtelierArt',  category: 'Digital Art',        sales: '710K+', listings: 560,  revenue: '$6.4M+',  convRate: '5.9%' },
+]
+
+// Trending shops — fast-growing sellers
+const TRENDING_SHOPS = [
+    { name: 'AuraRingCo',        category: 'Jewelry',            growth: '+340%', listings: 210,  revenue: '$1.2M+',  convRate: '7.4%' },
+    { name: 'PixelBloomPrints',  category: 'Wall Art',           growth: '+290%', listings: 480,  revenue: '$890K+',  convRate: '6.1%' },
+    { name: 'KnotAndThread',     category: 'Macrame & Textile',  growth: '+255%', listings: 145,  revenue: '$650K+',  convRate: '5.8%' },
+    { name: 'SoftClayStudio',    category: 'Clay Jewelry',       growth: '+220%', listings: 320,  revenue: '$540K+',  convRate: '6.9%' },
+    { name: 'GlowWickCo',        category: 'Candles',            growth: '+195%', listings: 95,   revenue: '$420K+',  convRate: '5.3%' },
+    { name: 'PressedPetalArts',  category: 'Botanical Art',      growth: '+180%', listings: 170,  revenue: '$380K+',  convRate: '4.8%' },
+    { name: 'MiniatureWorldShop',category: 'Miniatures',         growth: '+165%', listings: 530,  revenue: '$310K+',  convRate: '5.6%' },
+    { name: 'InkDropLettering',  category: 'Stationery',         growth: '+152%', listings: 260,  revenue: '$275K+',  convRate: '6.2%' },
+    { name: 'CozyKnitHouse',     category: 'Knitting & Crochet', growth: '+140%', listings: 190,  revenue: '$230K+',  convRate: '5.1%' },
 ]
 
 interface SavedShop {
@@ -87,57 +100,85 @@ function ListingCard({ item }: ListingCardProps) {
     )
 }
 
-function TopShopsGrid({ onShopClick }: { onShopClick: (name: string) => void }) {
+function ShopsGrid({ filter, categoryFilter, onShopClick }: { filter: 'top' | 'trending'; categoryFilter: string; onShopClick: (name: string) => void }) {
+    const isTop = filter === 'top'
+    const shops = (isTop ? TOP_ETSY_SHOPS : TRENDING_SHOPS).filter(s =>
+        categoryFilter === 'All' || s.category === categoryFilter
+    )
+
     return (
-        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="flex items-center gap-3">
-                <TrendingUp className="h-5 w-5 text-teal-600" />
-                <h2 className="text-xl font-semibold text-slate-800">Top Performing Etsy Shops</h2>
-                <span className="text-xs bg-teal-50 text-teal-600 border border-teal-100 px-2 py-0.5 rounded-full font-medium">By Total Sales</span>
-            </div>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {TOP_ETSY_SHOPS.map((shop) => (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {shops.map((shop) => {
+                const topShop = shop as typeof TOP_ETSY_SHOPS[0]
+                const trendShop = shop as typeof TRENDING_SHOPS[0]
+                return (
                     <Card
                         key={shop.name}
-                        className="border-white/50 bg-white/70 backdrop-blur-md shadow-md shadow-teal-900/5 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 group cursor-pointer"
+                        className="border-white/50 bg-white/70 backdrop-blur-md shadow-md shadow-teal-900/5 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 group cursor-pointer overflow-hidden"
                         onClick={() => onShopClick(shop.name)}
                     >
-                        <CardContent className="p-5">
-                            <div className="flex items-start gap-4">
-                                <div className="relative flex-shrink-0">
-                                    <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-teal-50 to-emerald-100 flex items-center justify-center text-teal-700 font-bold text-lg border border-teal-100 shadow-inner">
+                        <CardContent className="p-4">
+                            <div className="flex gap-4">
+                                {/* Avatar */}
+                                <div className="flex-shrink-0 flex flex-col items-center gap-2">
+                                    <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-500 flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-teal-900/20">
                                         {shop.name.substring(0, 2).toUpperCase()}
                                     </div>
-                                    <span className="absolute -top-2 -right-2 text-lg">{shop.badge}</span>
+                                    {!isTop && (
+                                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full whitespace-nowrap">
+                                            <TrendingUp className="h-2.5 w-2.5" />{trendShop.growth}
+                                        </span>
+                                    )}
                                 </div>
-                                <div className="min-w-0 flex-1">
-                                    <h3 className="font-bold text-slate-800 group-hover:text-teal-600 transition-colors truncate">{shop.name}</h3>
-                                    <p className="text-xs text-slate-500 mb-3">{shop.category}</p>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <div className="bg-slate-50 rounded-lg px-2 py-1.5">
-                                            <div className="text-xs text-slate-400 font-medium">Sales</div>
-                                            <div className="text-sm font-bold text-slate-700">{shop.sales}</div>
+
+                                {/* Info */}
+                                <div className="flex-1 min-w-0 space-y-3">
+                                    {/* Name + category */}
+                                    <div>
+                                        <h3 className="font-bold text-slate-800 text-base group-hover:text-teal-600 transition-colors truncate">{shop.name}</h3>
+                                        <p className="text-xs text-slate-500">{shop.category}</p>
+                                    </div>
+
+                                    {/* Stats grid */}
+                                    <div className="grid grid-cols-2 gap-2 text-xs">
+                                        {isTop ? (
+                                            <div className="bg-teal-50/60 border border-teal-100 rounded-xl px-3 py-2">
+                                                <p className="text-teal-600 font-medium mb-0.5">Sales</p>
+                                                <p className="font-bold text-slate-800 text-sm">{topShop.sales}</p>
+                                            </div>
+                                        ) : (
+                                            <div className="bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2">
+                                                <p className="text-emerald-600 font-medium mb-0.5">Growth</p>
+                                                <p className="font-bold text-emerald-700 text-sm">{trendShop.growth}</p>
+                                            </div>
+                                        )}
+                                        <div className="bg-slate-50 border border-slate-100 rounded-xl px-3 py-2">
+                                            <p className="text-slate-500 font-medium mb-0.5">Listings</p>
+                                            <p className="font-bold text-slate-800 text-sm">{shop.listings.toLocaleString()}</p>
                                         </div>
-                                        <div className="bg-slate-50 rounded-lg px-2 py-1.5">
-                                            <div className="text-xs text-slate-400 font-medium">Listings</div>
-                                            <div className="text-sm font-bold text-slate-700">{shop.listings.toLocaleString()}</div>
+                                        <div className="bg-orange-50/60 border border-orange-100 rounded-xl px-3 py-2">
+                                            <p className="text-orange-600 font-medium mb-0.5">Revenue</p>
+                                            <p className="font-bold text-slate-800 text-sm">{shop.revenue}</p>
+                                        </div>
+                                        <div className="bg-blue-50/60 border border-blue-100 rounded-xl px-3 py-2">
+                                            <p className="text-blue-600 font-medium mb-0.5">Conv. Rate</p>
+                                            <p className="font-bold text-slate-800 text-sm">{shop.convRate}</p>
                                         </div>
                                     </div>
+
                                 </div>
-                            </div>
-                            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center gap-1">
-                                <ExternalLink className="h-3 w-3 text-teal-600" />
-                                <span className="text-xs font-medium text-teal-600 group-hover:underline">Analyze this shop</span>
                             </div>
                         </CardContent>
                     </Card>
-                ))}
-            </div>
+                )
+            })}
         </div>
     )
 }
 
 export default function ShopsPage() {
+    const [shopFilter, setShopFilter] = useState<'top' | 'trending'>('top')
+    const [categoryFilter, setCategoryFilter] = useState('All')
     const [searchQuery, setSearchQuery] = useState('')
     const [searchResults, setSearchResults] = useState<typeof MOCK_SEARCH_RESULTS>([])
     const [savedShops, setSavedShops] = useState<SavedShop[]>([])
@@ -311,33 +352,46 @@ export default function ShopsPage() {
         <DashboardLayout>
             <div className="space-y-8">
                 {/* Header */}
-                <div className="relative pl-4">
-                    <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-teal-500 to-emerald-500 rounded-full" />
-                    <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-800">Shop Tracker</h1>
-                    <p className="text-muted-foreground">Search for competitors and track their performance.</p>
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-500 shadow-md shadow-teal-900/20">
+                            <Store className="h-6 w-6 text-white" />
+                        </div>
+                        <div>
+                            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-800">Shop Tracker</h1>
+                            <p className="text-sm text-slate-500 mt-0.5">Search for competitors and track their performance.</p>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Search Section */}
-                <Card className="border-white/50 bg-white/70 backdrop-blur-md shadow-lg shadow-teal-900/5">
-                    <CardContent className="p-8">
-                        <form onSubmit={handleSearch} className="relative flex items-center">
-                            <Search className="absolute left-4 h-6 w-6 text-teal-600" />
-                            <input
-                                type="text"
-                                placeholder="Enter Shop Name (e.g., 'UrbanCrafts')..."
-                                className="h-14 w-full rounded-xl border-2 border-teal-100 bg-white/50 pl-14 pr-4 text-lg text-slate-800 placeholder:text-slate-400 focus:border-teal-500 focus:outline-none focus:ring-4 focus:ring-teal-500/10 transition-all"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-                            <Button
-                                type="submit"
-                                className="absolute right-2 h-10 bg-teal-600 hover:bg-teal-700 text-white px-6 rounded-lg"
+                <form onSubmit={handleSearch} className="relative flex items-center gap-3">
+                    <div className="relative flex-1">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none" />
+                        <input
+                            type="text"
+                            placeholder="Enter Shop Name (e.g., 'UrbanCrafts')..."
+                            className="h-14 w-full pl-12 pr-5 rounded-xl border border-slate-200 bg-white text-lg font-medium text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent shadow-sm"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                        {searchQuery && (
+                            <button
+                                type="button"
+                                onClick={() => setSearchQuery('')}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                             >
-                                Search
-                            </Button>
-                        </form>
-                    </CardContent>
-                </Card>
+                                <X className="h-4 w-4" />
+                            </button>
+                        )}
+                    </div>
+                    <Button
+                        type="submit"
+                        className="h-14 min-w-[120px] bg-teal-600 hover:bg-teal-700 text-white px-8 rounded-xl text-base font-semibold shadow-sm"
+                    >
+                        Search
+                    </Button>
+                </form>
 
                 {/* Search Results */}
                 {hasSearched && (
@@ -483,8 +537,50 @@ export default function ShopsPage() {
                     </div>
                 )}
 
-                {/* Top Etsy Shops — always visible */}
-                <TopShopsGrid onShopClick={handleShopClick} />
+                {/* Discover Shops — always visible */}
+                <div className="space-y-4">
+                    {/* Filter tabs */}
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => setShopFilter('top')}
+                                className={cn(
+                                    "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border transition-all",
+                                    shopFilter === 'top'
+                                        ? "bg-teal-600 text-white border-teal-600 shadow-md shadow-teal-900/10"
+                                        : "bg-white text-slate-600 border-slate-200 hover:border-teal-300 hover:text-teal-600"
+                                )}
+                            >
+                                <Star className="h-4 w-4" /> Top Performing
+                            </button>
+                            <button
+                                onClick={() => setShopFilter('trending')}
+                                className={cn(
+                                    "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border transition-all",
+                                    shopFilter === 'trending'
+                                        ? "bg-teal-600 text-white border-teal-600 shadow-md shadow-teal-900/10"
+                                        : "bg-white text-slate-600 border-slate-200 hover:border-teal-300 hover:text-teal-600"
+                                )}
+                            >
+                                <TrendingUp className="h-4 w-4" /> Trending
+                            </button>
+                        </div>
+                        <div className="relative">
+                            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+                            <select
+                                value={categoryFilter}
+                                onChange={(e) => setCategoryFilter(e.target.value)}
+                                className="h-9 pl-9 pr-7 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-600 focus:border-teal-500 outline-none appearance-none cursor-pointer shadow-sm hover:border-teal-300 transition-colors"
+                            >
+                                {['All', ...Array.from(new Set([...TOP_ETSY_SHOPS, ...TRENDING_SHOPS].map(s => s.category))).sort()].map(cat => (
+                                    <option key={cat} value={cat}>{cat}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+                    <ShopsGrid filter={shopFilter} categoryFilter={categoryFilter} onShopClick={handleShopClick} />
+                </div>
             </div>
 
             {/* Shop Details Modal */}

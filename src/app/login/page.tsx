@@ -45,8 +45,8 @@ export default function LoginPage({
 
     return (
         <div className="flex min-h-screen flex-col items-center justify-center p-4">
-            <div className="mb-8 flex items-center gap-2 text-teal-700">
-                <TrendingUp className="h-10 w-10" />
+            <div className="mb-8 flex items-center gap-3 text-teal-700">
+                <img src="/logo.png" alt="SellerScout" className="h-12 w-12 object-contain" />
                 <span className="text-3xl font-bold tracking-tight">SellerScout</span>
             </div>
 

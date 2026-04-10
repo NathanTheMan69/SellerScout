@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter, usePathname } from 'next/navigation';
-import { ArrowLeft, Lock, MoreHorizontal, ChevronDown, ChevronUp, Filter, Download, Search, ImageOff, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Lock, MoreHorizontal, ChevronDown, ChevronUp, Filter, Download, Search, ImageOff, ExternalLink, X } from 'lucide-react';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/Card';
 import { Button } from '@/components/Button';
@@ -133,20 +133,25 @@ export default function ShopDetailsPage() {
                 </div>
 
                 {/* Search Filter Bar */}
-                <Card className="border-white/50 bg-white/70 backdrop-blur-md shadow-lg shadow-teal-900/5">
-                    <CardContent className="p-6">
-                        <div className="relative flex items-center">
-                            <Search className="absolute left-4 h-6 w-6 text-teal-600" />
-                            <input
-                                type="text"
-                                placeholder="Filter listings by title..."
-                                className="h-14 w-full rounded-xl border-2 border-teal-100 bg-white/50 pl-14 pr-4 text-lg text-slate-800 placeholder:text-slate-400 focus:border-teal-500 focus:outline-none focus:ring-4 focus:ring-teal-500/10 transition-all"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-                        </div>
-                    </CardContent>
-                </Card>
+                <div className="relative">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none" />
+                    <input
+                        type="text"
+                        placeholder="Filter listings by title..."
+                        className="h-14 w-full pl-12 pr-5 rounded-xl border border-slate-200 bg-white text-lg font-medium text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent shadow-sm"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    {searchQuery && (
+                        <button
+                            type="button"
+                            onClick={() => setSearchQuery('')}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                        >
+                            <X className="h-4 w-4" />
+                        </button>
+                    )}
+                </div>
 
                 {/* Data Table Card */}
                 <Card className="border-white/50 bg-white/70 backdrop-blur-md shadow-lg shadow-teal-900/5 overflow-hidden">

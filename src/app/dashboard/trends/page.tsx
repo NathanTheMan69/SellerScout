@@ -247,66 +247,74 @@ export default function TrendsPage() {
             <div className="space-y-8">
 
                 {/* Header */}
-                <div className="relative pl-4">
-                    <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-teal-500 to-emerald-500 rounded-full" />
-                    <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-800">Market Trends</h1>
-                    <p className="text-muted-foreground">Discover rising search terms and seasonal opportunities.</p>
+                <div className="flex items-center gap-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-500 shadow-md shadow-teal-900/20">
+                        <TrendingUp className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-800">Market Trends</h1>
+                        <p className="text-sm text-slate-500 mt-0.5">Discover rising search terms and seasonal opportunities.</p>
+                    </div>
                 </div>
 
-                {/* Search + Filter */}
+                {/* Search bar */}
                 <div className="flex items-center gap-3">
-                        {/* Search bar */}
-                        <div className="relative flex-1">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none" />
-                            <input
-                                type="text"
-                                placeholder="Search trends..."
-                                value={searchQuery}
-                                onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1) }}
-                                className="h-14 w-full pl-12 pr-5 rounded-xl border border-slate-200 bg-white text-lg font-medium text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent shadow-sm"
-                            />
-                            {searchQuery && (
-                                <button
-                                    onClick={() => { setSearchQuery(""); setCurrentPage(1) }}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
-                                >
-                                    <X className="h-4 w-4" />
-                                </button>
-                            )}
-                        </div>
-                        {/* Category filter */}
-                        <div className="relative shrink-0">
-                            <Filter className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-                            <select
-                                value={categoryFilter}
-                                onChange={(e) => { setCategoryFilter(e.target.value); setCurrentPage(1) }}
-                                className="h-14 pl-12 pr-8 rounded-xl border border-slate-200 bg-white text-lg font-medium text-slate-600 focus:border-teal-500 outline-none appearance-none cursor-pointer min-w-[180px] shadow-sm"
+                    <div className="relative flex-1">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none" />
+                        <input
+                            type="text"
+                            placeholder="Search trends..."
+                            value={searchQuery}
+                            onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1) }}
+                            className="h-14 w-full pl-12 pr-5 rounded-xl border border-slate-200 bg-white text-lg font-medium text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent shadow-sm"
+                        />
+                        {searchQuery && (
+                            <button
+                                onClick={() => { setSearchQuery(""); setCurrentPage(1) }}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                             >
-                                {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                            </select>
-                        </div>
+                                <X className="h-4 w-4" />
+                            </button>
+                        )}
+                    </div>
+                    <Button
+                        type="button"
+                        onClick={() => setCurrentPage(1)}
+                        className="h-14 min-w-[120px] bg-teal-600 hover:bg-teal-700 text-white px-8 rounded-xl text-base font-semibold shadow-sm"
+                    >
+                        Search
+                    </Button>
                 </div>
 
                 {/* Card Grid */}
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
                         <h2 className="text-xl font-semibold text-slate-800">Trending Now</h2>
-                        <span className="text-sm text-slate-500">{filteredTrends.length} keywords</span>
+                        <div className="relative">
+                            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+                            <select
+                                value={categoryFilter}
+                                onChange={(e) => { setCategoryFilter(e.target.value); setCurrentPage(1) }}
+                                className="h-9 pl-9 pr-7 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-600 focus:border-teal-500 outline-none appearance-none cursor-pointer shadow-sm hover:border-teal-300 transition-colors"
+                            >
+                                {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                            </select>
+                        </div>
                     </div>
 
-                    {loading ? (
+                                        {loading ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                             {[...Array(10)].map((_, i) => (
                                 <div key={i} className="rounded-xl border border-slate-200 bg-white overflow-hidden">
                                     <div className="h-36 bg-slate-100 animate-pulse" />
                                     <div className="p-4 space-y-2">
-                                        <div className="h-4 bg-slate-100 rounded animate-pulse w-3/4" />
+                                                            <div className="h-4 bg-slate-100 rounded animate-pulse w-3/4" />
                                         <div className="h-3 bg-slate-100 rounded animate-pulse w-1/2" />
                                     </div>
                                 </div>
-                            ))}
+                                                    ))}
                         </div>
-                    ) : currentData.length > 0 ? (
+                                        ) : currentData.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                             {currentData.map((item) => (
                                 <TrendCard
@@ -315,15 +323,15 @@ export default function TrendsPage() {
                                     onClick={() => setSelectedTrendData(item)}
                                 />
                             ))}
-                        </div>
+                                                        </div>
                     ) : (
                         <div className="rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50/50 p-16 text-center">
                             <p className="text-slate-500 font-medium">No trends found matching your filters.</p>
                         </div>
                     )}
 
-                    {/* Pagination */}
-                    {!loading && filteredTrends.length > ITEMS_PER_PAGE && (
+                            {/* Pagination */}
+                            {!loading && filteredTrends.length > ITEMS_PER_PAGE && (
                         <div className="flex items-center justify-end gap-2 pt-2">
                             <button
                                 onClick={() => {
@@ -362,8 +370,8 @@ export default function TrendsPage() {
                             >
                                 <ChevronRight className="h-4 w-4" />
                             </button>
-                        </div>
-                    )}
+                                </div>
+                            )}
                 </div>
 
                 {/* Trend Detail Modal */}
@@ -381,7 +389,7 @@ export default function TrendsPage() {
                                 <div className="flex items-center gap-3">
                                     <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-500 flex items-center justify-center">
                                         <BarChart2 className="h-4 w-4 text-white" />
-                                    </div>
+                                </div>
                                     <div>
                                         <h3 className="font-bold text-slate-800 text-base capitalize">{selectedTrendData.keyword}</h3>
                                         <p className="text-xs text-slate-500">{selectedTrendData.category} · Trend analysis & search history</p>
@@ -435,10 +443,10 @@ export default function TrendsPage() {
                                         </div>
                                         <p className="text-2xl font-bold text-slate-800">{selectedTrendData.avg_price || '—'}</p>
                                         <p className="text-xs text-orange-400 mt-0.5">typical range</p>
-                                    </div>
                                 </div>
+                            </div>
 
-                                {/* Chart */}
+                            {/* Chart */}
                                 {(() => {
                                     const chartData = (selectedTrendData.monthly_searches ?? []).length > 0
                                         ? selectedTrendData.monthly_searches!
@@ -451,26 +459,26 @@ export default function TrendsPage() {
                                                 {isMock && <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Estimated</span>}
                                             </div>
                                             <div className="h-[220px] w-full">
-                                                <ResponsiveContainer width="100%" height="100%">
+                                <ResponsiveContainer width="100%" height="100%">
                                                     <AreaChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
-                                                        <defs>
+                                        <defs>
                                                             <linearGradient id="trendGradient" x1="0" y1="0" x2="0" y2="1">
                                                                 <stop offset="5%" stopColor="#0d9488" stopOpacity={0.2} />
-                                                                <stop offset="95%" stopColor="#0d9488" stopOpacity={0} />
-                                                            </linearGradient>
-                                                        </defs>
-                                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                                                <stop offset="95%" stopColor="#0d9488" stopOpacity={0} />
+                                            </linearGradient>
+                                        </defs>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                                                         <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11 }} dy={8} />
                                                         <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} width={36} />
-                                                        <Tooltip
+                                        <Tooltip
                                                             contentStyle={{ backgroundColor: '#fff', borderRadius: '10px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgb(0 0 0 / 0.08)' }}
-                                                            formatter={(value: number) => [value.toLocaleString(), 'Search Volume']}
+                                            formatter={(value: number) => [value.toLocaleString(), 'Search Volume']}
                                                             itemStyle={{ color: '#0f766e', fontWeight: 600 }}
                                                             labelStyle={{ color: '#475569', fontWeight: 500 }}
-                                                        />
+                                        />
                                                         <Area type="monotone" dataKey="volume" stroke="#0d9488" strokeWidth={2.5} fillOpacity={1} fill="url(#trendGradient)" dot={false} activeDot={{ r: 5, fill: '#0d9488', stroke: '#fff', strokeWidth: 2 }} />
-                                                    </AreaChart>
-                                                </ResponsiveContainer>
+                                    </AreaChart>
+                                </ResponsiveContainer>
                                             </div>
                                         </div>
                                     )
@@ -572,9 +580,9 @@ export default function TrendsPage() {
                                     </a>
                                 </div>
                             </div>
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
 
             </div>
         </DashboardLayout>

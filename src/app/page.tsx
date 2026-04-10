@@ -10,13 +10,6 @@ export default function Home() {
   return (
     <DashboardLayout>
       <div className="flex flex-col gap-8 pb-20">
-        <div className="relative pl-4">
-          <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-teal-500 to-emerald-500 rounded-full" />
-          <h2 className="text-3xl font-bold tracking-tight text-slate-800">Dashboard</h2>
-          <p className="text-muted-foreground">
-            Overview of your store&apos;s performance.
-          </p>
-        </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <StatsCard
@@ -57,7 +50,7 @@ export default function Home() {
       </div>
 
       {/* Visual Scroll Hint */}
-      <div className="fixed bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-slate-50 to-transparent pointer-events-none z-50" />
+      <div className="fixed bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-slate-50 to-transparent pointer-events-none z-10" />
     </DashboardLayout>
   )
 }

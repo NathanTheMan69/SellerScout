@@ -6,7 +6,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         <div className="layout-container">
             <Sidebar />
             <main className="main-content pt-16 md:pt-0 md:pl-72">
-                <div className="w-full px-8 py-6">
+                <div className="w-full px-8 pt-10 pb-6">
                     {children}
                 </div>
             </main>

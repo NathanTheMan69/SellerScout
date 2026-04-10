@@ -112,8 +112,8 @@ export function SalesChart() {
                         >
                             <defs>
                                 <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                                    <stop offset="95%" stopColor="#0d9488" stopOpacity={0} />
+                                    <stop offset="5%" stopColor="#14b8a6" stopOpacity={0.35} />
+                                    <stop offset="95%" stopColor="#14b8a6" stopOpacity={0} />
                                 </linearGradient>
                             </defs>
                             <XAxis
@@ -144,7 +144,7 @@ export function SalesChart() {
                                 type="monotone"
                                 dataKey="total"
                                 stroke="#0d9488"
-                                strokeWidth={2}
+                                strokeWidth={2.5}
                                 fillOpacity={1}
                                 fill="url(#colorTotal)"
                                 animationDuration={500}
