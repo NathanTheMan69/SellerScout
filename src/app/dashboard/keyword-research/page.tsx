@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Search, Heart, TrendingUp, TrendingDown, Minus, AlertCircle, X, ShoppingBag, Star, ExternalLink, ImageOff, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Search, Heart, TrendingUp, TrendingDown, Minus, AlertCircle, X, ShoppingBag, Star, ExternalLink, ImageOff } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/Card'
 import { Button } from '@/components/Button'
 import { cn } from '@/lib/utils'
@@ -10,36 +11,38 @@ import { createClient } from '@/utils/supabase/client'
 import { AnalysisResult } from '@/lib/analyzer'
 import { useToast } from '@/components/Toast'
 
-// Mock keyword data
+// Mock keyword data — 30 items for 6 rows of 5
 const MOCK_DATA = [
-    { id: 1, keyword: 'Silver Ring',       volume: 12500, competition: 'High',      ctr: '2.4%', trend: 'up'     },
-    { id: 2, keyword: 'Leather Wallet',    volume: 8200,  competition: 'Medium',    ctr: '3.1%', trend: 'stable' },
-    { id: 3, keyword: 'Personalized Mug',  volume: 22000, competition: 'Very High', ctr: '1.8%', trend: 'up'     },
-    { id: 4, keyword: 'Digital Planner',   volume: 15600, competition: 'High',      ctr: '4.2%', trend: 'up'     },
-    { id: 5, keyword: 'Handmade Soap',     volume: 5400,  competition: 'Low',       ctr: '3.8%', trend: 'down'   },
-    { id: 6, keyword: 'Gold Necklace',     volume: 9200,  competition: 'High',      ctr: '2.1%', trend: 'up'     },
-    { id: 7, keyword: 'Vintage Jacket',    volume: 6100,  competition: 'Medium',    ctr: '3.5%', trend: 'stable' },
-    { id: 8, keyword: 'Custom Pet Tag',    volume: 8800,  competition: 'Low',       ctr: '4.9%', trend: 'up'     },
-]
-
-const MOCK_MOST_SEARCHED = [
-    { id: 10, keyword: 'Gift for Him',         volume: 45000, competition: 'Very High', ctr: '1.2%', trend: 'up' },
-    { id: 11, keyword: 'Minimalist Jewelry',   volume: 38000, competition: 'High',      ctr: '2.1%', trend: 'stable' },
-    { id: 12, keyword: 'Custom Portrait',      volume: 32000, competition: 'High',      ctr: '2.8%', trend: 'up' },
-    { id: 13, keyword: 'Wedding Decor',        volume: 29000, competition: 'Very High', ctr: '1.5%', trend: 'up' },
-    { id: 14, keyword: 'Initial Necklace',     volume: 25000, competition: 'High',      ctr: '1.9%', trend: 'stable' },
-    { id: 15, keyword: 'Bridesmaid Gift',      volume: 22000, competition: 'High',      ctr: '2.4%', trend: 'up' },
-    { id: 16, keyword: 'Gifts for Mom',        volume: 21000, competition: 'Very High', ctr: '1.1%', trend: 'down' },
-]
-
-const MOCK_RECOMMENDED = [
-    { id: 20, keyword: 'Handcrafted Boho Ring', volume: 4200,  competition: 'Medium', ctr: '4.5%', trend: 'up' },
-    { id: 21, keyword: 'Sterling Stackable',    volume: 3100,  competition: 'Low',    ctr: '5.2%', trend: 'up' },
-    { id: 22, keyword: 'Vintage Gemstone',      volume: 2800,  competition: 'Medium', ctr: '3.8%', trend: 'stable' },
-    { id: 23, keyword: 'Tarnish Free Band',     volume: 5600,  competition: 'Medium', ctr: '4.1%', trend: 'up' },
-    { id: 24, keyword: 'Gold Plated Ring',      volume: 6200,  competition: 'High',   ctr: '3.1%', trend: 'up' },
-    { id: 25, keyword: 'Minimalist Band',       volume: 4800,  competition: 'Medium', ctr: '4.4%', trend: 'stable' },
-    { id: 26, keyword: 'Pearl Promise Ring',    volume: 3500,  competition: 'Low',    ctr: '5.6%', trend: 'up' },
+    { id:  1, keyword: 'Silver Ring',           volume: 12500, competition: 'High',      ctr: '2.4%', trend: 'up'     },
+    { id:  2, keyword: 'Leather Wallet',         volume:  8200, competition: 'Medium',    ctr: '3.1%', trend: 'stable' },
+    { id:  3, keyword: 'Personalized Mug',       volume: 22000, competition: 'Very High', ctr: '1.8%', trend: 'up'     },
+    { id:  4, keyword: 'Digital Planner',        volume: 15600, competition: 'High',      ctr: '4.2%', trend: 'up'     },
+    { id:  5, keyword: 'Handmade Soap',          volume:  5400, competition: 'Low',       ctr: '3.8%', trend: 'down'   },
+    { id:  6, keyword: 'Gold Necklace',          volume:  9200, competition: 'High',      ctr: '2.1%', trend: 'up'     },
+    { id:  7, keyword: 'Vintage Jacket',         volume:  6100, competition: 'Medium',    ctr: '3.5%', trend: 'stable' },
+    { id:  8, keyword: 'Custom Pet Tag',         volume:  8800, competition: 'Low',       ctr: '4.9%', trend: 'up'     },
+    { id:  9, keyword: 'Enamel Pin',             volume:  7300, competition: 'Low',       ctr: '5.1%', trend: 'up'     },
+    { id: 10, keyword: 'Gift for Him',           volume: 45000, competition: 'Very High', ctr: '1.2%', trend: 'up'     },
+    { id: 11, keyword: 'Minimalist Jewelry',     volume: 38000, competition: 'High',      ctr: '2.1%', trend: 'stable' },
+    { id: 12, keyword: 'Custom Portrait',        volume: 32000, competition: 'High',      ctr: '2.8%', trend: 'up'     },
+    { id: 13, keyword: 'Wedding Decor',          volume: 29000, competition: 'Very High', ctr: '1.5%', trend: 'up'     },
+    { id: 14, keyword: 'Initial Necklace',       volume: 25000, competition: 'High',      ctr: '1.9%', trend: 'stable' },
+    { id: 15, keyword: 'Bridesmaid Gift',        volume: 22000, competition: 'High',      ctr: '2.4%', trend: 'up'     },
+    { id: 16, keyword: 'Gifts for Mom',          volume: 21000, competition: 'Very High', ctr: '1.1%', trend: 'down'   },
+    { id: 17, keyword: 'Scented Candle',         volume: 18400, competition: 'High',      ctr: '2.6%', trend: 'up'     },
+    { id: 18, keyword: 'Macrame Wall Art',       volume:  9700, competition: 'Medium',    ctr: '3.3%', trend: 'up'     },
+    { id: 19, keyword: 'Boho Earrings',          volume: 11200, competition: 'Medium',    ctr: '3.7%', trend: 'up'     },
+    { id: 20, keyword: 'Handcrafted Boho Ring',  volume:  4200, competition: 'Medium',    ctr: '4.5%', trend: 'up'     },
+    { id: 21, keyword: 'Sterling Stackable',     volume:  3100, competition: 'Low',       ctr: '5.2%', trend: 'up'     },
+    { id: 22, keyword: 'Vintage Gemstone',       volume:  2800, competition: 'Medium',    ctr: '3.8%', trend: 'stable' },
+    { id: 23, keyword: 'Tarnish Free Band',      volume:  5600, competition: 'Medium',    ctr: '4.1%', trend: 'up'     },
+    { id: 24, keyword: 'Gold Plated Ring',       volume:  6200, competition: 'High',      ctr: '3.1%', trend: 'up'     },
+    { id: 25, keyword: 'Minimalist Band',        volume:  4800, competition: 'Medium',    ctr: '4.4%', trend: 'stable' },
+    { id: 26, keyword: 'Pearl Promise Ring',     volume:  3500, competition: 'Low',       ctr: '5.6%', trend: 'up'     },
+    { id: 27, keyword: 'Custom Stamp',           volume:  6900, competition: 'Low',       ctr: '4.8%', trend: 'up'     },
+    { id: 28, keyword: 'Pressed Flower Art',     volume:  5100, competition: 'Low',       ctr: '4.2%', trend: 'up'     },
+    { id: 29, keyword: 'Ceramic Planter',        volume:  8400, competition: 'Medium',    ctr: '3.6%', trend: 'stable' },
+    { id: 30, keyword: 'Personalized Bookmark',  volume:  4600, competition: 'Low',       ctr: '5.0%', trend: 'up'     },
 ]
 
 // Curated top listing examples per keyword (used when Etsy API not available)
@@ -136,7 +139,7 @@ function KeywordDetailModal({ item, onClose }: KeywordDetailPanelProps) {
 
     return (
         <div
-            className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm"
+            className="modal-backdrop fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm"
             onClick={onClose}
         >
             <div
@@ -226,7 +229,7 @@ function KeywordDetailModal({ item, onClose }: KeywordDetailPanelProps) {
     )
 }
 
-function ViewAllModal({ title, data, onClose, onSave, savedKeywords }: { title: string, data: any[], onClose: () => void, onSave: (k: string, v?: number, c?: string) => void, savedKeywords: Set<string> }) {
+function ViewAllModal({ title, data, onClose, onSave, savedKeywords, onExpand }: { title: string, data: any[], onClose: () => void, onSave: (k: string, v?: number, c?: string) => void, savedKeywords: Set<string>, onExpand: (id: number) => void }) {
     return (
         <div className="modal-backdrop fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm" onClick={onClose}>
             <div className="modal-card w-full max-w-4xl max-h-[90vh] flex flex-col rounded-2xl border border-slate-200/80 bg-white shadow-2xl shadow-slate-900/20" onClick={e => e.stopPropagation()}>
@@ -250,7 +253,7 @@ function ViewAllModal({ title, data, onClose, onSave, savedKeywords }: { title: 
                         </thead>
                         <tbody className="divide-y divide-slate-100">
                             {data.map((item) => (
-                                <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
+                                <tr key={item.id} onClick={() => onExpand(item.id)} className="hover:bg-slate-50/50 transition-colors cursor-pointer group">
                                     <td className="px-6 py-4 font-bold text-slate-800">{item.keyword}</td>
                                     <td className="px-6 py-4 font-medium text-teal-600">{item.volume.toLocaleString()}</td>
                                     <td className="px-6 py-4">
@@ -284,6 +287,7 @@ function ViewAllModal({ title, data, onClose, onSave, savedKeywords }: { title: 
 }
 
 export default function KeywordResearchPage() {
+    const router = useRouter()
     const [searchQuery, setSearchQuery] = useState('')
     const [results, setResults] = useState(MOCK_DATA)
     const [hasSearched, setHasSearched] = useState(false)
@@ -293,9 +297,6 @@ export default function KeywordResearchPage() {
     const [apiError, setApiError] = useState<string | null>(null)
     const [savedKeywords, setSavedKeywords] = useState<Set<string>>(new Set())
     const [expandedKeyword, setExpandedKeyword] = useState<number | string | null>(null)
-    const [trendingPage, setTrendingPage] = useState(0)
-    const [recommendedPage, setRecommendedPage] = useState(0)
-    const [mostSearchedPage, setMostSearchedPage] = useState(0)
     const [viewAllSection, setViewAllSection] = useState<{title: string, data: any[]} | null>(null)
     const { success, error: toastError } = useToast()
     const supabase = createClient()
@@ -312,28 +313,9 @@ export default function KeywordResearchPage() {
 
     const handleSearch = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!searchQuery.trim()) {
-            setResults(MOCK_DATA); setHasSearched(false); setApiData(null); setShowDemoData(false); setApiError(null)
-            return
-        }
-        setIsLoading(true); setApiError(null); setHasSearched(true); setShowDemoData(false); setApiData(null); setExpandedKeyword(null)
-        try {
-            const response = await fetch('/api/research', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ keyword: searchQuery }),
-            })
-            if (!response.ok) throw new Error(`API Error: ${response.status}`)
-            const data: AnalysisResult = await response.json()
-            setApiData(data)
-        } catch {
-            setApiError('API Key Pending - Showing Demo Data')
-            setShowDemoData(true)
-            const filtered = MOCK_DATA.filter(item => item.keyword.toLowerCase().includes(searchQuery.toLowerCase()))
-            setResults(filtered.length > 0 ? filtered : MOCK_DATA)
-        } finally {
-            setIsLoading(false)
-        }
+        if (!searchQuery.trim()) return
+        setIsLoading(true)
+        router.push(`/dashboard/keyword-research/${encodeURIComponent(searchQuery)}`)
     }
 
     const handleSave = async (keyword: string, volume?: number, competition?: string) => {
@@ -362,88 +344,63 @@ export default function KeywordResearchPage() {
         setExpandedKeyword(prev => prev === id ? null : id)
     }
 
-    const renderSectionHeader = (iconDiv: React.ReactNode, title: string, page: number, setPage: (p: number) => void, data: any[]) => {
-        const totalItems = data.length;
-        const maxPage = Math.ceil(totalItems / 5) - 1;
-        return (
-            <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                    {iconDiv}
-                    <h2 className="text-xl font-bold text-slate-800">{title}</h2>
-                </div>
-                <div className="flex items-center gap-4">
-                    <button onClick={() => setViewAllSection({ title, data })} className="text-sm font-semibold text-teal-600 hover:text-teal-700 hover:underline">
-                        View All <span aria-hidden="true">&rarr;</span>
-                    </button>
-                    {maxPage > 0 && (
-                        <div className="flex items-center gap-1.5">
-                            <button 
-                                onClick={() => setPage(page - 1)} 
-                                disabled={page === 0}
-                                className="p-1.5 rounded-full border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-800 disabled:opacity-30 disabled:hover:bg-transparent transition-colors shadow-sm"
-                            >
-                                <ChevronLeft className="h-4 w-4" />
-                            </button>
-                            <button 
-                                onClick={() => setPage(page + 1)} 
-                                disabled={page >= maxPage}
-                                className="p-1.5 rounded-full border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-800 disabled:opacity-30 disabled:hover:bg-transparent transition-colors shadow-sm"
-                            >
-                                <ChevronRight className="h-4 w-4" />
-                            </button>
-                        </div>
-                    )}
-                </div>
-            </div>
-        )
-    }
-
-    const renderKeywordCard = (item: any) => (
-        <div 
-            key={item.id} 
+    const renderKeywordRow = (item: any) => (
+        <tr
+            key={item.id}
             onClick={() => toggleExpand(item.id)}
-            className="group relative cursor-pointer rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-all hover:-translate-y-1 hover:border-teal-300 hover:shadow-md hover:shadow-teal-900/10 flex flex-col justify-between"
+            className="group cursor-pointer hover:bg-teal-50/40 transition-colors"
         >
-            <div className="flex items-start justify-between mb-4">
-                <div>
-                    <h3 className="font-bold text-slate-800 text-lg mb-0.5 line-clamp-1" title={item.keyword}>{item.keyword}</h3>
-                    <div className="flex items-center gap-1.5">
-                        <span className="text-sm font-black text-teal-600">{item.volume.toLocaleString()}</span>
-                        <span className="text-[10px] text-slate-500 font-medium">searches/mo</span>
-                    </div>
+            <td className="px-5 py-3.5 font-semibold text-slate-800 group-hover:text-teal-700 transition-colors">
+                {item.keyword}
+            </td>
+            <td className="px-5 py-3.5 font-bold text-teal-600">
+                {item.volume.toLocaleString()}
+            </td>
+            <td className="px-5 py-3.5">
+                <span className={cn("text-xs font-bold px-2.5 py-1 rounded-full border",
+                    item.competition === 'Low'    && "bg-emerald-50 text-emerald-700 border-emerald-200",
+                    item.competition === 'Medium' && "bg-amber-50 text-amber-700 border-amber-200",
+                    (item.competition === 'High' || item.competition === 'Very High') && "bg-rose-50 text-rose-700 border-rose-200"
+                )}>
+                    {item.competition}
+                </span>
+            </td>
+            <td className="px-5 py-3.5 font-semibold text-slate-700">{item.ctr}</td>
+            <td className="px-5 py-3.5">
+                <div className="flex items-center gap-1.5">
+                    {item.trend === 'up'     && <><TrendingUp   className="h-4 w-4 text-emerald-500" /><span className="text-sm font-semibold text-emerald-600">Rising</span></>}
+                    {item.trend === 'down'   && <><TrendingDown  className="h-4 w-4 text-rose-500"    /><span className="text-sm font-semibold text-rose-600">Falling</span></>}
+                    {item.trend === 'stable' && <><Minus         className="h-4 w-4 text-slate-400"   /><span className="text-sm font-semibold text-slate-500">Stable</span></>}
                 </div>
-                <button 
-                    onClick={(e) => { e.stopPropagation(); handleSave(item.keyword, item.volume, item.competition) }} 
-                    className="p-1.5 rounded-full bg-slate-50 transition-colors group-hover:bg-slate-100 hover:border-rose-200 border border-transparent shrink-0 ml-2"
+            </td>
+            <td className="px-5 py-3.5 text-right">
+                <button
+                    onClick={(e) => { e.stopPropagation(); handleSave(item.keyword, item.volume, item.competition) }}
+                    className="p-1.5 rounded-full border border-transparent hover:border-rose-200 hover:bg-rose-50 transition-colors"
                 >
-                    <Heart className={cn("h-3.5 w-3.5 transition-colors", savedKeywords.has(item.keyword) ? "fill-rose-500 text-rose-500" : "text-slate-400 hover:text-rose-500")} />
+                    <Heart className={cn("h-4 w-4 transition-colors", savedKeywords.has(item.keyword) ? "fill-rose-500 text-rose-500" : "text-slate-300 hover:text-rose-400")} />
                 </button>
-            </div>
+            </td>
+        </tr>
+    )
 
-            <div className="grid grid-cols-3 gap-2 mt-1 pt-3 border-t border-slate-100">
-                <div className="flex flex-col gap-1">
-                    <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Comp</span>
-                    <span className={cn("text-[9px] font-bold w-fit px-1.5 py-0.5 rounded border",
-                        item.competition === 'Low' && "bg-emerald-50 text-emerald-700 border-emerald-200",
-                        item.competition === 'Medium' && "bg-amber-50 text-amber-700 border-amber-200",
-                        (item.competition === 'High' || item.competition === 'Very High') && "bg-rose-50 text-rose-700 border-rose-200"
-                    )}>
-                        {item.competition}
-                    </span>
-                </div>
-                <div className="flex flex-col gap-1 items-center">
-                    <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">CTR</span>
-                    <span className="text-xs font-bold text-slate-700">{item.ctr}</span>
-                </div>
-                <div className="flex flex-col gap-1 items-end text-right">
-                    <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Trend</span>
-                    <div className="flex items-center gap-1">
-                        {item.trend === 'up' && <><TrendingUp className="h-3 w-3 text-emerald-500" /><span className="text-xs font-bold text-emerald-600">Rising</span></>}
-                        {item.trend === 'down' && <><TrendingDown className="h-3 w-3 text-rose-500" /><span className="text-xs font-bold text-rose-600">Falling</span></>}
-                        {item.trend === 'stable' && <><Minus className="h-3 w-3 text-slate-400" /><span className="text-xs font-bold text-slate-500">Stable</span></>}
-                    </div>
-                </div>
-            </div>
+    const renderKeywordTable = (data: any[]) => (
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <table className="w-full text-sm text-left">
+                <thead>
+                    <tr className="bg-teal-50/60 border-b border-slate-200">
+                        <th className="px-5 py-3 text-xs font-bold uppercase tracking-wider text-slate-500">Keyword</th>
+                        <th className="px-5 py-3 text-xs font-bold uppercase tracking-wider text-slate-500">Search Vol</th>
+                        <th className="px-5 py-3 text-xs font-bold uppercase tracking-wider text-slate-500">Competition</th>
+                        <th className="px-5 py-3 text-xs font-bold uppercase tracking-wider text-slate-500">CTR</th>
+                        <th className="px-5 py-3 text-xs font-bold uppercase tracking-wider text-slate-500">Trend</th>
+                        <th className="px-5 py-3 text-xs font-bold uppercase tracking-wider text-slate-500 text-right">Save</th>
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                    {data.map(renderKeywordRow)}
+                </tbody>
+            </table>
         </div>
     )
 
@@ -459,8 +416,7 @@ export default function KeywordResearchPage() {
 
                 {/* Search */}
                 <div className="relative group">
-                    <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-teal-400 to-emerald-400 opacity-20 blur transition duration-500 group-hover:opacity-40" />
-                    <Card className="relative border-white bg-white/80 backdrop-blur-xl shadow-xl shadow-teal-900/5">
+                    <Card className="relative border border-slate-200/60 bg-white/80 backdrop-blur-xl shadow-sm hover:shadow-md transition-shadow duration-300">
                         <CardContent className="p-2 sm:p-3">
                             <form onSubmit={handleSearch} className="relative flex items-center">
                                 <div className="absolute left-3 flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 text-teal-600">
@@ -530,29 +486,9 @@ export default function KeywordResearchPage() {
                             </div>
                             
                             {apiData ? (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                                    {apiData.topTags.map((tag, index) => (
-                                        <div key={index} className="group relative rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-all hover:-translate-y-1 hover:border-teal-300 hover:shadow-md hover:shadow-teal-900/10 flex flex-col justify-between">
-                                            <div className="flex items-start justify-between mb-3">
-                                                <div>
-                                                    <h3 className="font-bold text-slate-800 text-base mb-0.5">{tag.tag}</h3>
-                                                    <p className="text-xs text-slate-500">Used in {tag.count}/{apiData.stats.listingCount}</p>
-                                                </div>
-                                                <button onClick={(e) => { e.stopPropagation(); handleSave(tag.tag) }} className="p-1.5 hover:bg-slate-50 rounded-full transition-colors group-hover:bg-white shadow-[0_1px_2px_-1px_rgba(0,0,0,0.05)] border border-slate-100">
-                                                    <Heart className={cn("h-3.5 w-3.5 transition-colors", savedKeywords.has(tag.tag) ? "fill-rose-500 text-rose-500" : "text-slate-400 hover:text-rose-400")} />
-                                                </button>
-                                            </div>
-                                            <div className="flex items-center justify-between rounded-lg bg-slate-50 border border-slate-100 p-2 text-xs">
-                                                <span className="font-semibold uppercase tracking-wider text-slate-500">Avg Price</span>
-                                                <span className="font-bold text-slate-800">${tag.averagePrice.toFixed(2)}</span>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
+                                renderKeywordTable(apiData.topTags.map((tag, i) => ({ id: i, keyword: tag.tag, volume: 0, competition: 'Unknown', ctr: `$${tag.averagePrice.toFixed(2)}`, trend: 'stable' })))
                             ) : results.length > 0 ? (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                                    {results.map(renderKeywordCard)}
-                                </div>
+                                renderKeywordTable(results)
                             ) : (
                                 <div className="rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50/50 p-16 text-center">
                                     <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 mb-4">
@@ -564,39 +500,8 @@ export default function KeywordResearchPage() {
                             )}
                         </>
                     ) : (
-                        <div className="space-y-8">
-                            {/* Trending Section */}
-                            <section>
-                                {renderSectionHeader(
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600"><TrendingUp className="h-5 w-5" /></div>,
-                                    "Trending Right Now", trendingPage, setTrendingPage, MOCK_DATA
-                                )}
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                                    {MOCK_DATA.slice(trendingPage * 5, (trendingPage + 1) * 5).map(renderKeywordCard)}
-                                </div>
-                            </section>
-
-                            {/* Recommended Section */}
-                            <section>
-                                {renderSectionHeader(
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-100 text-violet-600"><Star className="h-5 w-5" /></div>,
-                                    "Recommended for You", recommendedPage, setRecommendedPage, MOCK_RECOMMENDED
-                                )}
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                                    {MOCK_RECOMMENDED.slice(recommendedPage * 5, (recommendedPage + 1) * 5).map(renderKeywordCard)}
-                                </div>
-                            </section>
-
-                            {/* Most Searched Section */}
-                            <section>
-                                {renderSectionHeader(
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-100 text-rose-600"><Search className="h-5 w-5" /></div>,
-                                    "Most Searched Overall", mostSearchedPage, setMostSearchedPage, MOCK_MOST_SEARCHED
-                                )}
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                                    {MOCK_MOST_SEARCHED.slice(mostSearchedPage * 5, (mostSearchedPage + 1) * 5).map(renderKeywordCard)}
-                                </div>
-                            </section>
+                        <div>
+                            {renderKeywordTable(MOCK_DATA)}
                         </div>
                     )}
                 </div>
@@ -604,7 +509,7 @@ export default function KeywordResearchPage() {
 
             {/* Keyword Detail Modal */}
             {expandedKeyword !== null && (() => {
-                const selectedItem = results.find(item => item.id === expandedKeyword)
+                const selectedItem = [...results, ...MOCK_DATA].find(item => item.id === expandedKeyword)
                 return selectedItem ? <KeywordDetailModal item={selectedItem} onClose={() => setExpandedKeyword(null)} /> : null
             })()}
 
@@ -616,6 +521,7 @@ export default function KeywordResearchPage() {
                     onClose={() => setViewAllSection(null)} 
                     onSave={handleSave} 
                     savedKeywords={savedKeywords} 
+                    onExpand={toggleExpand}
                 />
             )}
         </DashboardLayout>
