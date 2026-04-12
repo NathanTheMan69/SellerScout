@@ -26,7 +26,7 @@ export default function LoginPage({
         if (res?.error) {
             setClientError(res.error)
         } else if (res?.success) {
-            router.push('/')
+            router.push('/dashboard')
         }
     }
 
