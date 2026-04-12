@@ -66,7 +66,7 @@ export function Sidebar() {
             <div className="fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-b border-emerald-50 z-50 flex items-center justify-between px-4 md:hidden">
                 <div className="flex items-center gap-2 text-teal-600">
                     <img src="/logo.png" alt="SellerScout" className="h-8 w-8 object-contain" />
-                    <span className="text-xl font-bold tracking-tight">SellerScout</span>
+                    <span className="text-xl font-bold tracking-tight" style={{ fontFamily: 'var(--font-raleway)' }}>Seller Scout</span>
                 </div>
                 <Button
                     variant="ghost"
@@ -93,7 +93,7 @@ export function Sidebar() {
                     <div className="flex h-24 items-center px-5 border-b border-slate-100">
                         <div className="flex items-center gap-3 text-teal-600">
                             <img src="/logo.png" alt="SellerScout" className="h-14 w-14 object-contain drop-shadow-sm" />
-                            <span className="text-2xl font-bold tracking-tight bg-gradient-to-r from-teal-600 to-emerald-500 bg-clip-text text-transparent">SellerScout</span>
+                            <span className="text-2xl font-bold tracking-tight bg-gradient-to-r from-teal-600 to-emerald-500 bg-clip-text text-transparent" style={{ fontFamily: 'var(--font-raleway)' }}>Seller Scout</span>
                         </div>
                     </div>
 

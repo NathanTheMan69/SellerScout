@@ -52,13 +52,13 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
             <img src="/logo.png" alt="SellerScout" className="h-9 w-9 drop-shadow-sm" />
-            <span className="text-xl font-bold bg-gradient-to-r from-teal-600 to-emerald-500 bg-clip-text text-transparent">
-              SellerScout
+            <span className="text-xl font-bold bg-gradient-to-r from-teal-600 to-emerald-500 bg-clip-text text-transparent" style={{ fontFamily: 'var(--font-raleway)' }}>
+              Seller Scout
             </span>
           </Link>
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
             <a href="#features" className="hover:text-teal-600 transition-colors">Features</a>
-            <a href="#stats" className="hover:text-teal-600 transition-colors">Why SellerScout</a>
+            <a href="#stats" className="hover:text-teal-600 transition-colors">Why Seller Scout</a>
           </nav>
           <div className="flex items-center gap-3">
             <Link
@@ -219,11 +219,11 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
             <img src="/logo.png" alt="SellerScout" className="h-7 w-7" />
-            <span className="text-base font-bold bg-gradient-to-r from-teal-600 to-emerald-500 bg-clip-text text-transparent">
-              SellerScout
+            <span className="text-base font-bold bg-gradient-to-r from-teal-600 to-emerald-500 bg-clip-text text-transparent" style={{ fontFamily: 'var(--font-raleway)' }}>
+              Seller Scout
             </span>
           </div>
-          <p className="text-sm text-slate-400">© {new Date().getFullYear()} SellerScout. All rights reserved.</p>
+          <p className="text-sm text-slate-400">© {new Date().getFullYear()} Seller Scout. All rights reserved.</p>
           <div className="flex items-center gap-6 text-sm text-slate-500">
             <Link href="/login" className="hover:text-teal-600 transition-colors">Sign In</Link>
             <Link href="/login" className="hover:text-teal-600 transition-colors">Get Started</Link>
