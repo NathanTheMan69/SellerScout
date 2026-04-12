@@ -69,7 +69,7 @@ export default function LoginPage({
                 </span>
             </div>
 
-            <Card className="w-full max-w-md border-slate-200 bg-white shadow-2xl shadow-slate-300/60 ring-1 ring-slate-100">
+            <Card className="w-full max-w-lg border-slate-200 bg-white shadow-2xl shadow-slate-300/60 ring-1 ring-slate-100">
                 {isSignupSuccess ? (
                     <div className="flex flex-col items-center justify-center p-8 text-center space-y-6">
                         <div className="rounded-full bg-teal-100 p-4">
@@ -92,7 +92,7 @@ export default function LoginPage({
                     </div>
                 ) : (
                     <>
-                        <CardHeader className="space-y-1 pb-4">
+                        <CardHeader className="space-y-2 pt-8 pb-2 px-8">
                             <CardTitle className="text-2xl font-bold text-center text-slate-800">
                                 {isSignIn ? 'Welcome back' : 'Create an account'}
                             </CardTitle>
@@ -103,14 +103,14 @@ export default function LoginPage({
                             </CardDescription>
                         </CardHeader>
 
-                        <CardContent>
+                        <CardContent className="px-8 pb-8">
                             <form className="flex flex-col gap-4">
                                 <div className="space-y-1.5">
                                     <label className="text-sm font-medium text-slate-700" htmlFor="email">
                                         Email
                                     </label>
                                     <input
-                                        className="flex h-10 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-1 disabled:opacity-50"
+                                        className="flex h-12 w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2 text-base placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-1 disabled:opacity-50"
                                         id="email"
                                         name="email"
                                         type="email"
@@ -123,7 +123,7 @@ export default function LoginPage({
                                         Password
                                     </label>
                                     <input
-                                        className="flex h-10 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-1 disabled:opacity-50"
+                                        className="flex h-12 w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2 text-base placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-1 disabled:opacity-50"
                                         id="password"
                                         name="password"
                                         type="password"
@@ -140,7 +140,7 @@ export default function LoginPage({
 
                                 <Button
                                     formAction={isSignIn ? handleLogin : handleSignup}
-                                    className="w-full mt-1 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-lg"
+                                    className="w-full mt-1 h-12 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-lg text-base"
                                     disabled={isLoading}
                                 >
                                     {isLoading ? 'Loading...' : isSignIn ? 'Log In' : 'Create Account'}
@@ -156,7 +156,7 @@ export default function LoginPage({
                             <button
                                 type="button"
                                 onClick={handleGoogleLogin}
-                                className="w-full flex items-center justify-center gap-3 h-10 px-4 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-sm font-semibold text-slate-700 shadow-sm transition-colors"
+                                className="w-full flex items-center justify-center gap-3 h-12 px-4 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-base font-semibold text-slate-700 shadow-sm transition-colors"
                             >
                                 <svg className="h-4 w-4" viewBox="0 0 24 24">
                                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
