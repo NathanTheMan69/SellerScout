@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Trash2, TrendingUp, TrendingDown, Minus } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/Card'
+import { useRouter } from 'next/navigation'
+import { Trash2, TrendingUp, Search, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { DashboardLayout } from '@/components/DashboardLayout'
 import { createClient } from '@/utils/supabase/client'
@@ -20,6 +20,7 @@ export default function SavedKeywordsPage() {
     const [savedKeywords, setSavedKeywords] = useState<SavedKeyword[]>([])
     const [loading, setLoading] = useState(true)
     const supabase = createClient()
+    const router = useRouter()
 
     useEffect(() => {
         fetchSavedKeywords()
@@ -37,10 +38,7 @@ export default function SavedKeywordsPage() {
                 .order('created_at', { ascending: false })
 
             if (error) throw error
-
-            if (data) {
-                setSavedKeywords(data)
-            }
+            if (data) setSavedKeywords(data)
         } catch (error) {
             console.error('Error fetching saved keywords:', error)
         } finally {
@@ -48,22 +46,20 @@ export default function SavedKeywordsPage() {
         }
     }
 
-    const handleDelete = async (id: string) => {
-        // Optimistic update
+    const handleDelete = async (e: React.MouseEvent, id: string) => {
+        e.stopPropagation()
         setSavedKeywords(prev => prev.filter(k => k.id !== id))
-
         try {
-            const { error } = await supabase
-                .from('saved_keywords')
-                .delete()
-                .eq('id', id)
-
+            const { error } = await supabase.from('saved_keywords').delete().eq('id', id)
             if (error) throw error
         } catch (error) {
             console.error('Error deleting keyword:', error)
-            alert('Failed to delete keyword. Please try again.')
-            fetchSavedKeywords() // Revert on error
+            fetchSavedKeywords()
         }
+    }
+
+    const handleKeywordClick = (keyword: string) => {
+        router.push(`/dashboard/keyword-research?q=${encodeURIComponent(keyword)}`)
     }
 
     return (
@@ -80,66 +76,94 @@ export default function SavedKeywordsPage() {
                     </div>
                 </div>
 
-                {/* Results Table */}
-                {/* Results Table */}
                 {loading ? (
                     <TableSkeleton />
                 ) : (
-                    <Card className="border-white/50 bg-white/70 backdrop-blur-md shadow-lg shadow-teal-900/5 overflow-hidden">
-                        <CardHeader>
-                            <CardTitle>Your Library</CardTitle>
-                            <CardDescription>You have {savedKeywords.length} saved keywords.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="p-0">
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-left text-sm">
-                                    <thead className="bg-teal-50/50 text-slate-600">
-                                        <tr>
-                                            <th className="px-6 py-4 font-semibold">Keyword</th>
-                                            <th className="px-6 py-4 font-semibold">Search Volume</th>
-                                            <th className="px-6 py-4 font-semibold">Competition</th>
-                                            <th className="px-6 py-4 font-semibold text-right">Actions</th>
+                    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm shadow-teal-900/5">
+                        <table className="w-full text-sm text-left">
+                            <thead>
+                                <tr className="border-b border-teal-200/60 bg-teal-500/80">
+                                    <th className="w-10 pl-5 pr-2 py-4" />
+                                    <th className="px-3 py-4 text-sm font-medium uppercase tracking-wider text-white">Keyword</th>
+                                    <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white">Search Vol</th>
+                                    <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white">Competition</th>
+                                    <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white">Saved On</th>
+                                    <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                                {savedKeywords.length > 0 ? (
+                                    savedKeywords.map((item, index) => (
+                                        <tr
+                                            key={item.id}
+                                            onClick={() => handleKeywordClick(item.keyword)}
+                                            className="group cursor-pointer transition-all duration-150 hover:bg-teal-50 hover:shadow-[inset_3px_0_0_0_#14b8a6]"
+                                        >
+                                            {/* Rank */}
+                                            <td className="w-10 pl-5 pr-2 py-3.5 text-xs font-bold text-slate-300 group-hover:text-teal-500 transition-colors tabular-nums">
+                                                {String(index + 1).padStart(2, '0')}
+                                            </td>
+                                            {/* Keyword */}
+                                            <td className="px-3 py-3.5">
+                                                <div className="flex items-center gap-2.5">
+                                                    <div className="h-7 w-7 rounded-lg bg-teal-50 border border-teal-100 flex items-center justify-center flex-shrink-0 group-hover:bg-teal-100 transition-colors">
+                                                        <Search className="h-3.5 w-3.5 text-teal-500" />
+                                                    </div>
+                                                    <span className="font-semibold text-slate-800 group-hover:text-teal-700 transition-all">
+                                                        {item.keyword}
+                                                    </span>
+                                                    <ExternalLink className="h-3 w-3 text-slate-300 group-hover:text-teal-400 transition-colors opacity-0 group-hover:opacity-100" />
+                                                </div>
+                                            </td>
+                                            {/* Search Volume */}
+                                            <td className="px-5 py-3.5">
+                                                <span className="font-bold text-teal-600 tabular-nums">
+                                                    {item.search_volume?.toLocaleString() ?? '—'}
+                                                </span>
+                                                <span className="text-xs text-slate-400 ml-1">/mo</span>
+                                            </td>
+                                            {/* Competition */}
+                                            <td className="px-5 py-3.5">
+                                                <span className={cn(
+                                                    "inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border",
+                                                    item.competition === 'Low'    && "bg-emerald-50 text-emerald-700 border-emerald-200",
+                                                    item.competition === 'Medium' && "bg-amber-50 text-amber-700 border-amber-200",
+                                                    (item.competition === 'High' || item.competition === 'Very High') && "bg-rose-50 text-rose-700 border-rose-200"
+                                                )}>
+                                                    <span className={cn("h-1.5 w-1.5 rounded-full",
+                                                        item.competition === 'Low'    && "bg-emerald-500",
+                                                        item.competition === 'Medium' && "bg-amber-500",
+                                                        (item.competition === 'High' || item.competition === 'Very High') && "bg-rose-500"
+                                                    )} />
+                                                    {item.competition ?? '—'}
+                                                </span>
+                                            </td>
+                                            {/* Saved On */}
+                                            <td className="px-5 py-3.5 text-slate-400 text-xs tabular-nums">
+                                                {new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                            </td>
+                                            {/* Delete */}
+                                            <td className="px-5 py-3.5 text-right">
+                                                <button
+                                                    onClick={(e) => handleDelete(e, item.id)}
+                                                    className="p-1.5 rounded-full border border-transparent hover:border-rose-200 hover:bg-rose-50 text-slate-300 hover:text-rose-500 transition-colors"
+                                                    title="Remove"
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </button>
+                                            </td>
                                         </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-100">
-                                        {savedKeywords.length > 0 ? (
-                                            savedKeywords.map((item) => (
-                                                <tr key={item.id} className="hover:bg-teal-50/30 transition-colors">
-                                                    <td className="px-6 py-4 font-medium text-slate-800">{item.keyword}</td>
-                                                    <td className="px-6 py-4 text-slate-600">{item.search_volume?.toLocaleString() || '-'}</td>
-                                                    <td className="px-6 py-4">
-                                                        <span className={cn(
-                                                            "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
-                                                            item.competition === 'Low' && "bg-emerald-100 text-emerald-800",
-                                                            item.competition === 'Medium' && "bg-yellow-100 text-yellow-800",
-                                                            (item.competition === 'High' || item.competition === 'Very High') && "bg-rose-100 text-rose-800"
-                                                        )}>
-                                                            {item.competition || '-'}
-                                                        </span>
-                                                    </td>
-                                                    <td className="px-6 py-4 text-right">
-                                                        <button
-                                                            onClick={() => handleDelete(item.id)}
-                                                            className="p-2 hover:bg-rose-50 hover:text-rose-600 text-slate-400 rounded-full transition-colors"
-                                                            title="Remove from saved"
-                                                        >
-                                                            <Trash2 className="h-5 w-5" />
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))
-                                        ) : (
-                                            <tr>
-                                                <td colSpan={4} className="px-6 py-12 text-center text-slate-500">
-                                                    No saved keywords yet. Go to Keyword Research to add some!
-                                                </td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </CardContent>
-                    </Card>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan={6} className="px-6 py-16 text-center text-slate-400">
+                                            No saved keywords yet. Go to <span className="font-semibold text-teal-600">Keyword Research</span> to save some!
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 )}
             </div>
         </DashboardLayout>
