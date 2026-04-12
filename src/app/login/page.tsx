@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { login, signup } from './actions'
 import { Button } from '@/components/Button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/Card'
-import { TrendingUp, MailCheck, ArrowLeft } from 'lucide-react'
+import { MailCheck, ArrowLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 export default function LoginPage({
@@ -12,17 +12,22 @@ export default function LoginPage({
 }: {
     searchParams: { message: string; error: string }
 }) {
+    const [mode, setMode] = useState<'signin' | 'signup'>('signin')
     const [isSignupSuccess, setIsSignupSuccess] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [clientError, setClientError] = useState<string | null>(null)
     const router = useRouter()
+
+    function switchMode(next: 'signin' | 'signup') {
+        setMode(next)
+        setClientError(null)
+    }
 
     async function handleLogin(formData: FormData) {
         setIsLoading(true)
         setClientError(null)
         const res = await login(formData)
         setIsLoading(false)
-
         if (res?.error) {
             setClientError(res.error)
         } else if (res?.success) {
@@ -35,7 +40,6 @@ export default function LoginPage({
         setClientError(null)
         const res = await signup(formData)
         setIsLoading(false)
-
         if (res?.error) {
             setClientError(res.error)
         } else if (res?.success) {
@@ -43,96 +47,120 @@ export default function LoginPage({
         }
     }
 
+    const isSignIn = mode === 'signin'
+
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center p-4">
+        <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 p-4">
             <div className="mb-8 flex items-center gap-3 text-teal-700">
                 <img src="/logo.png" alt="SellerScout" className="h-12 w-12 object-contain" />
-                <span className="text-3xl font-bold tracking-tight">SellerScout</span>
+                <span className="text-3xl font-bold tracking-tight bg-gradient-to-r from-teal-600 to-emerald-500 bg-clip-text text-transparent">
+                    SellerScout
+                </span>
             </div>
 
-            <Card className="w-full max-w-md border-white/50 bg-white/70 backdrop-blur-md shadow-xl shadow-teal-900/5 transition-all duration-500">
+            <Card className="w-full max-w-md border-white/50 bg-white shadow-xl shadow-teal-900/5">
                 {isSignupSuccess ? (
-                    <div className="flex flex-col items-center justify-center p-8 text-center space-y-6 animate-in fade-in zoom-in duration-300">
-                        <div className="rounded-full bg-teal-100 p-4 shadow-inner">
+                    <div className="flex flex-col items-center justify-center p-8 text-center space-y-6">
+                        <div className="rounded-full bg-teal-100 p-4">
                             <MailCheck className="h-12 w-12 text-teal-600" />
                         </div>
                         <div className="space-y-2">
-                            <h3 className="text-2xl font-bold text-teal-800">Check your inbox! 📧</h3>
-                            <p className="text-slate-600">
-                                We have sent a confirmation link to your email address.
+                            <h3 className="text-2xl font-bold text-slate-800">Check your inbox!</h3>
+                            <p className="text-slate-500">
+                                We sent a confirmation link to your email. Click it to activate your account.
                             </p>
                         </div>
                         <Button
                             variant="outline"
-                            onClick={() => setIsSignupSuccess(false)}
-                            className="mt-4 border-teal-200 text-teal-700 hover:bg-teal-50"
+                            onClick={() => { setIsSignupSuccess(false); switchMode('signin') }}
+                            className="border-teal-200 text-teal-700 hover:bg-teal-50"
                         >
                             <ArrowLeft className="mr-2 h-4 w-4" />
-                            Back to Login
+                            Back to Sign In
                         </Button>
                     </div>
                 ) : (
                     <>
-                        <CardHeader className="space-y-1">
+                        <CardHeader className="space-y-1 pb-4">
                             <CardTitle className="text-2xl font-bold text-center text-slate-800">
-                                Welcome back
+                                {isSignIn ? 'Welcome back' : 'Create an account'}
                             </CardTitle>
-                            <CardDescription className="text-center text-slate-600">
-                                Enter your email to sign in to your account
+                            <CardDescription className="text-center text-slate-500">
+                                {isSignIn
+                                    ? 'Sign in to your SellerScout account'
+                                    : 'Start growing your Etsy shop today'}
                             </CardDescription>
                         </CardHeader>
+
                         <CardContent>
                             <form className="flex flex-col gap-4">
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="email">
+                                <div className="space-y-1.5">
+                                    <label className="text-sm font-medium text-slate-700" htmlFor="email">
                                         Email
                                     </label>
                                     <input
-                                        className="flex h-10 w-full rounded-md border border-slate-200 bg-white/50 px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        className="flex h-10 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-1 disabled:opacity-50"
                                         id="email"
                                         name="email"
                                         type="email"
-                                        placeholder="m@example.com"
+                                        placeholder="you@example.com"
                                         required
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="password">
+                                <div className="space-y-1.5">
+                                    <label className="text-sm font-medium text-slate-700" htmlFor="password">
                                         Password
                                     </label>
                                     <input
-                                        className="flex h-10 w-full rounded-md border border-slate-200 bg-white/50 px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        className="flex h-10 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-1 disabled:opacity-50"
                                         id="password"
                                         name="password"
                                         type="password"
+                                        placeholder="••••••••"
                                         required
                                     />
                                 </div>
 
                                 {(searchParams?.error || clientError) && (
-                                    <div className="text-sm text-rose-600 bg-rose-50 p-2 rounded border border-rose-200 text-center">
+                                    <div className="text-sm text-rose-600 bg-rose-50 p-2.5 rounded-lg border border-rose-200 text-center">
                                         {clientError || searchParams.error}
                                     </div>
                                 )}
 
-                                <div className="flex flex-col gap-2 mt-2">
-                                    <Button
-                                        formAction={handleLogin}
-                                        className="w-full bg-teal-600 hover:bg-teal-700 text-white"
-                                        disabled={isLoading}
-                                    >
-                                        {isLoading ? 'Loading...' : 'Sign In'}
-                                    </Button>
-                                    <Button
-                                        formAction={handleSignup}
-                                        variant="outline"
-                                        className="w-full border-teal-200 text-teal-700 hover:bg-teal-50 hover:text-teal-800"
-                                        disabled={isLoading}
-                                    >
-                                        Sign Up
-                                    </Button>
-                                </div>
+                                <Button
+                                    formAction={isSignIn ? handleLogin : handleSignup}
+                                    className="w-full mt-1 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-lg"
+                                    disabled={isLoading}
+                                >
+                                    {isLoading ? 'Loading...' : isSignIn ? 'Sign In' : 'Create Account'}
+                                </Button>
                             </form>
+
+                            <p className="mt-5 text-center text-sm text-slate-500">
+                                {isSignIn ? (
+                                    <>
+                                        Don&apos;t have an account?{' '}
+                                        <button
+                                            type="button"
+                                            onClick={() => switchMode('signup')}
+                                            className="font-semibold text-teal-600 hover:text-teal-700 hover:underline"
+                                        >
+                                            Sign up
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        Already have an account?{' '}
+                                        <button
+                                            type="button"
+                                            onClick={() => switchMode('signin')}
+                                            className="font-semibold text-teal-600 hover:text-teal-700 hover:underline"
+                                        >
+                                            Sign in
+                                        </button>
+                                    </>
+                                )}
+                            </p>
                         </CardContent>
                     </>
                 )}
