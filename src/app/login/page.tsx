@@ -58,7 +58,7 @@ export default function LoginPage({
                 </span>
             </div>
 
-            <Card className="w-full max-w-md border-white/50 bg-white shadow-xl shadow-teal-900/5">
+            <Card className="w-full max-w-md border-slate-200 bg-white shadow-2xl shadow-slate-300/60 ring-1 ring-slate-100">
                 {isSignupSuccess ? (
                     <div className="flex flex-col items-center justify-center p-8 text-center space-y-6">
                         <div className="rounded-full bg-teal-100 p-4">
@@ -76,7 +76,7 @@ export default function LoginPage({
                             className="border-teal-200 text-teal-700 hover:bg-teal-50"
                         >
                             <ArrowLeft className="mr-2 h-4 w-4" />
-                            Back to Sign In
+                            Back to Log In
                         </Button>
                     </div>
                 ) : (
@@ -87,7 +87,7 @@ export default function LoginPage({
                             </CardTitle>
                             <CardDescription className="text-center text-slate-500">
                                 {isSignIn
-                                    ? 'Sign in to your SellerScout account'
+                                    ? 'Log in to your SellerScout account'
                                     : 'Start growing your Etsy shop today'}
                             </CardDescription>
                         </CardHeader>
@@ -132,7 +132,7 @@ export default function LoginPage({
                                     className="w-full mt-1 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-lg"
                                     disabled={isLoading}
                                 >
-                                    {isLoading ? 'Loading...' : isSignIn ? 'Sign In' : 'Create Account'}
+                                    {isLoading ? 'Loading...' : isSignIn ? 'Log In' : 'Create Account'}
                                 </Button>
                             </form>
 
@@ -156,7 +156,7 @@ export default function LoginPage({
                                             onClick={() => switchMode('signin')}
                                             className="font-semibold text-teal-600 hover:text-teal-700 hover:underline"
                                         >
-                                            Sign in
+                                            Log in
                                         </button>
                                     </>
                                 )}
