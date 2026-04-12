@@ -225,6 +225,7 @@ export default function LandingPage() {
           </div>
           <p className="text-sm text-slate-400">© {new Date().getFullYear()} Seller Scout. All rights reserved.</p>
           <div className="flex items-center gap-6 text-sm text-slate-500">
+            <Link href="/privacy" className="hover:text-teal-600 transition-colors">Privacy Policy</Link>
             <Link href="/login" className="hover:text-teal-600 transition-colors">Sign In</Link>
             <Link href="/login" className="hover:text-teal-600 transition-colors">Get Started</Link>
           </div>
