@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Suspense } from 'react'
 import { ArrowLeft, Lock, Copy, Clipboard, Star, TrendingUp, Snowflake, TreePine, ExternalLink, ImageOff, Zap, Sparkles } from 'lucide-react'
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 import { useSearchParams, useRouter } from 'next/navigation'
@@ -44,7 +44,7 @@ const MOCK_REPORT_DATA = {
     ]
 }
 
-export default function IntelligenceReportPage() {
+function IntelligenceReportPageInner() {
     const searchParams = useSearchParams()
     const router = useRouter()
     const query = searchParams.get('query')
@@ -381,5 +381,13 @@ export default function IntelligenceReportPage() {
                 </Card>
             </div>
         </DashboardLayout>
+    )
+}
+
+export default function IntelligenceReportPage() {
+    return (
+        <Suspense>
+            <IntelligenceReportPageInner />
+        </Suspense>
     )
 }

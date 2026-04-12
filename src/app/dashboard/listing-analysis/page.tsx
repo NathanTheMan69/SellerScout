@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react'
+import React, { useState, Suspense } from 'react'
 import { Search, ShoppingBag, AlertCircle, ImageOff, ArrowLeft, TrendingUp, TrendingDown, Tag, X, Filter, BarChart2, DollarSign, Zap, ExternalLink, Copy, Check, Star } from 'lucide-react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { DashboardLayout } from '@/components/DashboardLayout'
@@ -141,7 +141,7 @@ function NicheCard({ item, onClick }: { item: NicheData; onClick: () => void }) 
     )
 }
 
-export default function ListingAnalysisPage(): React.JSX.Element {
+function ListingAnalysisPageInner(): React.JSX.Element {
     const [categoryFilter, setCategoryFilter] = useState('All')
     const [performanceFilter, setPerformanceFilter] = useState<'top' | 'trending'>('top')
     const [currentPage, setCurrentPage] = useState(1)
@@ -467,5 +467,13 @@ export default function ListingAnalysisPage(): React.JSX.Element {
 
             </div>
         </DashboardLayout>
+    )
+}
+
+export default function ListingAnalysisPage() {
+    return (
+        <Suspense>
+            <ListingAnalysisPageInner />
+        </Suspense>
     )
 }
