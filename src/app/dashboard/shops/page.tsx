@@ -100,7 +100,13 @@ function ListingCard({ item }: ListingCardProps) {
     )
 }
 
-function ShopsGrid({ filter, categoryFilter, onShopClick }: { filter: 'top' | 'trending'; categoryFilter: string; onShopClick: (name: string) => void }) {
+function ShopsGrid({ filter, categoryFilter, onShopClick, savedShops, onTrack }: {
+    filter: 'top' | 'trending'
+    categoryFilter: string
+    onShopClick: (name: string) => void
+    savedShops: SavedShop[]
+    onTrack: (e: React.MouseEvent, shop: { id: string; name: string; url: string; sales: number; listings: number }) => void
+}) {
     const isTop = filter === 'top'
     const shops = (isTop ? TOP_ETSY_SHOPS : TRENDING_SHOPS).filter(s =>
         categoryFilter === 'All' || s.category === categoryFilter
@@ -111,6 +117,7 @@ function ShopsGrid({ filter, categoryFilter, onShopClick }: { filter: 'top' | 't
             {shops.map((shop) => {
                 const topShop = shop as typeof TOP_ETSY_SHOPS[0]
                 const trendShop = shop as typeof TRENDING_SHOPS[0]
+                const isSaved = savedShops.some(s => s.shop_name === shop.name)
                 return (
                     <Card
                         key={shop.name}
@@ -134,9 +141,22 @@ function ShopsGrid({ filter, categoryFilter, onShopClick }: { filter: 'top' | 't
                                 {/* Info */}
                                 <div className="flex-1 min-w-0 space-y-3">
                                     {/* Name + category */}
-                                    <div>
-                                        <h3 className="font-bold text-slate-800 text-base group-hover:text-teal-600 transition-colors truncate">{shop.name}</h3>
-                                        <p className="text-xs text-slate-500">{shop.category}</p>
+                                    <div className="flex items-start justify-between gap-2">
+                                        <div className="min-w-0">
+                                            <h3 className="font-bold text-slate-800 text-base group-hover:text-teal-600 transition-colors truncate">{shop.name}</h3>
+                                            <p className="text-xs text-slate-500">{shop.category}</p>
+                                        </div>
+                                        <button
+                                            onClick={(e) => onTrack(e, { id: shop.name, name: shop.name, url: `https://etsy.com/shop/${shop.name}`, sales: 0, listings: shop.listings })}
+                                            className={cn(
+                                                "flex-shrink-0 p-1.5 rounded-full transition-all duration-200",
+                                                isSaved
+                                                    ? "bg-rose-50 text-rose-500 hover:bg-slate-50 hover:text-slate-400"
+                                                    : "bg-slate-50 text-slate-400 hover:bg-rose-50 hover:text-rose-500"
+                                            )}
+                                        >
+                                            <Heart className={cn("h-4 w-4", isSaved && "fill-rose-500")} />
+                                        </button>
                                     </div>
 
                                     {/* Stats grid */}
@@ -464,78 +484,6 @@ export default function ShopsPage() {
                     </div>
                 )}
 
-                {/* Tracked Shops — only shown if user has any */}
-                {!loading && savedShops.length > 0 && (
-                    <div className="space-y-4">
-                        <h2 className="text-xl font-semibold text-slate-800">Your Tracked Shops</h2>
-                        <Card className="border-white/50 bg-white/70 backdrop-blur-md shadow-lg shadow-teal-900/5 overflow-hidden">
-                            <CardContent className="p-0">
-                                <div className="overflow-x-auto">
-                                    <table className="w-full text-left text-sm">
-                                        <thead className="bg-teal-50/50 text-slate-600">
-                                            <tr>
-                                                <th className="px-6 py-4 font-semibold">Shop Name</th>
-                                                <th className="px-6 py-4 font-semibold">Total Sales</th>
-                                                <th className="px-6 py-4 font-semibold">Listings</th>
-                                                <th className="px-6 py-4 font-semibold text-right">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-slate-100">
-                                            {savedShops.map((shop) => (
-                                                <tr
-                                                    key={shop.id}
-                                                    className="hover:bg-teal-50/30 transition-colors cursor-pointer"
-                                                    onClick={() => handleShopClick(shop.shop_name)}
-                                                >
-                                                    <td className="px-6 py-4">
-                                                        <div className="flex items-center gap-3">
-                                                            <div className="h-8 w-8 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-bold text-xs">
-                                                                {shop.shop_name.substring(0, 2).toUpperCase()}
-                                                            </div>
-                                                            <div className="font-medium text-slate-800">{shop.shop_name}</div>
-                                                            {shop.shop_url && (
-                                                                <a
-                                                                    href={shop.shop_url}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    className="text-slate-400 hover:text-teal-600"
-                                                                    onClick={(e) => e.stopPropagation()}
-                                                                >
-                                                                    <ExternalLink className="h-3 w-3" />
-                                                                </a>
-                                                            )}
-                                                        </div>
-                                                    </td>
-                                                    <td className="px-6 py-4 text-slate-600">
-                                                        <div className="flex items-center gap-2">
-                                                            <ShoppingBag className="h-4 w-4 text-slate-400" />
-                                                            {shop.total_sales?.toLocaleString() || '-'}
-                                                        </div>
-                                                    </td>
-                                                    <td className="px-6 py-4 text-slate-600">
-                                                        <div className="flex items-center gap-2">
-                                                            <Tag className="h-4 w-4 text-slate-400" />
-                                                            {shop.listing_count?.toLocaleString() || '-'}
-                                                        </div>
-                                                    </td>
-                                                    <td className="px-6 py-4 text-right">
-                                                        <button
-                                                            onClick={(e) => handleDelete(e, shop.id)}
-                                                            className="p-2 hover:bg-rose-50 hover:text-rose-600 text-slate-400 rounded-full transition-colors"
-                                                            title="Stop tracking"
-                                                        >
-                                                            <Trash2 className="h-5 w-5" />
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </div>
-                )}
 
                 {/* Discover Shops — always visible */}
                 <div className="space-y-4">
@@ -579,7 +527,7 @@ export default function ShopsPage() {
                         </div>
                     </div>
 
-                    <ShopsGrid filter={shopFilter} categoryFilter={categoryFilter} onShopClick={handleShopClick} />
+                    <ShopsGrid filter={shopFilter} categoryFilter={categoryFilter} onShopClick={handleShopClick} savedShops={savedShops} onTrack={handleTrack} />
                 </div>
             </div>
 

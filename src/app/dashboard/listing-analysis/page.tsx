@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useState, Suspense } from 'react'
-import { Search, ShoppingBag, AlertCircle, ImageOff, ArrowLeft, TrendingUp, TrendingDown, Tag, X, Filter, BarChart2, DollarSign, Zap, ExternalLink, Copy, Check, Star } from 'lucide-react'
+import { Search, ShoppingBag, AlertCircle, ImageOff, ArrowLeft, TrendingUp, TrendingDown, Tag, X, Filter, BarChart2, DollarSign, Zap, ExternalLink, Copy, Check, Star, Heart } from 'lucide-react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { DashboardLayout } from '@/components/DashboardLayout'
 import { Button } from '@/components/Button'
 import { cn } from '@/lib/utils'
+import { createClient } from '@/utils/supabase/client'
+import { useToast } from '@/components/Toast'
 import {
     XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart,
 } from "recharts"
@@ -87,7 +89,7 @@ function generateTags(keyword: string, category: string) {
     ].filter((v, i, a) => a.indexOf(v) === i && v.length > 0).slice(0, 8)
 }
 
-function NicheCard({ item, onClick }: { item: NicheData; onClick: () => void }) {
+function NicheCard({ item, onClick, isSaved, onSave }: { item: NicheData; onClick: () => void; isSaved: boolean; onSave: (e: React.MouseEvent) => void }) {
     const [imgError, setImgError] = useState(false)
     const isRising = item.growth > 0
 
@@ -114,6 +116,17 @@ function NicheCard({ item, onClick }: { item: NicheData; onClick: () => void }) 
                 <div className="absolute top-2 right-2 bg-black/50 backdrop-blur-md text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
                     {item.category}
                 </div>
+                <button
+                    onClick={onSave}
+                    className={cn(
+                        "absolute bottom-2 right-2 p-1.5 rounded-full backdrop-blur-md transition-all duration-200",
+                        isSaved
+                            ? "bg-rose-500/90 text-white"
+                            : "bg-black/40 text-white/70 hover:bg-rose-500/90 hover:text-white"
+                    )}
+                >
+                    <Heart className={cn("h-3.5 w-3.5", isSaved && "fill-white")} />
+                </button>
             </div>
 
             <div className="p-4 flex flex-col gap-2 flex-1">
@@ -150,9 +163,67 @@ function ListingAnalysisPageInner(): React.JSX.Element {
     const [isLoading, setIsLoading] = useState(false)
     const [apiError, setApiError] = useState<string | null>(null)
     const [copiedTags, setCopiedTags] = useState(false)
+    const [savedNicheIds, setSavedNicheIds] = useState<Set<string>>(new Set())
+    const [savedNicheDbIds, setSavedNicheDbIds] = useState<Record<string, string>>({})
     const router = useRouter()
     const searchParams = useSearchParams()
     const returnTo = searchParams.get('returnTo')
+    const supabase = createClient()
+    const { success, error } = useToast()
+
+    React.useEffect(() => {
+        const fetchSaved = async () => {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) return
+            const { data } = await supabase
+                .from('saved_listings')
+                .select('id, listing_title')
+                .eq('user_id', user.id)
+            if (data) {
+                const ids = new Set(data.map((d: { listing_title: string }) => d.listing_title))
+                const dbMap: Record<string, string> = {}
+                data.forEach((d: { id: string; listing_title: string }) => { dbMap[d.listing_title] = d.id })
+                setSavedNicheIds(ids)
+                setSavedNicheDbIds(dbMap)
+            }
+        }
+        fetchSaved()
+    }, [])
+
+    const handleSaveNiche = async (e: React.MouseEvent, item: NicheData) => {
+        e.stopPropagation()
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return
+
+        if (savedNicheIds.has(item.niche)) {
+            const dbId = savedNicheDbIds[item.niche]
+            setSavedNicheIds(prev => { const s = new Set(prev); s.delete(item.niche); return s })
+            const { error: err } = await supabase.from('saved_listings').delete().eq('id', dbId)
+            if (err) {
+                setSavedNicheIds(prev => new Set(prev).add(item.niche))
+                error('Failed to remove listing')
+            } else {
+                success('Listing removed', item.niche)
+            }
+        } else {
+            setSavedNicheIds(prev => new Set(prev).add(item.niche))
+            const { data, error: err } = await supabase.from('saved_listings').insert({
+                user_id: user.id,
+                listing_title: item.niche,
+                listing_url: `https://www.etsy.com/search?q=${encodeURIComponent(item.keyword)}`,
+                price: 0,
+                image_url: item.image,
+                total_sales: item.search_volume,
+            }).select('id').single()
+            if (err) {
+                setSavedNicheIds(prev => { const s = new Set(prev); s.delete(item.niche); return s })
+                error('Failed to save listing')
+            } else {
+                success('Listing saved!', item.niche)
+                if (data) setSavedNicheDbIds(prev => ({ ...prev, [item.niche]: data.id }))
+            }
+        }
+    }
 
     const categories = ['All', ...Array.from(new Set(NICHES.map(n => n.category))).sort()]
 
@@ -280,7 +351,7 @@ function ListingAnalysisPageInner(): React.JSX.Element {
                     {currentData.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                             {currentData.map((item) => (
-                                <NicheCard key={item.id} item={item} onClick={() => setSelectedNiche(item)} />
+                                <NicheCard key={item.id} item={item} onClick={() => setSelectedNiche(item)} isSaved={savedNicheIds.has(item.niche)} onSave={(e) => handleSaveNiche(e, item)} />
                             ))}
                         </div>
                     ) : (

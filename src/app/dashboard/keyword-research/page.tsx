@@ -130,6 +130,7 @@ interface KeywordDetailPanelProps {
 
 function KeywordDetailModal({ item, onClose }: KeywordDetailPanelProps) {
     const listings = KEYWORD_LISTINGS[item.keyword] ?? KEYWORD_LISTINGS['default']
+    const router = useRouter()
 
     const competitionColor = (c: string) => {
         if (c === 'Low') return 'text-emerald-700 bg-emerald-100/60 border-emerald-200'
@@ -213,16 +214,24 @@ function KeywordDetailModal({ item, onClose }: KeywordDetailPanelProps) {
 
                         {/* Footer CTA */}
                         <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-                        <p className="text-xs text-slate-400">Data reflects estimated Etsy market trends</p>
-                        <a
-                            href={`https://www.etsy.com/search?q=${encodeURIComponent(item.keyword)}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-1.5 text-xs font-medium text-teal-600 hover:text-teal-700 hover:underline transition-colors"
-                        >
-                            View on Etsy <ExternalLink className="h-3 w-3" />
-                        </a>
-                    </div>
+                            <p className="text-xs text-slate-400">Data reflects estimated Etsy market trends</p>
+                            <div className="flex items-center gap-3">
+                                <a
+                                    href={`https://www.etsy.com/search?q=${encodeURIComponent(item.keyword)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-1.5 text-xs font-medium text-teal-600 hover:text-teal-700 hover:underline transition-colors"
+                                >
+                                    View on Etsy <ExternalLink className="h-3 w-3" />
+                                </a>
+                                <button
+                                    onClick={() => router.push(`/dashboard/keyword-research/${encodeURIComponent(item.keyword)}`)}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold rounded-lg transition-colors shadow-sm"
+                                >
+                                    More Details <TrendingUp className="h-3 w-3" />
+                                </button>
+                            </div>
+                        </div>
                 </div>
             </div>
         </div>
