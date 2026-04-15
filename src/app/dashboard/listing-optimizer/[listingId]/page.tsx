@@ -809,9 +809,9 @@ export default function ListingOptimizerDetailPage() {
                                                     <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11 }} />
                                                     <Tooltip
                                                         contentStyle={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 8, fontSize: 12 }}
-                                                        formatter={(v: number, _: string, entry: { payload: { label: string; active: boolean } }) => [
+                                                        formatter={(v: number, _: string, entry: { payload?: { label: string; active: boolean } }) => [
                                                             `${v} listings`,
-                                                            entry.payload.active ? `${entry.payload.label} ← your price` : entry.payload.label,
+                                                            entry.payload?.active ? `${entry.payload.label} ← your price` : (entry.payload?.label ?? ''),
                                                         ]}
                                                         labelFormatter={() => ''}
                                                     />

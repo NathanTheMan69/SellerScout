@@ -177,7 +177,7 @@ export default function KeywordAnalyzerPage() {
                 listing_url: `https://www.etsy.com/search?q=${encodeURIComponent(item.title)}`,
                 price: item.price,
                 image_url: item.img,
-                total_sales: item.sales,
+                total_sales: item.orders,
             }).select('id').single()
             if (err) { setSavedIds(prev => { const s = new Set(prev); s.delete(item.id); return s }); error('Failed to save listing') }
             else { success('Listing saved!', item.title); if (data) setSavedDbIds(prev => ({ ...prev, [item.id]: data.id })) }
