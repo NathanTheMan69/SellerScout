@@ -571,7 +571,7 @@ export default function TrendsPage() {
                                     ))}
                                 </div>
                             )}
-                        </div>
+                            </div>
                         )}
 
                         {/* Competition dropdown */}
@@ -607,7 +607,7 @@ export default function TrendsPage() {
                                     ))}
                                 </div>
                             )}
-                        </div>
+                            </div>
 
                         {/* Date range — pushed to far right */}
                         <div className="ml-auto flex items-center gap-2">
@@ -628,9 +628,9 @@ export default function TrendsPage() {
                                     {r}
                                 </button>
                             ))}
-                        </div>
-                        </div>
-                    </div>
+                            </div>
+                                </div>
+                            </div>
 
                     {/* Products view */}
                     {section1View === 'products' && (() => {
@@ -697,7 +697,7 @@ export default function TrendsPage() {
                                 </button>
                             </div>
                         )}
-                        </div>
+                </div>
                         )
                     })()}
 
@@ -714,7 +714,7 @@ export default function TrendsPage() {
                         const totalCatPages = Math.ceil(filteredCats.length / SECTION1_PER_PAGE)
                         const pagedCats = filteredCats.slice((categoryPage - 1) * SECTION1_PER_PAGE, categoryPage * SECTION1_PER_PAGE)
                         return (
-                        <div className="space-y-4">
+                <div className="space-y-4">
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                             {pagedCats.map(cat => {
                                 const isRising = cat.avgGrowth > 0

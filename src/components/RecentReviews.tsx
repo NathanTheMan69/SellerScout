@@ -13,11 +13,11 @@ const reviews = [
 
 export function RecentReviews() {
     return (
-        <Card className="border-white/50 bg-white/70 backdrop-blur-md shadow-lg shadow-teal-900/5 h-full">
-            <CardHeader>
-                <CardTitle>Recent Reviews</CardTitle>
+        <Card className="border-white/50 bg-white/70 backdrop-blur-md shadow-lg shadow-teal-900/5 h-full overflow-hidden">
+            <CardHeader className="bg-teal-500/80 px-5 py-3.5">
+                <CardTitle className="text-base font-semibold text-white tracking-wide">Recent Reviews</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-5">
                 <div className="space-y-6 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                     {reviews.map((review) => (
                         <div key={review.id} className="flex gap-4">

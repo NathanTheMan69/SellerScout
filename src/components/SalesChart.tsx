@@ -78,9 +78,9 @@ export function SalesChart() {
     }, [timeRange]);
 
     return (
-        <Card className="col-span-1 md:col-span-2 lg:col-span-3">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-7">
-                <CardTitle className="text-base font-normal">Sales Trend</CardTitle>
+        <Card className="col-span-1 md:col-span-2 lg:col-span-3 overflow-hidden flex flex-col">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 px-5 pt-5">
+                <CardTitle className="text-sm font-semibold text-slate-700 tracking-wide">Sales Trend</CardTitle>
                 <div className="flex items-center gap-1 bg-slate-100/50 p-1 rounded-lg">
                     {["7D", "30D", "6M", "1Y", "All"].map((range) => (
                         <button
@@ -98,15 +98,15 @@ export function SalesChart() {
                     ))}
                 </div>
             </CardHeader>
-            <CardContent className="pl-2">
-                <div className="h-[300px] w-full">
+            <div className="flex-1 pr-3 pb-4">
+                <div className="h-full w-full">
                     <ResponsiveContainer width="100%" height="100%">
                         <AreaChart
                             data={filteredData}
                             margin={{
                                 top: 5,
-                                right: 10,
-                                left: 10,
+                                right: 5,
+                                left: -10,
                                 bottom: 0,
                             }}
                         >
@@ -119,17 +119,19 @@ export function SalesChart() {
                             <XAxis
                                 dataKey="name"
                                 stroke="#334155"
-                                fontSize={12}
+                                fontSize={11}
                                 tickLine={false}
                                 axisLine={false}
                                 minTickGap={30}
+                                height={20}
                             />
                             <YAxis
                                 stroke="#334155"
-                                fontSize={12}
+                                fontSize={11}
                                 tickLine={false}
                                 axisLine={false}
-                                tickFormatter={(value) => `$${value}`}
+                                width={55}
+                                tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
                             />
                             <Tooltip
                                 contentStyle={{
@@ -152,7 +154,7 @@ export function SalesChart() {
                         </AreaChart>
                     </ResponsiveContainer>
                 </div>
-            </CardContent>
+            </div>
         </Card>
     )
 }

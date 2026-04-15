@@ -23,13 +23,15 @@ export function StatsCard({
 }: StatsCardProps) {
     return (
         <Card className={cn("overflow-hidden", className)}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 bg-teal-500/80 px-5 py-1.5">
+                <CardTitle className="text-base font-semibold text-white tracking-wide">
                     {title}
                 </CardTitle>
-                <Icon className="h-4 w-4 text-muted-foreground" />
+                <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center flex-shrink-0">
+                    <Icon className="h-6 w-6 text-teal-500" />
+                </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-4">
                 <div
                     className={cn(
                         "text-2xl font-bold",

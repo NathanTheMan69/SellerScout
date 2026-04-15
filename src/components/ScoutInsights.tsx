@@ -4,18 +4,14 @@ import { Button } from "@/components/Button"
 
 export function ScoutInsights() {
     return (
-        <Card className="border-teal-200 bg-gradient-to-br from-teal-50/80 to-white/80 backdrop-blur-md shadow-lg shadow-teal-900/10 h-full relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-4 opacity-10">
-                <Sparkles className="h-32 w-32 text-teal-600" />
-            </div>
-
-            <CardHeader>
-                <div className="flex items-center gap-2 text-teal-700">
-                    <Sparkles className="h-5 w-5" />
-                    <CardTitle className="text-teal-800">Scout AI Insights</CardTitle>
+        <Card className="border-teal-200 bg-white/70 backdrop-blur-md shadow-lg shadow-teal-900/10 h-full relative overflow-hidden">
+            <CardHeader className="bg-teal-500/80 px-5 py-3.5">
+                <div className="flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 text-white/80" />
+                    <CardTitle className="text-base font-semibold text-white tracking-wide">Scout AI Insights</CardTitle>
                 </div>
             </CardHeader>
-            <CardContent className="relative z-10">
+            <CardContent className="relative z-10 pt-5">
                 <div className="space-y-4">
                     <p className="text-slate-700 leading-relaxed">
                         Based on your recent sales and the rising trend in <span className="font-semibold text-teal-700">"Minimalist Decor"</span>,
