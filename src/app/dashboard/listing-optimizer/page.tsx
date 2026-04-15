@@ -330,9 +330,15 @@ function ListingDetailModal({ listing, onClose }: { listing: MockListing; onClos
                                     href={`https://www.etsy.com/search?q=${encodeURIComponent(listing.title)}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-1.5 text-xs font-semibold bg-white/20 hover:bg-white/30 border border-white/30 px-3 py-1.5 rounded-lg transition-colors"
+                                    className="flex items-center gap-1.5 text-sm font-semibold bg-white/15 hover:bg-white/25 border border-white/30 px-4 py-2 rounded-lg transition-colors"
                                 >
-                                    <ExternalLink className="h-3.5 w-3.5" /> View on Etsy
+                                    <ExternalLink className="h-4 w-4" /> View on Etsy
+                                </a>
+                                <a
+                                    href={`/dashboard/listing-optimizer/${listing.listing_id}`}
+                                    className="flex items-center gap-1.5 text-sm font-semibold bg-white text-teal-700 hover:bg-white/90 px-4 py-2 rounded-lg transition-colors shadow-sm"
+                                >
+                                    <TrendingUp className="h-4 w-4" /> Full Analysis
                                 </a>
                                 <button onClick={onClose} className="p-1.5 hover:bg-white/20 rounded-full transition-colors text-white/70 hover:text-white">
                                     <X className="h-4 w-4" />
