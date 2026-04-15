@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search, Heart, TrendingUp, TrendingDown, Minus, AlertCircle, X, ShoppingBag, Star, ExternalLink, ImageOff } from 'lucide-react'
+import { Search, Heart, TrendingUp, TrendingDown, Minus, AlertCircle, X, ShoppingBag, Star, ExternalLink, ImageOff, BarChart2, Tag, DollarSign, Copy, Check } from 'lucide-react'
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/Card'
 import { Button } from '@/components/Button'
 import { cn } from '@/lib/utils'
@@ -13,36 +14,36 @@ import { useToast } from '@/components/Toast'
 
 // Mock keyword data — 30 items for 6 rows of 5
 const MOCK_DATA = [
-    { id:  1, keyword: 'Silver Ring',           volume: 12500, competition: 'High',      ctr: '2.4%', trend: 'up'     },
-    { id:  2, keyword: 'Leather Wallet',         volume:  8200, competition: 'Medium',    ctr: '3.1%', trend: 'stable' },
-    { id:  3, keyword: 'Personalized Mug',       volume: 22000, competition: 'Very High', ctr: '1.8%', trend: 'up'     },
-    { id:  4, keyword: 'Digital Planner',        volume: 15600, competition: 'High',      ctr: '4.2%', trend: 'up'     },
-    { id:  5, keyword: 'Handmade Soap',          volume:  5400, competition: 'Low',       ctr: '3.8%', trend: 'down'   },
-    { id:  6, keyword: 'Gold Necklace',          volume:  9200, competition: 'High',      ctr: '2.1%', trend: 'up'     },
-    { id:  7, keyword: 'Vintage Jacket',         volume:  6100, competition: 'Medium',    ctr: '3.5%', trend: 'stable' },
-    { id:  8, keyword: 'Custom Pet Tag',         volume:  8800, competition: 'Low',       ctr: '4.9%', trend: 'up'     },
-    { id:  9, keyword: 'Enamel Pin',             volume:  7300, competition: 'Low',       ctr: '5.1%', trend: 'up'     },
-    { id: 10, keyword: 'Gift for Him',           volume: 45000, competition: 'Very High', ctr: '1.2%', trend: 'up'     },
-    { id: 11, keyword: 'Minimalist Jewelry',     volume: 38000, competition: 'High',      ctr: '2.1%', trend: 'stable' },
-    { id: 12, keyword: 'Custom Portrait',        volume: 32000, competition: 'High',      ctr: '2.8%', trend: 'up'     },
-    { id: 13, keyword: 'Wedding Decor',          volume: 29000, competition: 'Very High', ctr: '1.5%', trend: 'up'     },
-    { id: 14, keyword: 'Initial Necklace',       volume: 25000, competition: 'High',      ctr: '1.9%', trend: 'stable' },
-    { id: 15, keyword: 'Bridesmaid Gift',        volume: 22000, competition: 'High',      ctr: '2.4%', trend: 'up'     },
-    { id: 16, keyword: 'Gifts for Mom',          volume: 21000, competition: 'Very High', ctr: '1.1%', trend: 'down'   },
-    { id: 17, keyword: 'Scented Candle',         volume: 18400, competition: 'High',      ctr: '2.6%', trend: 'up'     },
-    { id: 18, keyword: 'Macrame Wall Art',       volume:  9700, competition: 'Medium',    ctr: '3.3%', trend: 'up'     },
-    { id: 19, keyword: 'Boho Earrings',          volume: 11200, competition: 'Medium',    ctr: '3.7%', trend: 'up'     },
-    { id: 20, keyword: 'Handcrafted Boho Ring',  volume:  4200, competition: 'Medium',    ctr: '4.5%', trend: 'up'     },
-    { id: 21, keyword: 'Sterling Stackable',     volume:  3100, competition: 'Low',       ctr: '5.2%', trend: 'up'     },
-    { id: 22, keyword: 'Vintage Gemstone',       volume:  2800, competition: 'Medium',    ctr: '3.8%', trend: 'stable' },
-    { id: 23, keyword: 'Tarnish Free Band',      volume:  5600, competition: 'Medium',    ctr: '4.1%', trend: 'up'     },
-    { id: 24, keyword: 'Gold Plated Ring',       volume:  6200, competition: 'High',      ctr: '3.1%', trend: 'up'     },
-    { id: 25, keyword: 'Minimalist Band',        volume:  4800, competition: 'Medium',    ctr: '4.4%', trend: 'stable' },
-    { id: 26, keyword: 'Pearl Promise Ring',     volume:  3500, competition: 'Low',       ctr: '5.6%', trend: 'up'     },
-    { id: 27, keyword: 'Custom Stamp',           volume:  6900, competition: 'Low',       ctr: '4.8%', trend: 'up'     },
-    { id: 28, keyword: 'Pressed Flower Art',     volume:  5100, competition: 'Low',       ctr: '4.2%', trend: 'up'     },
-    { id: 29, keyword: 'Ceramic Planter',        volume:  8400, competition: 'Medium',    ctr: '3.6%', trend: 'stable' },
-    { id: 30, keyword: 'Personalized Bookmark',  volume:  4600, competition: 'Low',       ctr: '5.0%', trend: 'up'     },
+    { id:  1, keyword: 'Silver Ring',           volume: 12500, competition: 'High',      ctr: '2.4%', trend: 'up',     category: 'Jewelry'        },
+    { id:  2, keyword: 'Leather Wallet',         volume:  8200, competition: 'Medium',    ctr: '3.1%', trend: 'stable', category: 'Accessories'    },
+    { id:  3, keyword: 'Personalized Mug',       volume: 22000, competition: 'Very High', ctr: '1.8%', trend: 'up',     category: 'Home & Living'  },
+    { id:  4, keyword: 'Digital Planner',        volume: 15600, competition: 'High',      ctr: '4.2%', trend: 'up',     category: 'Digital'        },
+    { id:  5, keyword: 'Handmade Soap',          volume:  5400, competition: 'Low',       ctr: '3.8%', trend: 'down',   category: 'Bath & Beauty'  },
+    { id:  6, keyword: 'Gold Necklace',          volume:  9200, competition: 'High',      ctr: '2.1%', trend: 'up',     category: 'Jewelry'        },
+    { id:  7, keyword: 'Vintage Jacket',         volume:  6100, competition: 'Medium',    ctr: '3.5%', trend: 'stable', category: 'Clothing'       },
+    { id:  8, keyword: 'Custom Pet Tag',         volume:  8800, competition: 'Low',       ctr: '4.9%', trend: 'up',     category: 'Pet Supplies'   },
+    { id:  9, keyword: 'Enamel Pin',             volume:  7300, competition: 'Low',       ctr: '5.1%', trend: 'up',     category: 'Accessories'    },
+    { id: 10, keyword: 'Gift for Him',           volume: 45000, competition: 'Very High', ctr: '1.2%', trend: 'up',     category: 'Gifts'          },
+    { id: 11, keyword: 'Minimalist Jewelry',     volume: 38000, competition: 'High',      ctr: '2.1%', trend: 'stable', category: 'Jewelry'        },
+    { id: 12, keyword: 'Custom Portrait',        volume: 32000, competition: 'High',      ctr: '2.8%', trend: 'up',     category: 'Art'            },
+    { id: 13, keyword: 'Wedding Decor',          volume: 29000, competition: 'Very High', ctr: '1.5%', trend: 'up',     category: 'Weddings'       },
+    { id: 14, keyword: 'Initial Necklace',       volume: 25000, competition: 'High',      ctr: '1.9%', trend: 'stable', category: 'Jewelry'        },
+    { id: 15, keyword: 'Bridesmaid Gift',        volume: 22000, competition: 'High',      ctr: '2.4%', trend: 'up',     category: 'Gifts'          },
+    { id: 16, keyword: 'Gifts for Mom',          volume: 21000, competition: 'Very High', ctr: '1.1%', trend: 'down',   category: 'Gifts'          },
+    { id: 17, keyword: 'Scented Candle',         volume: 18400, competition: 'High',      ctr: '2.6%', trend: 'up',     category: 'Home & Living'  },
+    { id: 18, keyword: 'Macrame Wall Art',       volume:  9700, competition: 'Medium',    ctr: '3.3%', trend: 'up',     category: 'Home Decor'     },
+    { id: 19, keyword: 'Boho Earrings',          volume: 11200, competition: 'Medium',    ctr: '3.7%', trend: 'up',     category: 'Jewelry'        },
+    { id: 20, keyword: 'Handcrafted Boho Ring',  volume:  4200, competition: 'Medium',    ctr: '4.5%', trend: 'up',     category: 'Jewelry'        },
+    { id: 21, keyword: 'Sterling Stackable',     volume:  3100, competition: 'Low',       ctr: '5.2%', trend: 'up',     category: 'Jewelry'        },
+    { id: 22, keyword: 'Vintage Gemstone',       volume:  2800, competition: 'Medium',    ctr: '3.8%', trend: 'stable', category: 'Jewelry'        },
+    { id: 23, keyword: 'Tarnish Free Band',      volume:  5600, competition: 'Medium',    ctr: '4.1%', trend: 'up',     category: 'Jewelry'        },
+    { id: 24, keyword: 'Gold Plated Ring',       volume:  6200, competition: 'High',      ctr: '3.1%', trend: 'up',     category: 'Jewelry'        },
+    { id: 25, keyword: 'Minimalist Band',        volume:  4800, competition: 'Medium',    ctr: '4.4%', trend: 'stable', category: 'Jewelry'        },
+    { id: 26, keyword: 'Pearl Promise Ring',     volume:  3500, competition: 'Low',       ctr: '5.6%', trend: 'up',     category: 'Jewelry'        },
+    { id: 27, keyword: 'Custom Stamp',           volume:  6900, competition: 'Low',       ctr: '4.8%', trend: 'up',     category: 'Craft Supplies' },
+    { id: 28, keyword: 'Pressed Flower Art',     volume:  5100, competition: 'Low',       ctr: '4.2%', trend: 'up',     category: 'Art'            },
+    { id: 29, keyword: 'Ceramic Planter',        volume:  8400, competition: 'Medium',    ctr: '3.6%', trend: 'stable', category: 'Home & Garden'  },
+    { id: 30, keyword: 'Personalized Bookmark',  volume:  4600, competition: 'Low',       ctr: '5.0%', trend: 'up',     category: 'Books'          },
 ]
 
 // Curated top listing examples per keyword (used when Etsy API not available)
@@ -123,116 +124,250 @@ function TopListingCard({ listing }: { listing: { title: string; shop: string; p
     )
 }
 
+function calcKwScore(item: { volume: number; competition: string; trend: string }) {
+    const growthPct = item.trend === 'up' ? 42 : item.trend === 'down' ? -18 : 5
+    return Math.min(99, Math.max(20, Math.round(
+        (growthPct > 0 ? Math.min(growthPct, 150) / 2.5 : 0) +
+        (item.competition === 'Low' ? 35 : item.competition === 'Medium' ? 25 : item.competition === 'Very High' ? 5 : 12) +
+        Math.min(item.volume / 1500, 22)
+    )))
+}
+
 interface KeywordDetailPanelProps {
     item: typeof MOCK_DATA[0]
     onClose: () => void
 }
 
 function KeywordDetailModal({ item, onClose }: KeywordDetailPanelProps) {
-    const listings = KEYWORD_LISTINGS[item.keyword] ?? KEYWORD_LISTINGS['default']
     const router = useRouter()
+    const [volumeRange, setVolumeRange] = useState<'1M'|'6M'|'1Y'|'ALL'>('1Y')
+    const [copiedTag, setCopiedTag] = useState<string|null>(null)
+    const [copiedAll, setCopiedAll] = useState(false)
 
-    const competitionColor = (c: string) => {
-        if (c === 'Low') return 'text-emerald-700 bg-emerald-100/60 border-emerald-200'
-        if (c === 'Medium') return 'text-amber-700 bg-amber-100/60 border-amber-200'
-        return 'text-rose-700 bg-rose-100/60 border-rose-200'
+    const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+    const growthPct = item.trend === 'up' ? 42 : item.trend === 'down' ? -18 : 5
+    const baseRev = item.volume * (item.competition === 'Low' ? 0.048 : item.competition === 'Medium' ? 0.032 : item.competition === 'Very High' ? 0.012 : 0.022) * 28
+
+    const monthlyVolData = MONTHS.map((month, i) => {
+        const progress = i / 11
+        const trend = item.volume * (1 - growthPct/200) + item.volume * (growthPct/200) * 2 * progress
+        return { month, searches: Math.max(50, Math.round(trend + trend * 0.07 * Math.sin(i * 1.3))) }
+    })
+    const prevYearVolData = monthlyVolData.map(d => ({ month: d.month + "'23", searches: Math.round(d.searches * 0.72) }))
+    const thisYearVolData = monthlyVolData.map(d => ({ ...d, month: d.month + "'24" }))
+    const lastVol = monthlyVolData[11].searches
+    const oneMonthVolData = ['Wk 1','Wk 2','Wk 3','Wk 4'].map((wk, i) => ({
+        month: wk, searches: Math.round(lastVol / 4 * (0.88 + Math.sin(i * 1.4) * 0.12)),
+    }))
+    const chartData = volumeRange === '1M' ? oneMonthVolData : volumeRange === '6M' ? monthlyVolData.slice(-6) : volumeRange === 'ALL' ? [...prevYearVolData, ...thisYearVolData] : monthlyVolData
+
+    const kwScore = Math.min(99, Math.max(20, Math.round(
+        (growthPct > 0 ? Math.min(growthPct, 150) / 2.5 : 0) +
+        (item.competition === 'Low' ? 35 : item.competition === 'Medium' ? 25 : item.competition === 'Very High' ? 5 : 12) +
+        Math.min(item.volume / 1500, 22)
+    )))
+
+    const compColor = (c: string) => {
+        if (c === 'Low')       return 'text-emerald-700 bg-emerald-50 border-emerald-200'
+        if (c === 'Medium')    return 'text-amber-700   bg-amber-50   border-amber-200'
+        if (c === 'High')      return 'text-rose-700    bg-rose-50    border-rose-200'
+        if (c === 'Very High') return 'text-purple-700  bg-purple-50  border-purple-200'
+        return 'text-slate-600 bg-slate-50 border-slate-200'
     }
 
+    const relatedTags = [item.keyword.toLowerCase(), ...item.keyword.toLowerCase().split(' '), 'handmade', 'gift', 'etsy', 'custom']
+        .filter((v, i, a) => a.indexOf(v) === i && v.length > 2).slice(0, 8)
+
+    const COMPS = ['Low','Medium','High','Very High'] as const
+    const tagRows = relatedTags.map((tag, i) => {
+        const seed = tag.split('').reduce((a, c) => a + c.charCodeAt(0), 0)
+        const vol = Math.round(item.volume * (0.06 + (seed % 38) / 100))
+        const comp = COMPS[(seed + i) % 4]
+        const score = Math.min(99, Math.max(18, Math.round(
+            (growthPct > 0 ? Math.min(growthPct, 150) / 3 : 0) +
+            (['Low','Medium'].includes(comp) ? 28 : 8) +
+            Math.min(vol / 1200, 18) + (seed % 18)
+        )))
+        return { tag, vol, comp, score }
+    })
+
+    const monthlyRev = Math.round(baseRev)
+
     return (
-        <div
-            className="modal-backdrop fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm"
-            onClick={onClose}
-        >
-            <div
-                className="modal-card w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/80 bg-slate-50 shadow-2xl shadow-slate-900/20"
-                onClick={(e) => e.stopPropagation()}
-            >
-                {/* Modal Header */}
-                    <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200/60 bg-slate-50 sticky top-0 rounded-t-2xl">
-                    <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-500 flex items-center justify-center">
-                            <Search className="h-4 w-4 text-white" />
+        <div className="modal-backdrop fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm" onClick={onClose}>
+            <div className="w-full max-w-3xl rounded-2xl bg-white shadow-2xl shadow-slate-900/25 border border-slate-200/60 overflow-hidden" onClick={e => e.stopPropagation()}>
+            <div className="modal-card max-h-[92vh] overflow-y-auto">
+
+                {/* ── Teal Banner ── */}
+                <div className="relative rounded-t-2xl bg-teal-500/80 px-6 pt-3 pb-4 text-white overflow-hidden">
+                    <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-center gap-4">
+                            <div className="h-14 w-14 rounded-xl bg-white/20 border-2 border-white/30 flex-shrink-0 shadow-md flex items-center justify-center">
+                                <Search className="h-6 w-6 text-white/80" />
+                            </div>
+                            <div>
+                                <h2 className="text-2xl font-black tracking-normal leading-tight capitalize">{item.keyword}</h2>
+                                <div className="flex items-center gap-2 mt-1.5">
+                                    <span className="text-xs font-semibold bg-black/25 text-white/90 px-2.5 py-0.5 rounded-full">
+                                        {item.category}
+                                    </span>
+                                    <span className="text-sm text-white/80 font-semibold">{item.volume.toLocaleString()} searches/mo</span>
+                                </div>
+                                <div className="flex items-center gap-2.5 mt-2.5">
+                                    <span className="text-white/80 text-xs font-semibold uppercase tracking-wider">Keyword Score</span>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-28 h-2 bg-white/20 rounded-full overflow-hidden">
+                                            <div className="h-full bg-white rounded-full transition-all duration-700" style={{ width: `${kwScore}%` }} />
+                                        </div>
+                                        <span className="font-black text-white text-lg leading-none">{kwScore}</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <h3 className="font-bold text-slate-800 text-base">{item.keyword}</h3>
-                            <p className="text-xs text-slate-500">Keyword breakdown & top performing listings</p>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                            <a href={`https://www.etsy.com/search?q=${encodeURIComponent(item.keyword)}`} target="_blank" rel="noopener noreferrer"
+                                className="flex items-center gap-1.5 text-sm font-semibold bg-white/20 hover:bg-white/30 border border-white/30 px-4 py-2 rounded-lg transition-colors">
+                                <ExternalLink className="h-4 w-4" /> Search Etsy
+                            </a>
+                            <button onClick={() => router.push(`/dashboard/keyword-research/${encodeURIComponent(item.keyword)}`)}
+                                className="flex items-center gap-1.5 text-sm font-semibold bg-white text-teal-700 hover:bg-white/90 px-4 py-2 rounded-lg transition-colors shadow-sm">
+                                <TrendingUp className="h-4 w-4" /> Full Analysis
+                            </button>
+                            <button onClick={onClose} className="p-1.5 hover:bg-white/20 rounded-full transition-colors text-white/70 hover:text-white">
+                                <X className="h-4 w-4" />
+                            </button>
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-1.5 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600">
-                        <X className="h-4 w-4" />
-                    </button>
                 </div>
 
-                <div className="p-6 space-y-6">
+                {/* ── Body ── */}
+                <div className="p-5 space-y-5 bg-slate-50 rounded-b-2xl">
+
                     {/* Stat Cards */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <div className="bg-teal-100/35 rounded-xl border border-teal-200 p-4">
-                            <p className="text-xs font-semibold text-teal-600 uppercase tracking-wider mb-1">Search Volume</p>
-                            <p className="text-2xl font-bold text-slate-800">{item.volume.toLocaleString()}</p>
-                            <p className="text-xs text-teal-500 mt-0.5">monthly searches</p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 items-stretch">
+                        <div className="rounded-xl border border-teal-200 bg-white p-4">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-teal-600">Revenue</span>
+                                <DollarSign className="h-4 w-4 text-teal-400 opacity-70" />
+                            </div>
+                            <p className="text-2xl font-black text-teal-900">
+                                {monthlyRev >= 1000000 ? `$${(monthlyRev/1000000).toFixed(1)}M` : monthlyRev >= 1000 ? `$${(monthlyRev/1000).toFixed(0)}k` : `$${monthlyRev}`}
+                            </p>
+                            <p className="text-xs text-teal-500 mt-0.5">est. monthly</p>
                         </div>
-                        <div className={cn("rounded-xl border p-4", competitionColor(item.competition))}>
-                            <p className="text-xs font-semibold uppercase tracking-wider mb-1">Competition</p>
-                            <p className="text-2xl font-bold">{item.competition}</p>
+                        <div className={cn("rounded-xl border p-4 bg-white", growthPct > 0 ? "border-emerald-200" : growthPct < 0 ? "border-rose-200" : "border-slate-200")}>
+                            <div className="flex items-center justify-between mb-2">
+                                <span className={cn("text-[10px] font-bold uppercase tracking-wider", growthPct > 0 ? "text-emerald-600" : growthPct < 0 ? "text-rose-600" : "text-slate-500")}>Growth</span>
+                                {growthPct > 0 ? <TrendingUp className="h-4 w-4 text-emerald-400 opacity-70" /> : growthPct < 0 ? <TrendingDown className="h-4 w-4 text-rose-400 opacity-70" /> : <Minus className="h-4 w-4 text-slate-400 opacity-70" />}
+                            </div>
+                            <p className={cn("text-2xl font-black", growthPct > 0 ? "text-emerald-800" : growthPct < 0 ? "text-rose-800" : "text-slate-700")}>
+                                {growthPct > 0 ? `+${growthPct}%` : `${growthPct}%`}
+                            </p>
+                            <p className={cn("text-xs mt-0.5", growthPct > 0 ? "text-emerald-500" : growthPct < 0 ? "text-rose-400" : "text-slate-400")}>over 12 months</p>
+                        </div>
+                        <div className={cn("rounded-xl border p-4 bg-white", compColor(item.competition).replace(/bg-\S+/g, ''))}>
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-[10px] font-bold uppercase tracking-wider">Competition</span>
+                                <Tag className="h-4 w-4 opacity-40" />
+                            </div>
+                            <p className="text-xl font-black whitespace-nowrap">{item.competition}</p>
                             <p className="text-xs mt-0.5 opacity-60">seller density</p>
                         </div>
-                        <div className="bg-blue-100/60 rounded-xl border border-blue-200 p-4">
-                            <p className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-1">Click-Through Rate</p>
-                            <p className="text-2xl font-bold text-slate-800">{item.ctr}</p>
-                            <p className="text-xs text-blue-500 mt-0.5">avg across listings</p>
-                        </div>
-                        <div className={cn("rounded-xl border p-4",
-                            item.trend === 'up'     ? 'bg-emerald-100/35 border-emerald-200' :
-                            item.trend === 'down'   ? 'bg-rose-100/60 border-rose-200' :
-                                                      'bg-slate-100/80 border-slate-300'
-                        )}>
-                            <p className={cn("text-xs font-semibold uppercase tracking-wider mb-1", item.trend === 'up' ? 'text-emerald-600' : item.trend === 'down' ? 'text-rose-600' : 'text-slate-500')}>7d Trend</p>
-                            <div className="flex items-center gap-2">
-                                {item.trend === 'up'     && <TrendingUp className="h-6 w-6 text-emerald-500" />}
-                                {item.trend === 'down'   && <TrendingDown className="h-6 w-6 text-rose-500" />}
-                                {item.trend === 'stable' && <Minus className="h-6 w-6 text-slate-400" />}
-                                <p className={cn("text-2xl font-bold", item.trend === 'up' ? 'text-emerald-700' : item.trend === 'down' ? 'text-rose-700' : 'text-slate-700')}>
-                                    {item.trend === 'up' ? 'Rising' : item.trend === 'down' ? 'Falling' : 'Stable'}
-                                </p>
+                        <div className="rounded-xl border border-violet-200 bg-white p-4">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-violet-600">Conversion Rate</span>
+                                <TrendingUp className="h-4 w-4 text-violet-400 opacity-70" />
                             </div>
+                            <p className="text-2xl font-black text-violet-900">{item.ctr}</p>
+                            <p className="text-xs text-violet-500 mt-0.5 opacity-60">avg. estimate</p>
                         </div>
                     </div>
 
-                    {/* Top Listings Grid */}
-                    <div>
-                        <div className="flex items-center gap-2 mb-4">
-                            <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
-                            <h4 className="font-bold text-slate-800">Top Performing Listings</h4>
-                            <span className="text-xs bg-teal-50 text-teal-600 border border-teal-100 px-2 py-0.5 rounded-full font-medium">by favorites</span>
+                    {/* Search Volume Chart */}
+                    <div className="rounded-xl border border-slate-200 bg-white p-4">
+                        <div className="flex items-center justify-between mb-4">
+                            <p className="text-sm font-bold text-slate-700">Search Volume</p>
+                            <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-0.5">
+                                {(['1M','6M','1Y','ALL'] as const).map(r => (
+                                    <button key={r} onClick={() => setVolumeRange(r)}
+                                        className={cn("px-2.5 py-1 rounded-md text-xs font-semibold transition-all",
+                                            volumeRange === r ? "bg-white text-teal-700 shadow-sm" : "text-slate-500 hover:text-slate-700"
+                                        )}>
+                                        {r === 'ALL' ? 'All' : r}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-                            {listings.map((listing, i) => (
-                                <TopListingCard key={i} listing={listing} />
-                            ))}
+                        <div className="h-[190px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
+                                    <defs>
+                                        <linearGradient id="kwVolGradient" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#0d9488" stopOpacity={0.18} />
+                                            <stop offset="95%" stopColor="#0d9488" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                    <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11 }} dy={8} />
+                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11 }} tickFormatter={v => v >= 1000 ? `${(v/1000).toFixed(0)}k` : `${v}`} width={36} />
+                                    <Tooltip contentStyle={{ backgroundColor: '#fff', borderRadius: '10px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgb(0 0 0 / 0.08)' }} formatter={(v: number) => [`${v.toLocaleString()}`, 'Searches']} itemStyle={{ color: '#0f766e', fontWeight: 600 }} labelStyle={{ color: '#475569', fontWeight: 500 }} />
+                                    <Area type="monotone" dataKey="searches" stroke="#0d9488" strokeWidth={2.5} fillOpacity={1} fill="url(#kwVolGradient)" dot={false} activeDot={{ r: 5, fill: '#0d9488', stroke: '#fff', strokeWidth: 2 }} />
+                                </AreaChart>
+                            </ResponsiveContainer>
                         </div>
                     </div>
 
-                        {/* Footer CTA */}
-                        <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-                            <p className="text-xs text-slate-400">Data reflects estimated Etsy market trends</p>
-                            <div className="flex items-center gap-3">
-                                <a
-                                    href={`https://www.etsy.com/search?q=${encodeURIComponent(item.keyword)}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-center gap-1.5 text-xs font-medium text-teal-600 hover:text-teal-700 hover:underline transition-colors"
-                                >
-                                    View on Etsy <ExternalLink className="h-3 w-3" />
-                                </a>
-                                <button
-                                    onClick={() => router.push(`/dashboard/keyword-research/${encodeURIComponent(item.keyword)}`)}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold rounded-lg transition-colors shadow-sm"
-                                >
-                                    More Details <TrendingUp className="h-3 w-3" />
-                                </button>
-                            </div>
-                        </div>
+                    {/* Related Keywords Table */}
+                    <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+                        <table className="w-full text-left text-sm">
+                            <thead>
+                                <tr className="bg-teal-500/80 text-white text-xs font-bold uppercase tracking-wider">
+                                    <th className="px-4 py-3 w-[40%]">
+                                        <div className="flex items-center gap-2">
+                                            <Tag className="h-3.5 w-3.5 opacity-80" /> Related Keywords
+                                            <button onClick={() => { navigator.clipboard.writeText(relatedTags.join(', ')); setCopiedAll(true); setTimeout(() => setCopiedAll(false), 1500) }}
+                                                className="flex items-center gap-1 text-[10px] font-semibold bg-white/20 hover:bg-white/30 px-2 py-0.5 rounded-md transition-colors normal-case tracking-normal">
+                                                {copiedAll ? <><Check className="h-3 w-3" /> Copied</> : <><Copy className="h-3 w-3" /> Copy All</>}
+                                            </button>
+                                        </div>
+                                    </th>
+                                    <th className="px-4 py-3 w-[20%]">Volume</th>
+                                    <th className="px-4 py-3 w-[22%]">Competition</th>
+                                    <th className="px-4 py-3 w-[18%] text-right">Keyword Score</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                                {tagRows.map(({ tag, vol, comp, score }) => (
+                                    <tr key={tag} className="group hover:bg-teal-50 hover:outline hover:outline-2 hover:outline-teal-500 hover:-outline-offset-1 hover:shadow-[inset_2px_0_0_#0d9488,inset_-2px_0_0_#0d9488]">
+                                        <td className="px-4 py-3">
+                                            <div className="flex items-center gap-2">
+                                                <button onClick={() => { navigator.clipboard.writeText(tag); setCopiedTag(tag); setTimeout(() => setCopiedTag(null), 1500) }}
+                                                    className="text-slate-300 hover:text-teal-500 transition-colors flex-shrink-0">
+                                                    {copiedTag === tag ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
+                                                </button>
+                                                <span className="font-medium text-slate-700 capitalize">{tag}</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-4 py-3 text-slate-600 font-medium">{vol >= 1000 ? `${(vol/1000).toFixed(0)}k` : vol}</td>
+                                        <td className="px-4 py-3">
+                                            <span className={cn("text-[11px] font-bold px-2.5 py-0.5 rounded-full border", compColor(comp))}>{comp}</span>
+                                        </td>
+                                        <td className="px-4 py-3 text-right">
+                                            <div className="flex items-center justify-end gap-2">
+                                                <div className="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                                    <div className="h-full bg-teal-500 rounded-full" style={{ width: `${score}%` }} />
+                                                </div>
+                                                <span className="font-bold text-slate-700 text-xs w-6 text-right">{score}</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
+            </div>
             </div>
         </div>
     )
@@ -267,9 +402,10 @@ function ViewAllModal({ title, data, onClose, onSave, savedKeywords, onExpand }:
                                     <td className="px-6 py-4 font-medium text-teal-600">{item.volume.toLocaleString()}</td>
                                     <td className="px-6 py-4">
                                         <span className={cn("text-[9px] font-bold px-2 py-0.5 rounded border w-fit",
-                                            item.competition === 'Low' && "bg-emerald-50 text-emerald-700 border-emerald-200",
-                                            item.competition === 'Medium' && "bg-amber-50 text-amber-700 border-amber-200",
-                                            (item.competition === 'High' || item.competition === 'Very High') && "bg-rose-50 text-rose-700 border-rose-200"
+                                            item.competition === 'Low'       && "bg-emerald-50 text-emerald-700 border-emerald-200",
+                                            item.competition === 'Medium'    && "bg-amber-50 text-amber-700 border-amber-200",
+                                            item.competition === 'High'      && "bg-rose-50 text-rose-700 border-rose-200",
+                                            item.competition === 'Very High' && "bg-purple-50 text-purple-700 border-purple-200"
                                         )}>{item.competition}</span>
                                     </td>
                                     <td className="px-6 py-4 font-bold text-slate-700">{item.ctr}</td>
@@ -353,15 +489,22 @@ export default function KeywordResearchPage() {
         setExpandedKeyword(prev => prev === id ? null : id)
     }
 
-    const renderKeywordRow = (item: any, index: number) => (
+    const renderKeywordRow = (item: any, index: number) => {
+        const score = calcKwScore(item)
+        return (
         <tr
             key={item.id}
             onClick={() => toggleExpand(item.id)}
             className="group cursor-pointer transition-all duration-150 hover:bg-teal-50 hover:shadow-[inset_3px_0_0_0_#14b8a6]"
         >
-            {/* Rank */}
-            <td className="w-10 pl-5 pr-2 py-3.5 text-xs font-bold text-slate-300 group-hover:text-teal-500 transition-colors tabular-nums">
-                {String(index + 1).padStart(2, '0')}
+            {/* Heart / Save */}
+            <td className="pl-5 pr-2 py-3.5">
+                <button
+                    onClick={(e) => { e.stopPropagation(); handleSave(item.keyword, item.volume, item.competition) }}
+                    className="p-1 rounded-full border border-transparent hover:border-rose-200 hover:bg-rose-50 transition-colors"
+                >
+                    <Heart className={cn("h-4 w-4 transition-colors", savedKeywords.has(item.keyword) ? "fill-rose-500 text-rose-500" : "text-slate-300 hover:text-rose-400")} />
+                </button>
             </td>
             {/* Keyword */}
             <td className="px-3 py-3.5">
@@ -378,62 +521,66 @@ export default function KeywordResearchPage() {
                 <span className="text-xs text-slate-400 ml-1">/mo</span>
             </td>
             {/* Competition */}
-            <td className="px-5 py-3.5">
+            <td className="px-5 py-3.5 text-center">
                 <span className={cn("inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border",
-                    item.competition === 'Low'    && "bg-emerald-50 text-emerald-700 border-emerald-200",
-                    item.competition === 'Medium' && "bg-amber-50 text-amber-700 border-amber-200",
-                    (item.competition === 'High' || item.competition === 'Very High') && "bg-rose-50 text-rose-700 border-rose-200"
+                    item.competition === 'Low'       && "bg-emerald-50 text-emerald-700 border-emerald-200",
+                    item.competition === 'Medium'    && "bg-amber-50 text-amber-700 border-amber-200",
+                    item.competition === 'High'      && "bg-rose-50 text-rose-700 border-rose-200",
+                    item.competition === 'Very High' && "bg-purple-50 text-purple-700 border-purple-200"
                 )}>
                     <span className={cn("h-1.5 w-1.5 rounded-full",
-                        item.competition === 'Low'    && "bg-emerald-500",
-                        item.competition === 'Medium' && "bg-amber-500",
-                        (item.competition === 'High' || item.competition === 'Very High') && "bg-rose-500"
+                        item.competition === 'Low'       && "bg-emerald-500",
+                        item.competition === 'Medium'    && "bg-amber-500",
+                        item.competition === 'High'      && "bg-rose-500",
+                        item.competition === 'Very High' && "bg-purple-500"
                     )} />
                     {item.competition}
                 </span>
             </td>
-            {/* CTR */}
-            <td className="px-5 py-3.5">
-                <div className="flex items-center gap-2">
-                    <div className="h-1.5 w-16 rounded-full bg-slate-100 overflow-hidden">
-                        <div
-                            className="h-full rounded-full bg-teal-400"
-                            style={{ width: `${Math.min(100, parseFloat(item.ctr) * 16)}%` }}
-                        />
-                    </div>
-                    <span className="font-semibold text-slate-700 tabular-nums text-sm">{item.ctr}</span>
-                </div>
+            {/* Conversion */}
+            <td className="px-5 py-3.5 text-center">
+                <span className="font-semibold text-slate-700 tabular-nums text-sm">{item.ctr}</span>
             </td>
             {/* Trend */}
-            <td className="px-5 py-3.5">
+            <td className="px-5 py-3.5 text-center">
                 {item.trend === 'up'     && <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full"><TrendingUp className="h-3.5 w-3.5" />Rising</span>}
                 {item.trend === 'down'   && <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-700 bg-rose-50 border border-rose-200 px-2.5 py-1 rounded-full"><TrendingDown className="h-3.5 w-3.5" />Falling</span>}
                 {item.trend === 'stable' && <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-full"><Minus className="h-3.5 w-3.5" />Stable</span>}
             </td>
-            {/* Save */}
-            <td className="px-5 py-3.5 text-right">
-                <button
-                    onClick={(e) => { e.stopPropagation(); handleSave(item.keyword, item.volume, item.competition) }}
-                    className="p-1.5 rounded-full border border-transparent hover:border-rose-200 hover:bg-rose-50 transition-colors"
-                >
-                    <Heart className={cn("h-4 w-4 transition-colors", savedKeywords.has(item.keyword) ? "fill-rose-500 text-rose-500" : "text-slate-300 hover:text-rose-400")} />
-                </button>
+            {/* Score */}
+            <td className="pl-14 pr-5 py-3.5">
+                <div className="flex items-center gap-2">
+                    <div className="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div className="h-full bg-teal-500 rounded-full" style={{ width: `${score}%` }} />
+                    </div>
+                    <span className="font-bold text-slate-700 text-sm tabular-nums w-6">{score}</span>
+                </div>
             </td>
         </tr>
-    )
+        )
+    }
 
     const renderKeywordTable = (data: any[]) => (
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm shadow-teal-900/5">
-            <table className="w-full text-sm text-left">
+            <table className="w-full text-sm text-left table-fixed">
+                <colgroup>
+                    <col className="w-[4%]" />
+                    <col className="w-[20%]" />
+                    <col className="w-[13%]" />
+                    <col className="w-[15%]" />
+                    <col className="w-[15%]" />
+                    <col className="w-[15%]" />
+                    <col className="w-[18%]" />
+                </colgroup>
                 <thead>
                     <tr className="border-b border-teal-200/60 bg-teal-500/80">
-                        <th className="w-10 pl-5 pr-2 py-4" />
+                        <th className="pl-5 pr-2 py-4" />
                         <th className="px-3 py-4 text-sm font-medium uppercase tracking-wider text-white text-left">Keyword</th>
                         <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white text-left">Search Vol</th>
-                        <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white text-left">Competition</th>
-                        <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white text-left">CTR</th>
-                        <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white text-left">Trend</th>
-                        <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white text-right">Save</th>
+                        <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white text-center">Competition</th>
+                        <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white text-center">Conversion</th>
+                        <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white text-center">Trend</th>
+                        <th className="pl-14 pr-5 py-4 text-sm font-medium uppercase tracking-wider text-white text-left">Score</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">

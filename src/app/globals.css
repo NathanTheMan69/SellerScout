@@ -132,3 +132,21 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #14b8a6; /* teal-500 */
 }
+
+/* Thin scrollbar for modals */
+.modal-card::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-card::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-card::-webkit-scrollbar-thumb {
+  background: rgba(20, 184, 166, 0.35);
+  border-radius: 999px;
+}
+
+.modal-card::-webkit-scrollbar-thumb:hover {
+  background: #14b8a6;
+}

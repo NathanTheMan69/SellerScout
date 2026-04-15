@@ -270,8 +270,8 @@ export default function KeywordAnalyzerPage() {
 
                 {/* ── Stats Grid ── */}
                 <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
-                    <StatCard label="Search Volume"      value="12,500"   sub="monthly searches"   icon={<BarChart2 className="h-5 w-5" />}    color="bg-teal-50 border-teal-200 text-teal-900" />
-                    <div className="rounded-2xl border bg-emerald-50 border-emerald-200 text-emerald-900 p-5 flex flex-col gap-3">
+                    <StatCard label="Search Volume"      value="12,500"   sub="monthly searches"   icon={<BarChart2 className="h-5 w-5" />}    color="bg-white border-teal-200 text-teal-900" />
+                    <div className="rounded-2xl border bg-white border-emerald-200 text-emerald-900 p-5 flex flex-col gap-3">
                         <div className="flex items-center justify-between">
                             <span className="text-xs font-bold uppercase tracking-wider opacity-70">Growth</span>
                             <div className="opacity-60"><TrendingUp className="h-5 w-5" /></div>
@@ -284,8 +284,8 @@ export default function KeywordAnalyzerPage() {
                             <div className="text-xs mt-0.5 opacity-60 font-medium">over 12 months</div>
                         </div>
                     </div>
-                    <StatCard label="Total Views"        value="84,142"   sub="across all results" icon={<Eye className="h-5 w-5" />}          color="bg-violet-50 border-violet-200 text-violet-900" />
-                    <div className="rounded-2xl border bg-orange-50 border-orange-200 text-orange-900 p-5 flex flex-col gap-3">
+                    <StatCard label="Total Views"        value="84,142"   sub="across all results" icon={<Eye className="h-5 w-5" />}          color="bg-white border-violet-200 text-violet-900" />
+                    <div className="rounded-2xl border bg-white border-orange-200 text-orange-900 p-5 flex flex-col gap-3">
                         <div className="flex items-center justify-between">
                             <span className="text-xs font-bold uppercase tracking-wider opacity-70">Competition</span>
                             <div className="opacity-60"><Store className="h-5 w-5" /></div>
@@ -298,8 +298,8 @@ export default function KeywordAnalyzerPage() {
                             <div className="text-xs mt-0.5 opacity-60 font-medium">seller density</div>
                         </div>
                     </div>
-                    <StatCard label="Total Sales"        value="24,541"   sub="all time"           icon={<ShoppingBag className="h-5 w-5" />}  color="bg-emerald-50 border-emerald-200 text-emerald-900" />
-                    <StatCard label="Total Revenue"      value="$482k"    sub="estimated"          icon={<DollarSign className="h-5 w-5" />}   color="bg-rose-50 border-rose-200 text-rose-900" />
+                    <StatCard label="Total Sales"        value="24,541"   sub="all time"           icon={<ShoppingBag className="h-5 w-5" />}  color="bg-white border-emerald-200 text-emerald-900" />
+                    <StatCard label="Total Revenue"      value="$482k"    sub="estimated"          icon={<DollarSign className="h-5 w-5" />}   color="bg-white border-rose-200 text-rose-900" />
                 </div>
 
                 {/* ── Charts Row ── */}

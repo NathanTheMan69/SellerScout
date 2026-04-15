@@ -126,14 +126,16 @@ export default function SavedKeywordsPage() {
                                             <td className="px-5 py-3.5">
                                                 <span className={cn(
                                                     "inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border",
-                                                    item.competition === 'Low'    && "bg-emerald-50 text-emerald-700 border-emerald-200",
-                                                    item.competition === 'Medium' && "bg-amber-50 text-amber-700 border-amber-200",
-                                                    (item.competition === 'High' || item.competition === 'Very High') && "bg-rose-50 text-rose-700 border-rose-200"
+                                                    item.competition === 'Low'       && "bg-emerald-50 text-emerald-700 border-emerald-200",
+                                                    item.competition === 'Medium'    && "bg-amber-50 text-amber-700 border-amber-200",
+                                                    item.competition === 'High'      && "bg-rose-50 text-rose-700 border-rose-200",
+                                                    item.competition === 'Very High' && "bg-purple-50 text-purple-700 border-purple-200"
                                                 )}>
                                                     <span className={cn("h-1.5 w-1.5 rounded-full",
-                                                        item.competition === 'Low'    && "bg-emerald-500",
-                                                        item.competition === 'Medium' && "bg-amber-500",
-                                                        (item.competition === 'High' || item.competition === 'Very High') && "bg-rose-500"
+                                                        item.competition === 'Low'       && "bg-emerald-500",
+                                                        item.competition === 'Medium'    && "bg-amber-500",
+                                                        item.competition === 'High'      && "bg-rose-500",
+                                                        item.competition === 'Very High' && "bg-purple-500"
                                                     )} />
                                                     {item.competition ?? '—'}
                                                 </span>

@@ -300,42 +300,42 @@ export default function ShopDetailsPage() {
                         label="Total Sales"
                         value={MOCK_SHOP.totalSales.toLocaleString()}
                         sub="all time"
-                        color="bg-teal-50 border-teal-200 text-teal-900"
+                        color="bg-white border-teal-200 text-teal-900"
                     />
                     <StatCard
                         icon={<Package className="h-5 w-5" />}
                         label="Active Listings"
                         value={MOCK_SHOP.activeListings.toLocaleString()}
                         sub="live now"
-                        color="bg-blue-50 border-blue-200 text-blue-900"
+                        color="bg-white border-blue-200 text-blue-900"
                     />
                     <StatCard
                         icon={<TrendingUp className="h-5 w-5" />}
                         label="Growth"
                         value="+14%"
                         sub="last 30 days"
-                        color="bg-emerald-50 border-emerald-200 text-emerald-900"
+                        color="bg-white border-emerald-200 text-emerald-900"
                     />
                     <StatCard
                         icon={<Heart className="h-5 w-5" />}
                         label="Favorites"
                         value={MOCK_SHOP.totalFavorers.toLocaleString()}
                         sub="all time"
-                        color="bg-rose-50 border-rose-200 text-rose-900"
+                        color="bg-white border-rose-200 text-rose-900"
                     />
                     <StatCard
                         icon={<TrendingUp className="h-5 w-5" />}
                         label="Conversion Rate"
                         value="3.8%"
                         sub="avg across listings"
-                        color="bg-amber-50 border-amber-200 text-amber-900"
+                        color="bg-white border-amber-200 text-amber-900"
                     />
                     <StatCard
                         icon={<Calendar className="h-5 w-5" />}
                         label="Shop Age"
                         value={`${Math.floor(MOCK_SHOP.ageMonths / 12)}y ${MOCK_SHOP.ageMonths % 12}m`}
                         sub={`Est. ${MOCK_SHOP.founded}`}
-                        color="bg-purple-50 border-purple-200 text-purple-900"
+                        color="bg-white border-purple-200 text-purple-900"
                     />
                 </div>
 

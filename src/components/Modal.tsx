@@ -8,7 +8,7 @@ import { Button } from "@/components/Button"
 interface ModalProps {
     isOpen: boolean
     onClose: () => void
-    title: string
+    title?: string
     children: React.ReactNode
     className?: string
 }
@@ -26,21 +26,24 @@ export function Modal({ isOpen, onClose, title, children, className }: ModalProp
 
             {/* Modal Content */}
             <div className={cn(
-                "relative z-50 w-full max-w-3xl transform overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-50 p-6 text-left shadow-2xl shadow-slate-900/20 transition-all animate-in fade-in zoom-in-95 duration-200",
+                "relative z-50 w-full max-w-3xl transform overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-50 text-left shadow-2xl shadow-slate-900/20 transition-all animate-in fade-in zoom-in-95 duration-200",
+                title ? "p-6" : "",
                 className
             )}>
-                <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-bold text-teal-900">{title}</h2>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 rounded-full hover:bg-slate-100 text-slate-500"
-                        onClick={onClose}
-                    >
-                        <X className="h-4 w-4" />
-                        <span className="sr-only">Close</span>
-                    </Button>
-                </div>
+                {title && (
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-xl font-bold text-teal-900">{title}</h2>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 rounded-full hover:bg-slate-100 text-slate-500"
+                            onClick={onClose}
+                        >
+                            <X className="h-4 w-4" />
+                            <span className="sr-only">Close</span>
+                        </Button>
+                    </div>
+                )}
 
                 <div className="relative">
                     {children}

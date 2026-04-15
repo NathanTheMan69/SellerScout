@@ -4,6 +4,9 @@ import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import { DashboardLayout } from "@/components/DashboardLayout"
 import {
+    XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart,
+} from "recharts"
+import {
     Search,
     Loader2,
     Eye,
@@ -25,13 +28,17 @@ import {
     Tag,
     Sparkles,
     Filter,
+    Layers,
+    Calendar,
+    ChevronDown,
 } from "lucide-react"
 
 const MOCK_MY_LISTINGS = [
     {
         listing_id: 1, title: "Handmade Sterling Silver Stacking Ring Set",
+        section: "Rings",
         price: { amount: 3400, divisor: 100, currency_code: "USD" },
-        quantity: 12, num_sales: 240, views: 4820, favorites: 1240, revenue: 8160,
+        quantity: 12, num_sales: 240, views: 4820, favorites: 1240, revenue: 8160, reviews: 186,
         created_at: "2025-02-18T00:00:00.000Z",
         tags: ["silver ring", "stacking ring", "minimalist jewelry", "handmade", "gift for her"],
         images: [{ url_170x135: "https://images.unsplash.com/photo-1603561591411-07134e71a2a9?w=300&q=80", url_fullxfull: "https://images.unsplash.com/photo-1603561591411-07134e71a2a9?w=600&q=80" }],
@@ -46,8 +53,9 @@ const MOCK_MY_LISTINGS = [
     },
     {
         listing_id: 2, title: "Personalized Gold Initial Necklace",
+        section: "Necklaces",
         price: { amount: 4800, divisor: 100, currency_code: "USD" },
-        quantity: 8, num_sales: 175, views: 3100, favorites: 890, revenue: 8400,
+        quantity: 8, num_sales: 175, views: 3100, favorites: 890, revenue: 8400, reviews: 142,
         created_at: "2024-11-09T00:00:00.000Z",
         tags: ["initial necklace", "personalized", "gold necklace", "custom jewelry", "bridesmaid gift"],
         images: [{ url_170x135: "https://images.unsplash.com/photo-1599643478518-17488fbbcd75?w=300&q=80", url_fullxfull: "https://images.unsplash.com/photo-1599643478518-17488fbbcd75?w=600&q=80" }],
@@ -62,8 +70,9 @@ const MOCK_MY_LISTINGS = [
     },
     {
         listing_id: 3, title: "Boho Crystal Drop Earrings",
+        section: "Earrings",
         price: { amount: 2200, divisor: 100, currency_code: "USD" },
-        quantity: 20, num_sales: 88, views: 1850, favorites: 420, revenue: 1936,
+        quantity: 20, num_sales: 88, views: 1850, favorites: 420, revenue: 1936, reviews: 54,
         created_at: "2025-08-01T00:00:00.000Z",
         tags: ["boho earrings", "crystal earrings", "drop earrings", "handmade earrings"],
         images: [{ url_170x135: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=300&q=80", url_fullxfull: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=600&q=80" }],
@@ -78,8 +87,9 @@ const MOCK_MY_LISTINGS = [
     },
     {
         listing_id: 4, title: "Hammered Copper Cuff Bracelet",
+        section: "Bracelets",
         price: { amount: 4100, divisor: 100, currency_code: "USD" },
-        quantity: 3, num_sales: 42, views: 920, favorites: 210, revenue: 1722,
+        quantity: 3, num_sales: 42, views: 920, favorites: 210, revenue: 1722, reviews: 28,
         created_at: "2024-06-21T00:00:00.000Z",
         tags: ["copper bracelet", "cuff bracelet", "hammered metal", "artisan jewelry"],
         images: [{ url_170x135: "https://images.unsplash.com/photo-1617038220319-276d3cfab638?w=300&q=80", url_fullxfull: "https://images.unsplash.com/photo-1617038220319-276d3cfab638?w=600&q=80" }],
@@ -94,8 +104,9 @@ const MOCK_MY_LISTINGS = [
     },
     {
         listing_id: 5, title: "Minimalist Gold Bar Necklace",
+        section: "Necklaces",
         price: { amount: 3800, divisor: 100, currency_code: "USD" },
-        quantity: 15, num_sales: 310, views: 5600, favorites: 1680, revenue: 11780,
+        quantity: 15, num_sales: 310, views: 5600, favorites: 1680, revenue: 11780, reviews: 274,
         created_at: "2023-12-12T00:00:00.000Z",
         tags: ["gold bar necklace", "minimalist", "dainty necklace", "layering necklace", "gift for her", "gold jewelry", "simple necklace"],
         images: [{ url_170x135: "https://images.unsplash.com/photo-1616077167999-51d36a3e7fcf?w=300&q=80", url_fullxfull: "https://images.unsplash.com/photo-1616077167999-51d36a3e7fcf?w=600&q=80" }],
@@ -110,8 +121,9 @@ const MOCK_MY_LISTINGS = [
     },
     {
         listing_id: 6, title: "Custom Name Ring Sterling Silver",
+        section: "Rings",
         price: { amount: 5500, divisor: 100, currency_code: "USD" },
-        quantity: 7, num_sales: 98, views: 2340, favorites: 560, revenue: 5390,
+        quantity: 7, num_sales: 98, views: 2340, favorites: 560, revenue: 5390, reviews: 71,
         created_at: "2025-04-03T00:00:00.000Z",
         tags: ["name ring", "custom ring", "personalized ring", "sterling silver", "engraved ring"],
         images: [{ url_170x135: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=300&q=80", url_fullxfull: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&q=80" }],
@@ -191,17 +203,17 @@ function ListingGridCard({ listing, onSelect }: { listing: MockListing; onSelect
     const [imgError, setImgError] = useState(false)
 
     return (
-        <button
-            type="button"
+        <div
             onClick={() => onSelect(listing)}
-            className="group overflow-hidden rounded-2xl border border-slate-200 bg-white text-left shadow-sm transition-all hover:-translate-y-1 hover:border-teal-200 hover:shadow-lg hover:shadow-teal-900/10"
+            className="group cursor-pointer rounded-xl border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-1 hover:border-teal-300 hover:shadow-md hover:shadow-teal-900/10 overflow-hidden flex flex-col"
         >
-            <div className="relative aspect-square overflow-hidden bg-slate-100">
+            {/* Square image */}
+            <div className="relative aspect-square bg-slate-100 overflow-hidden shrink-0">
                 {listing.images[0] && !imgError ? (
                     <img
                         src={listing.images[0].url_fullxfull || listing.images[0].url_170x135}
                         alt={listing.title}
-                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                        className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
                         onError={() => setImgError(true)}
                     />
                 ) : (
@@ -210,63 +222,46 @@ function ListingGridCard({ listing, onSelect }: { listing: MockListing; onSelect
                     </div>
                 )}
 
-                <div className="absolute left-3 top-3 rounded-full border border-white/70 bg-white/90 px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-sm backdrop-blur">
+                {/* Price — top left */}
+                <div className="absolute top-2 left-2 flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full bg-black/50 backdrop-blur-md text-white">
                     {formatPrice(listing)}
                 </div>
 
-                <div className={cn("absolute right-3 top-3 rounded-full border px-2.5 py-1 text-xs font-semibold shadow-sm backdrop-blur", getScoreColor(listing.score), "bg-white/90")}>
+                {/* Score — top right */}
+                <div className={cn(
+                    "absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-full border",
+                    listing.score >= 85 ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+                    listing.score >= 70 ? "bg-amber-50 text-amber-700 border-amber-200" :
+                    "bg-rose-50 text-rose-700 border-rose-200"
+                )}>
                     {listing.score}/100
                 </div>
-
-                <div className="absolute left-3 bottom-3 flex items-center gap-1 rounded-full border border-white/70 bg-white/90 px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-sm backdrop-blur">
-                    <Clock className="h-3.5 w-3.5 text-slate-500" />
-                    {getListingAge(listing.created_at)}
-                </div>
-
-                <div className="absolute right-3 bottom-3 rounded-full border border-white/70 bg-white/90 px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-sm backdrop-blur">
-                    {listing.quantity} in stock
-                </div>
             </div>
 
-            <div className="space-y-3 p-4">
-                <div>
-                    <h3 className="line-clamp-2 min-h-[2.75rem] text-sm font-semibold text-slate-800">
+            {/* Card body */}
+            <div className="px-3 py-2.5 flex flex-col gap-1.5">
+                <div className="flex items-start justify-between gap-2">
+                    <h3 className="font-bold text-slate-800 text-sm leading-tight flex-1 min-w-0 truncate" title={listing.title}>
                         {listing.title}
                     </h3>
+                    <div className="flex items-center gap-1 text-slate-400 whitespace-nowrap flex-shrink-0">
+                        <Clock className="h-3 w-3" />
+                        <span className="text-xs font-semibold">{getListingAge(listing.created_at)}</span>
+                    </div>
                 </div>
-
-                <div className="grid grid-cols-2 gap-2 pt-1">
-                    <div className="flex items-center justify-between rounded-full border border-slate-200 bg-slate-50 px-3 py-2 shadow-[0_1px_2px_-1px_rgba(0,0,0,0.05)] transition-colors hover:border-teal-200 hover:bg-teal-50/50">
-                        <div className="flex items-center gap-1.5 text-slate-500">
-                            <DollarSign className="h-3.5 w-3.5 text-teal-600" />
-                            <span className="text-[10px] font-semibold uppercase tracking-wider">Rev</span>
-                        </div>
-                        <span className="text-xs font-bold text-slate-800">${listing.revenue.toLocaleString()}</span>
+                <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
+                        <span className="text-sm font-black text-teal-600">${listing.revenue.toLocaleString()}</span>
+                        <span className="text-[10px] text-slate-400 font-medium">revenue</span>
                     </div>
-                    <div className="flex items-center justify-between rounded-full border border-slate-200 bg-slate-50 px-3 py-2 shadow-[0_1px_2px_-1px_rgba(0,0,0,0.05)] transition-colors hover:border-blue-200 hover:bg-blue-50/50">
-                        <div className="flex items-center gap-1.5 text-slate-500">
-                            <ShoppingBag className="h-3.5 w-3.5 text-blue-500" />
-                            <span className="text-[10px] font-semibold uppercase tracking-wider">Sold</span>
-                        </div>
-                        <span className="text-xs font-bold text-slate-800">{listing.num_sales.toLocaleString()}</span>
-                    </div>
-                    <div className="flex items-center justify-between rounded-full border border-slate-200 bg-slate-50 px-3 py-2 shadow-[0_1px_2px_-1px_rgba(0,0,0,0.05)] transition-colors hover:border-violet-200 hover:bg-violet-50/50">
-                        <div className="flex items-center gap-1.5 text-slate-500">
-                            <Eye className="h-3.5 w-3.5 text-violet-500" />
-                            <span className="text-[10px] font-semibold uppercase tracking-wider">Views</span>
-                        </div>
-                        <span className="text-xs font-bold text-slate-800">{listing.views.toLocaleString()}</span>
-                    </div>
-                    <div className="flex items-center justify-between rounded-full border border-slate-200 bg-slate-50 px-3 py-2 shadow-[0_1px_2px_-1px_rgba(0,0,0,0.05)] transition-colors hover:border-rose-200 hover:bg-rose-50/50">
-                        <div className="flex items-center gap-1.5 text-slate-500">
-                            <Heart className="h-3.5 w-3.5 text-rose-500" />
-                            <span className="text-[10px] font-semibold uppercase tracking-wider">Favs</span>
-                        </div>
-                        <span className="text-xs font-bold text-slate-800">{listing.favorites.toLocaleString()}</span>
+                    <span className="text-slate-200">·</span>
+                    <div className="flex items-center gap-1">
+                        <span className="text-sm font-black text-slate-700">{listing.num_sales.toLocaleString()}</span>
+                        <span className="text-[10px] text-slate-400 font-medium">sales</span>
                     </div>
                 </div>
             </div>
-        </button>
+        </div>
     )
 }
 
@@ -276,225 +271,242 @@ function getMockTagScore(tag: string) {
     return Math.abs(hash) % 51 + 50; // Random deterministic score 50-100
 }
 
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+
+function generateListingRevenue(listing: MockListing) {
+    const monthly = listing.revenue / 12
+    return MONTHS.map((month, i) => ({
+        month,
+        revenue: Math.round(monthly * (0.7 + Math.sin(i * 0.8 + 1) * 0.2 + (i / 24))),
+    }))
+}
+
 function ListingDetailModal({ listing, onClose }: { listing: MockListing; onClose: () => void }) {
     const [imgError, setImgError] = useState(false)
+    const [revenueRange, setRevenueRange] = useState<'1M' | '6M' | '1Y' | 'ALL'>('1Y')
 
     return (
         <div className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm" onClick={onClose}>
-            <div className="modal-card flex max-h-[90vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-50 shadow-2xl shadow-slate-900/20" onClick={(e) => e.stopPropagation()}>
-                {/* Header (Integrated and Minimal) */}
-                <div className="flex items-center justify-between border-b border-slate-200/60 bg-white px-6 py-5">
-                    <div className="flex items-center gap-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-500 shadow-md shadow-teal-500/20">
-                            <Package className="h-6 w-6 text-white" />
-                        </div>
-                        <div>
-                            <h3 className="line-clamp-1 text-xl font-bold text-slate-800">{listing.title}</h3>
-                            <a
-                                href={`https://www.etsy.com/search?q=${encodeURIComponent(listing.title)}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 text-sm font-medium text-teal-600 transition-colors hover:text-teal-700 hover:underline"
-                            >
-                                View on Etsy <ExternalLink className="h-3.5 w-3.5" />
-                            </a>
+            <div className="w-full max-w-3xl rounded-2xl bg-white shadow-2xl shadow-slate-900/25 border border-slate-200/60 overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-card max-h-[92vh] overflow-y-auto">
+
+                    {/* ── Teal Banner Header ── */}
+                    <div className="relative rounded-t-2xl bg-teal-500/80 px-6 pt-3 pb-4 text-white overflow-hidden">
+                        <div className="relative flex items-start justify-between gap-4">
+                            <div className="flex items-center gap-4">
+                                {/* Thumbnail */}
+                                <div className="h-20 w-20 rounded-xl bg-white/20 border-2 border-white/30 overflow-hidden flex-shrink-0 shadow-md flex items-center justify-center">
+                                    {listing.images[0] && !imgError ? (
+                                        <img
+                                            src={listing.images[0].url_fullxfull || listing.images[0].url_170x135}
+                                            alt={listing.title}
+                                            className="h-full w-full object-cover"
+                                            onError={() => setImgError(true)}
+                                        />
+                                    ) : (
+                                        <Package className="h-6 w-6 text-white/80" />
+                                    )}
+                                </div>
+                                <div>
+                                    <h2 className="text-2xl font-black tracking-normal leading-tight line-clamp-1">{listing.title}</h2>
+                                    <div className="flex items-center gap-2 mt-1.5">
+                                        <span className="text-xs font-semibold bg-white/20 px-2 py-0.5 rounded-full">{formatPrice(listing)}</span>
+                                        <span className="text-sm text-white/80 font-semibold">{getListingAge(listing.created_at)} old</span>
+                                    </div>
+                                    {/* Listing Score bar */}
+                                    <div className="flex items-center gap-2.5 mt-2.5">
+                                        <span className="text-white/80 text-xs font-semibold uppercase tracking-wider">Listing Score</span>
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-28 h-2 bg-white/20 rounded-full overflow-hidden">
+                                                <div className="h-full bg-white rounded-full transition-all duration-700" style={{ width: `${listing.score}%` }} />
+                                            </div>
+                                            <span className="font-black text-white text-lg leading-none">{listing.score}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                                <a
+                                    href={`https://www.etsy.com/search?q=${encodeURIComponent(listing.title)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-1.5 text-xs font-semibold bg-white/20 hover:bg-white/30 border border-white/30 px-3 py-1.5 rounded-lg transition-colors"
+                                >
+                                    <ExternalLink className="h-3.5 w-3.5" /> View on Etsy
+                                </a>
+                                <button onClick={onClose} className="p-1.5 hover:bg-white/20 rounded-full transition-colors text-white/70 hover:text-white">
+                                    <X className="h-4 w-4" />
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    <button onClick={onClose} className="rounded-full bg-slate-100 p-2 text-slate-500 transition-colors hover:bg-slate-200 hover:text-slate-800">
-                        <X className="h-4 w-4" />
-                    </button>
-                </div>
 
-                {/* Body */}
-                <div className="flex-1 overflow-y-auto p-6">
-                    <div className="grid gap-6 lg:grid-cols-12">
-                        {/* LEFT COLUMN: Context */}
-                        <div className="space-y-6 lg:col-span-5">
-                            {/* Image Container */}
-                            <div className="group relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                                {listing.images[0] && !imgError ? (
-                                    <img
-                                        src={listing.images[0].url_fullxfull || listing.images[0].url_170x135}
-                                        alt={listing.title}
-                                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                                        onError={() => setImgError(true)}
-                                    />
-                                ) : (
-                                    <div className="flex h-full w-full items-center justify-center bg-slate-50">
-                                        <ImageOff className="h-10 w-10 text-slate-300" />
-                                    </div>
-                                )}
-                                <div className="absolute left-4 top-4 rounded-full border border-white/20 bg-slate-900/70 px-3 py-1.5 text-sm font-semibold text-white shadow-sm backdrop-blur-md">
-                                    {formatPrice(listing)}
+                    {/* ── Body ── */}
+                    <div className="p-5 space-y-5 bg-slate-50 rounded-b-2xl">
+
+                        {/* Stat Cards */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 items-stretch">
+                            <div className="rounded-xl border border-teal-200 bg-white p-4">
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="text-[10px] font-bold uppercase tracking-wider text-teal-600">Revenue</span>
+                                    <DollarSign className="h-4 w-4 text-teal-400 opacity-70" />
                                 </div>
+                                <p className="text-2xl font-black text-teal-900">${listing.revenue.toLocaleString()}</p>
+                                <p className="text-xs text-teal-500 mt-0.5">total earned</p>
                             </div>
-
-                            {/* Description */}
-                            <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-                                <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Description</h4>
-                                <p className="text-sm leading-relaxed text-slate-600">
-                                    {listing.description || "No description available for this listing yet."}
+                            <div className="rounded-xl border border-emerald-200 bg-white p-4">
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600">Sales</span>
+                                    <ShoppingBag className="h-4 w-4 text-emerald-400 opacity-70" />
+                                </div>
+                                <p className="text-2xl font-black text-emerald-900">{listing.num_sales.toLocaleString()}</p>
+                                <p className="text-xs text-emerald-500 mt-0.5">units sold</p>
+                            </div>
+                            <div className="rounded-xl border border-orange-200 bg-white p-4">
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="text-[10px] font-bold uppercase tracking-wider text-orange-600">Reviews</span>
+                                    <Star className="h-4 w-4 text-orange-400 opacity-70" />
+                                </div>
+                                <p className="text-2xl font-black text-orange-900">{(listing.reviews ?? 0).toLocaleString()}</p>
+                                <p className="text-xs text-orange-500 mt-0.5">customer reviews</p>
+                            </div>
+                            <div className="rounded-xl border border-violet-200 bg-white p-4">
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="text-[10px] font-bold uppercase tracking-wider text-violet-600">Conv. Rate</span>
+                                    <TrendingUp className="h-4 w-4 text-violet-400 opacity-70" />
+                                </div>
+                                <p className="text-2xl font-black text-violet-900">
+                                    {listing.views > 0 ? ((listing.num_sales / listing.views) * 100).toFixed(1) : '0.0'}%
                                 </p>
+                                <p className="text-xs text-violet-500 mt-0.5">sales / views</p>
                             </div>
-
-
                         </div>
 
-                        {/* RIGHT COLUMN: Optimization */}
-                        <div className="space-y-6 lg:col-span-7">
-                            {/* Score Card */}
-                            <div className={cn(
-                                "flex flex-col items-center justify-between gap-4 rounded-2xl border p-6 sm:flex-row shadow-sm",
-                                listing.score >= 85 ? "bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-100" :
-                                listing.score >= 70 ? "bg-gradient-to-br from-amber-50 to-orange-50 border-amber-100" :
-                                "bg-gradient-to-br from-rose-50 to-red-50 border-rose-100"
-                            )}>
-                                <div className="text-center sm:text-left">
-                                    <div className="mb-2 flex items-center justify-center gap-2 sm:justify-start">
-                                        <Zap className={cn("h-5 w-5", listing.score >= 85 ? "text-emerald-500" : listing.score >= 70 ? "text-amber-500" : "text-rose-500")} />
-                                        <h4 className={cn("text-sm font-bold uppercase tracking-wider", listing.score >= 85 ? "text-emerald-700" : listing.score >= 70 ? "text-amber-700" : "text-rose-700")}>Listing Score</h4>
+                        {/* Revenue Chart */}
+                        {(() => {
+                            const allData = generateListingRevenue(listing)
+                            const lastRev = allData[allData.length - 1].revenue
+                            const oneMonthData = ['Wk 1','Wk 2','Wk 3','Wk 4'].map((wk, i) => ({
+                                month: wk,
+                                revenue: Math.round(lastRev / 4 * (0.85 + Math.sin(i * 1.4) * 0.15)),
+                            }))
+                            const prevYearData = allData.map(d => ({ ...d, month: d.month + "'23", revenue: Math.round(d.revenue * 0.75) }))
+                            const thisYearData = allData.map(d => ({ ...d, month: d.month + "'24" }))
+                            const RANGES = [
+                                { key: '1M' as const, label: '1M' },
+                                { key: '6M' as const, label: '6M' },
+                                { key: '1Y' as const, label: '1Y' },
+                                { key: 'ALL' as const, label: 'All' },
+                            ]
+                            const chartData =
+                                revenueRange === '1M'  ? oneMonthData :
+                                revenueRange === '6M'  ? allData.slice(-6) :
+                                revenueRange === 'ALL' ? [...prevYearData, ...thisYearData] :
+                                allData
+                            return (
+                                <div className="rounded-xl border border-slate-200 bg-white p-4">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <p className="text-sm font-bold text-slate-700">Est. Revenue</p>
+                                        <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-0.5">
+                                            {RANGES.map(r => (
+                                                <button
+                                                    key={r.key}
+                                                    onClick={() => setRevenueRange(r.key)}
+                                                    className={cn(
+                                                        "px-2.5 py-1 rounded-md text-xs font-semibold transition-all",
+                                                        revenueRange === r.key
+                                                            ? "bg-white text-teal-700 shadow-sm"
+                                                            : "text-slate-500 hover:text-slate-700"
+                                                    )}
+                                                >
+                                                    {r.label}
+                                                </button>
+                                            ))}
+                                        </div>
                                     </div>
-                                    <p className="text-sm font-medium text-slate-600">Based on SEO best practices and current performance.</p>
+                                    <div className="h-[200px] w-full">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <AreaChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
+                                                <defs>
+                                                    <linearGradient id="optRevGrad" x1="0" y1="0" x2="0" y2="1">
+                                                        <stop offset="5%" stopColor="#14b8a6" stopOpacity={0.25} />
+                                                        <stop offset="95%" stopColor="#14b8a6" stopOpacity={0} />
+                                                    </linearGradient>
+                                                </defs>
+                                                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                                                <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
+                                                <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} tickFormatter={v => v >= 1000 ? `$${(v/1000).toFixed(0)}k` : `$${v}`} width={45} />
+                                                <Tooltip
+                                                    contentStyle={{ borderRadius: '10px', border: '1px solid #e2e8f0', fontSize: 12 }}
+                                                    formatter={(v: number) => [`$${v.toLocaleString()}`, 'Revenue']}
+                                                />
+                                                <Area type="monotone" dataKey="revenue" stroke="#0d9488" strokeWidth={2} fill="url(#optRevGrad)" dot={false} />
+                                            </AreaChart>
+                                        </ResponsiveContainer>
+                                    </div>
                                 </div>
-                                <div className="flex items-end gap-1">
-                                    <span className={cn("text-6xl font-black tabular-nums tracking-tighter", listing.score >= 85 ? "text-emerald-600" : listing.score >= 70 ? "text-amber-600" : "text-rose-600")}>
-                                        {listing.score}
-                                    </span>
-                                    <span className="mb-2 text-lg font-bold text-slate-400">/100</span>
+                            )
+                        })()}
+
+                        {/* Tag Optimization */}
+                        <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                            <div className="flex items-center justify-between bg-teal-500 px-5 py-3">
+                                <div className="flex items-center gap-2">
+                                    <Tag className="h-4 w-4 text-white" />
+                                    <h4 className="text-xs font-bold uppercase tracking-wider text-white">Tag Optimization</h4>
                                 </div>
+                                <span className="text-xs text-white/80 font-medium">{listing.tags.length}/13 tags used</span>
                             </div>
 
-                            {/* Stats Grid */}
-                            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-                                { /* Revenue */ }
-                                <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] transition-all hover:border-teal-200 hover:shadow-md">
-                                    <div className="mb-3 flex items-center gap-2.5">
-                                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-50 text-teal-600">
-                                            <DollarSign className="h-4 w-4" />
-                                        </div>
-                                        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Revenue</p>
+                            <div className="p-5 space-y-5">
+                                <div>
+                                    <div className="mb-2.5 flex items-center justify-between">
+                                        <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Current Tags</span>
+                                        {listing.tags.length < 13 && (
+                                            <span className="text-xs font-medium text-slate-400 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full">
+                                                +{13 - listing.tags.length} slots available
+                                            </span>
+                                        )}
                                     </div>
-                                    <p className="text-2xl font-bold tracking-tight text-slate-800">${listing.revenue.toLocaleString()}</p>
-                                </div>
-                                
-                                { /* Sales */ }
-                                <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] transition-all hover:border-blue-200 hover:shadow-md">
-                                    <div className="mb-3 flex items-center gap-2.5">
-                                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
-                                            <ShoppingBag className="h-4 w-4" />
-                                        </div>
-                                        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Sales</p>
-                                    </div>
-                                    <p className="text-2xl font-bold tracking-tight text-slate-800">{listing.num_sales.toLocaleString()}</p>
-                                </div>
-
-                                { /* Quantity */ }
-                                <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] transition-all hover:border-orange-200 hover:shadow-md">
-                                    <div className="mb-3 flex items-center gap-2.5">
-                                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-50 text-orange-600">
-                                            <Package className="h-4 w-4" />
-                                        </div>
-                                        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">In Stock</p>
-                                    </div>
-                                    <p className="text-2xl font-bold tracking-tight text-slate-800">{listing.quantity}</p>
-                                </div>
-
-                                { /* Favorites */ }
-                                <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] transition-all hover:border-rose-200 hover:shadow-md">
-                                    <div className="mb-3 flex items-center gap-2.5">
-                                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-50 text-rose-500">
-                                            <Heart className="h-4 w-4 fill-rose-500" />
-                                        </div>
-                                        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Favorites</p>
-                                    </div>
-                                    <p className="text-2xl font-bold tracking-tight text-slate-800">{listing.favorites.toLocaleString()}</p>
-                                </div>
-
-                                { /* Views */ }
-                                <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] transition-all hover:border-violet-200 hover:shadow-md">
-                                    <div className="mb-3 flex items-center gap-2.5">
-                                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-50 text-violet-600">
-                                            <Eye className="h-4 w-4" />
-                                        </div>
-                                        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Views</p>
-                                    </div>
-                                    <p className="text-2xl font-bold tracking-tight text-slate-800">{listing.views.toLocaleString()}</p>
-                                </div>
-
-                                { /* Listing Age */ }
-                                <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] transition-all hover:border-slate-300 hover:shadow-md">
-                                    <div className="mb-3 flex items-center gap-2.5">
-                                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
-                                            <Clock className="h-4 w-4" />
-                                        </div>
-                                        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Age</p>
-                                    </div>
-                                    <p className="text-2xl font-bold tracking-tight text-slate-800">{getListingAge(listing.created_at)}</p>
-                                </div>
-                            </div>
-
-                            {/* Tag Optimization */}
-                            <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-                                <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/50 px-5 py-4">
-                                    <div className="flex items-center gap-2">
-                                        <Tag className="h-4 w-4 text-teal-600" />
-                                        <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700">Tag Optimization</h4>
-                                    </div>
-                                </div>
-                                
-                                <div className="p-5">
-                                    <div className="mb-5">
-                                        <div className="mb-2.5 flex items-center justify-between">
-                                            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Current Tags ({listing.tags.length}/13)</span>
-                                        </div>
-                                        <div className="flex flex-wrap gap-2">
-                                            {listing.tags.map((tag) => {
-                                                const score = getMockTagScore(tag)
-                                                return (
-                                                    <div key={tag} className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white pl-3 pr-1 py-1 shadow-sm transition-colors hover:border-teal-200">
-                                                        <span className="text-xs font-semibold text-slate-700">#{tag}</span>
-                                                        <span className={cn("px-1.5 py-0.5 rounded-full text-[10px] font-bold", 
-                                                            score >= 85 ? "bg-emerald-100 text-emerald-700" :
-                                                            score >= 70 ? "bg-slate-100 text-slate-600" :
-                                                            "bg-rose-100 text-rose-700"
-                                                        )}>
-                                                            {score}
-                                                        </span>
-                                                        <div className="ml-1">
-                                                            <CopyButton text={tag} />
-                                                        </div>
-                                                    </div>
-                                                )
-                                            })}
-                                            {listing.tags.length < 13 && (
-                                                <div className="rounded-full border border-dashed border-slate-300 bg-slate-50 px-3 py-1 flex items-center text-xs font-medium text-slate-400">
-                                                    +{13 - listing.tags.length} available
+                                    <div className="flex flex-wrap gap-2">
+                                        {listing.tags.map((tag) => {
+                                            const score = getMockTagScore(tag)
+                                            return (
+                                                <div key={tag} className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1 shadow-sm transition-colors hover:border-teal-200">
+                                                    <span className="text-xs font-semibold text-slate-700">#{tag}</span>
+                                                    <span className={cn("px-1.5 py-0.5 rounded-full text-[10px] font-bold",
+                                                        score >= 85 ? "bg-emerald-100 text-emerald-700" :
+                                                        score >= 70 ? "bg-slate-100 text-slate-600" :
+                                                        "bg-rose-100 text-rose-700"
+                                                    )}>
+                                                        {score}
+                                                    </span>
                                                 </div>
-                                            )}
-                                        </div>
+                                            )
+                                        })}
                                     </div>
+                                </div>
 
-                                    <div>
-                                        <div className="mb-2.5 flex items-center gap-1.5">
-                                            <Sparkles className="h-3.5 w-3.5 text-teal-500" />
-                                            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Suggested Tags</span>
-                                        </div>
-                                        <div className="flex flex-wrap gap-2">
-                                            {listing.suggested_tags.map((tag) => {
-                                                const score = getMockTagScore(tag)
-                                                return (
-                                                    <div key={tag} className="flex items-center gap-1.5 rounded-full border border-teal-200 bg-teal-50 pl-3 pr-1 py-1 shadow-sm transition-colors cursor-pointer hover:bg-teal-100">
-                                                        <span className="text-xs font-semibold text-teal-700">+{tag}</span>
-                                                        <span className="px-1.5 py-0.5 rounded-full bg-white/60 text-teal-600 text-[10px] font-bold border border-teal-100/50">
-                                                            {score}
-                                                        </span>
-                                                        <div className="ml-1">
-                                                            <CopyButton text={tag} />
-                                                        </div>
+                                <div>
+                                    <div className="mb-2.5 flex items-center gap-1.5">
+                                        <Sparkles className="h-3.5 w-3.5 text-teal-500" />
+                                        <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Suggested Tags</span>
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                        {listing.suggested_tags.map((tag) => {
+                                            const score = getMockTagScore(tag)
+                                            return (
+                                                <div key={tag} className="flex items-center gap-1.5 rounded-full border border-teal-200 bg-teal-50 pl-3 pr-1 py-1 shadow-sm transition-colors cursor-pointer hover:bg-teal-100">
+                                                    <span className="text-xs font-semibold text-teal-700">+{tag}</span>
+                                                    <span className="px-1.5 py-0.5 rounded-full bg-white/60 text-teal-600 text-[10px] font-bold border border-teal-100/50">
+                                                        {score}
+                                                    </span>
+                                                    <div className="ml-1">
+                                                        <CopyButton text={tag} />
                                                     </div>
-                                                )
-                                            })}
-                                        </div>
+                                                </div>
+                                            )
+                                        })}
                                     </div>
                                 </div>
                             </div>
@@ -512,9 +524,13 @@ export default function ListingOptimizerPage() {
     const [searchQuery, setSearchQuery] = useState("")
     const [selectedListing, setSelectedListing] = useState<MockListing | null>(null)
     const [usingMock, setUsingMock] = useState(false)
-    const [performanceFilter, setPerformanceFilter] = useState<"all" | "top" | "trending">("all")
-    const [stockFilter, setStockFilter] = useState<"all" | "high" | "low">("all")
-    const [showNeedsOptimization, setShowNeedsOptimization] = useState(false)
+    const [performanceFilter, setPerformanceFilter] = useState<"top" | "trending">("top")
+    const [sectionFilter, setSectionFilter] = useState("All")
+    const [ageFilter, setAgeFilter] = useState("All")
+    const [optimizationFilter, setOptimizationFilter] = useState<"All" | "Excellent" | "Good" | "Needs Refinement">("All")
+    const [sectionOpen, setSectionOpen] = useState(false)
+    const [ageOpen, setAgeOpen] = useState(false)
+    const [optimizationOpen, setOptimizationOpen] = useState(false)
 
     useEffect(() => {
         fetchListings()
@@ -563,18 +579,50 @@ export default function ListingOptimizerPage() {
         }
     }
 
-    const needsOptimizationCount = listings.filter((l) => (l.score ?? 0) <= 60).length
+    const passesAge = (l: typeof listings[0]) => {
+        if (ageFilter === "All") return true
+        const months = Math.max(0,
+            (new Date().getFullYear() - new Date(l.created_at).getFullYear()) * 12 +
+            (new Date().getMonth() - new Date(l.created_at).getMonth())
+        )
+        const years = months / 12
+        if (ageFilter === "< 1 year" && years >= 1) return false
+        if (ageFilter === "1–2 years" && (years < 1 || years >= 3)) return false
+        if (ageFilter === "3–5 years" && (years < 3 || years >= 5)) return false
+        if (ageFilter === "5+ years" && years < 5) return false
+        return true
+    }
 
-    const filtered = listings
+    const availableSections = Array.from(
+        new Set(listings.map(l => l.section).filter(Boolean))
+    ) as string[]
+
+    const baseFiltered = listings
         .filter((l) => l.title.toLowerCase().includes(searchQuery.toLowerCase()))
-        .filter((l) => !showNeedsOptimization || (l.score ?? 0) <= 60)
-        .sort((a, b) => {
-            if (performanceFilter === "top") return (b.revenue ?? 0) - (a.revenue ?? 0)
-            if (performanceFilter === "trending") return (b.views ?? 0) - (a.views ?? 0)
-            if (stockFilter === "high") return (b.quantity ?? 0) - (a.quantity ?? 0)
-            if (stockFilter === "low") return (a.quantity ?? 0) - (b.quantity ?? 0)
-            return a.title.localeCompare(b.title)
+        .filter(passesAge)
+        .filter((l) => sectionFilter === "All" || l.section === sectionFilter)
+
+    const optimizationCounts = {
+        All: baseFiltered.length,
+        Excellent: baseFiltered.filter(l => (l.score ?? 0) >= 80).length,
+        Good: baseFiltered.filter(l => { const s = l.score ?? 0; return s >= 60 && s < 80 }).length,
+        "Needs Refinement": baseFiltered.filter(l => (l.score ?? 0) < 60).length,
+    }
+
+    const filtered = baseFiltered
+        .filter((l) => {
+            if (optimizationFilter === "All") return true
+            const s = l.score ?? 0
+            if (optimizationFilter === "Excellent" && s < 80) return false
+            if (optimizationFilter === "Good" && (s < 60 || s >= 80)) return false
+            if (optimizationFilter === "Needs Refinement" && s >= 60) return false
+            return true
         })
+        .sort((a, b) =>
+            performanceFilter === "top"
+                ? (b.revenue ?? 0) - (a.revenue ?? 0)
+                : (b.views ?? 0) - (a.views ?? 0)
+        )
 
     return (
         <DashboardLayout>
@@ -618,50 +666,159 @@ export default function ListingOptimizerPage() {
                 </div>
 
                 {/* Filters */}
-                <div className="flex items-center gap-3">
-                    <div className="relative">
-                        <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
-                        <select
-                            value={performanceFilter}
-                            onChange={(e) => setPerformanceFilter(e.target.value as "all" | "top" | "trending")}
-                            className="h-9 pl-9 pr-7 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-600 focus:border-teal-500 outline-none appearance-none cursor-pointer shadow-sm hover:border-teal-300 transition-colors"
-                        >
-                            <option value="all">All (A–Z)</option>
-                            <option value="top">Top Performers</option>
-                            <option value="trending">Trending</option>
-                        </select>
-                    </div>
-                    <div className="relative">
-                        <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
-                        <select
-                            value={stockFilter}
-                            onChange={(e) => setStockFilter(e.target.value as "all" | "high" | "low")}
-                            className="h-9 pl-9 pr-7 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-600 focus:border-teal-500 outline-none appearance-none cursor-pointer shadow-sm hover:border-teal-300 transition-colors"
-                        >
-                            <option value="all">All Stock</option>
-                            <option value="high">High Stock</option>
-                            <option value="low">Low Stock</option>
-                        </select>
-                    </div>
+                <div className="flex items-center gap-2">
+                    {/* Top Performing */}
                     <button
-                        type="button"
-                        onClick={() => setShowNeedsOptimization((v) => !v)}
+                        onClick={() => setPerformanceFilter("top")}
                         className={cn(
-                            "h-9 inline-flex items-center gap-2 px-4 rounded-xl border text-sm font-medium shadow-sm transition-colors",
-                            showNeedsOptimization
-                                ? "bg-amber-500 border-amber-500 text-white hover:bg-amber-600"
-                                : "bg-white border-slate-200 text-slate-600 hover:border-amber-400 hover:text-amber-600"
+                            "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border transition-all",
+                            performanceFilter === "top"
+                                ? "bg-teal-600 text-white border-teal-600 shadow-md shadow-teal-900/10"
+                                : "bg-white text-slate-600 border-slate-200 hover:border-teal-300 hover:text-teal-600"
                         )}
                     >
-                        <Zap className="h-3.5 w-3.5" />
-                        Optimize Listings
-                        <span className={cn(
-                            "inline-flex items-center justify-center rounded-full text-xs font-bold px-1.5 min-w-[1.25rem] h-5",
-                            showNeedsOptimization ? "bg-white/30 text-white" : "bg-slate-100 text-slate-600"
-                        )}>
-                            {needsOptimizationCount}
-                        </span>
+                        <Star className="h-4 w-4" /> Top Performing
                     </button>
+
+                    {/* Trending */}
+                    <button
+                        onClick={() => setPerformanceFilter("trending")}
+                        className={cn(
+                            "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border transition-all",
+                            performanceFilter === "trending"
+                                ? "bg-teal-600 text-white border-teal-600 shadow-md shadow-teal-900/10"
+                                : "bg-white text-slate-600 border-slate-200 hover:border-teal-300 hover:text-teal-600"
+                        )}
+                    >
+                        <TrendingUp className="h-4 w-4" /> Trending
+                    </button>
+
+                    {/* Sections dropdown */}
+                    <div className="relative">
+                        <button
+                            onClick={() => { setSectionOpen(v => !v); setAgeOpen(false); setOptimizationOpen(false) }}
+                            className={cn(
+                                "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border transition-all",
+                                sectionFilter !== "All"
+                                    ? "bg-teal-600 text-white border-teal-600 shadow-md shadow-teal-900/10"
+                                    : "bg-white text-slate-600 border-slate-200 hover:border-teal-300 hover:text-teal-600"
+                            )}
+                        >
+                            <Layers className="h-4 w-4" />
+                            {sectionFilter === "All" ? "Sections" : sectionFilter}
+                            <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", sectionOpen && "rotate-180")} />
+                        </button>
+                        {sectionOpen && (
+                            <div className="absolute top-full left-0 mt-1.5 z-20 bg-white border border-slate-200 rounded-xl shadow-lg shadow-slate-900/10 py-1 min-w-[180px]">
+                                {availableSections.length === 0 ? (
+                                    <div className="px-4 py-2 text-sm text-slate-400 italic">N/A</div>
+                                ) : (
+                                    <>
+                                        <button
+                                            onClick={() => { setSectionFilter("All"); setSectionOpen(false) }}
+                                            className={cn(
+                                                "w-full text-left px-4 py-2 text-sm font-medium transition-colors",
+                                                sectionFilter === "All"
+                                                    ? "text-teal-700 bg-teal-50 font-semibold"
+                                                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-800"
+                                            )}
+                                        >
+                                            All Sections
+                                        </button>
+                                        {availableSections.map(section => (
+                                            <button
+                                                key={section}
+                                                onClick={() => { setSectionFilter(section); setSectionOpen(false) }}
+                                                className={cn(
+                                                    "w-full text-left px-4 py-2 text-sm font-medium transition-colors",
+                                                    sectionFilter === section
+                                                        ? "text-teal-700 bg-teal-50 font-semibold"
+                                                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-800"
+                                                )}
+                                            >
+                                                {section}
+                                            </button>
+                                        ))}
+                                    </>
+                                )}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Listing Age dropdown */}
+                    <div className="relative">
+                        <button
+                            onClick={() => { setAgeOpen(v => !v); setSectionOpen(false); setOptimizationOpen(false) }}
+                            className={cn(
+                                "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border transition-all",
+                                ageFilter !== "All"
+                                    ? "bg-teal-600 text-white border-teal-600 shadow-md shadow-teal-900/10"
+                                    : "bg-white text-slate-600 border-slate-200 hover:border-teal-300 hover:text-teal-600"
+                            )}
+                        >
+                            <Calendar className="h-4 w-4" />
+                            {ageFilter === "All" ? "Listing Age" : ageFilter}
+                            <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", ageOpen && "rotate-180")} />
+                        </button>
+                        {ageOpen && (
+                            <div className="absolute top-full left-0 mt-1.5 z-20 bg-white border border-slate-200 rounded-xl shadow-lg shadow-slate-900/10 py-1 min-w-[160px]">
+                                {(["All", "< 1 year", "1–2 years", "3–5 years", "5+ years"] as const).map(opt => (
+                                    <button
+                                        key={opt}
+                                        onClick={() => { setAgeFilter(opt); setAgeOpen(false) }}
+                                        className={cn(
+                                            "w-full text-left px-4 py-2 text-sm font-medium transition-colors",
+                                            ageFilter === opt
+                                                ? "text-teal-700 bg-teal-50 font-semibold"
+                                                : "text-slate-600 hover:bg-slate-50 hover:text-slate-800"
+                                        )}
+                                    >
+                                        {opt === "All" ? "Any Age" : opt}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Optimization Score dropdown */}
+                    <div className="relative">
+                        <button
+                            onClick={() => { setOptimizationOpen(v => !v); setSectionOpen(false); setAgeOpen(false) }}
+                            className={cn(
+                                "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border transition-all",
+                                optimizationFilter !== "All"
+                                    ? "bg-teal-600 text-white border-teal-600 shadow-md shadow-teal-900/10"
+                                    : "bg-white text-slate-600 border-slate-200 hover:border-teal-300 hover:text-teal-600"
+                            )}
+                        >
+                            <Sparkles className="h-4 w-4" />
+                            {optimizationFilter === "All" ? "Optimization" : optimizationFilter}
+                            <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", optimizationOpen && "rotate-180")} />
+                        </button>
+                        {optimizationOpen && (
+                            <div className="absolute top-full left-0 mt-1.5 z-20 bg-white border border-slate-200 rounded-xl shadow-lg shadow-slate-900/10 py-1 min-w-[200px]">
+                                {([
+                                    { value: "All",              label: `All Scores (${optimizationCounts.All})` },
+                                    { value: "Excellent",        label: `Excellent (${optimizationCounts.Excellent})` },
+                                    { value: "Good",             label: `Good (${optimizationCounts.Good})` },
+                                    { value: "Needs Refinement", label: `Needs Refinement (${optimizationCounts["Needs Refinement"]})` },
+                                ] as const).map(({ value, label }) => (
+                                    <button
+                                        key={value}
+                                        onClick={() => { setOptimizationFilter(value); setOptimizationOpen(false) }}
+                                        className={cn(
+                                            "w-full text-left px-4 py-2 text-sm font-medium transition-colors",
+                                            optimizationFilter === value
+                                                ? "text-teal-700 bg-teal-50 font-semibold"
+                                                : "text-slate-600 hover:bg-slate-50 hover:text-slate-800"
+                                        )}
+                                    >
+                                        {label}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {isLoading ? (
