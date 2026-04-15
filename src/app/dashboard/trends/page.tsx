@@ -975,7 +975,7 @@ export default function TrendsPage() {
                     <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setSelectedProduct(null)} />
 
                     {/* Modal */}
-                    <div className="relative z-50 w-full max-w-3xl max-h-[92vh] overflow-y-auto rounded-2xl border border-slate-200/80 shadow-2xl shadow-slate-900/20 animate-in fade-in zoom-in-95 duration-200">
+                    <div className="relative z-50 w-full max-w-3xl max-h-[92vh] overflow-y-auto rounded-2xl border border-slate-200/80 bg-slate-50 shadow-2xl shadow-slate-900/20 animate-in fade-in zoom-in-95 duration-200">
 
                         {/* ── Teal Header ── */}
                         <div className="relative rounded-t-2xl bg-teal-500/80 p-5 text-white">
