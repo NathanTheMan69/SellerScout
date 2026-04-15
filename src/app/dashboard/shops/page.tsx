@@ -49,8 +49,10 @@ interface SavedShop {
     id: string
     shop_name: string
     shop_url: string
-    total_sales: number
-    listing_count: number
+    total_sales: string | null
+    listing_count: number | null
+    revenue: string | null
+    conv_rate: string | null
     created_at: string
 }
 
@@ -107,7 +109,7 @@ function ShopsGrid({ filter, categoryFilter, ageFilter, onShopClick, savedShops,
     ageFilter: string
     onShopClick: (name: string) => void
     savedShops: SavedShop[]
-    onTrack: (e: React.MouseEvent, shop: { id: string; name: string; url: string; sales: number; listings: number }) => void
+    onTrack: (e: React.MouseEvent, shop: { id: string; name: string; url: string; sales: string | number; listings: number; revenue?: string; convRate?: string }) => void
 }) {
     const isTop = filter === 'top'
     const currentYear = new Date().getFullYear()
@@ -161,7 +163,7 @@ function ShopsGrid({ filter, categoryFilter, ageFilter, onShopClick, savedShops,
                                             <p className="text-[11px] text-slate-500">{shop.category} · Est. {shop.estYear}</p>
                                         </div>
                                         <button
-                                            onClick={(e) => onTrack(e, { id: shop.name, name: shop.name, url: `https://etsy.com/shop/${shop.name}`, sales: 0, listings: shop.listings })}
+                                            onClick={(e) => onTrack(e, { id: shop.name, name: shop.name, url: `https://etsy.com/shop/${shop.name}`, sales: topShop.sales ?? trendShop.growth ?? '', listings: shop.listings, revenue: shop.revenue, convRate: shop.convRate })}
                                             className={cn(
                                                 "flex-shrink-0 p-1.5 rounded-full transition-all duration-200",
                                                 isSaved
@@ -286,7 +288,7 @@ export default function ShopsPage() {
         executeSearch(term)
     }
 
-    const handleTrack = async (e: React.MouseEvent, shop: typeof MOCK_SEARCH_RESULTS[0]) => {
+    const handleTrack = async (e: React.MouseEvent, shop: { id: string; name: string; url: string; sales: string | number; listings: number; revenue?: string; convRate?: string }) => {
         e.stopPropagation() // Prevent modal open
         const savedShop = savedShops.find(s => s.shop_name === shop.name)
 
@@ -314,8 +316,10 @@ export default function ShopsPage() {
                 id: 'temp-' + Date.now(),
                 shop_name: shop.name,
                 shop_url: shop.url,
-                total_sales: shop.sales,
+                total_sales: String(shop.sales ?? ''),
                 listing_count: shop.listings,
+                revenue: shop.revenue ?? null,
+                conv_rate: shop.convRate ?? null,
                 created_at: new Date().toISOString()
             }
             setSavedShops(prev => [newShop, ...prev])
@@ -330,8 +334,10 @@ export default function ShopsPage() {
                         user_id: user.id,
                         shop_name: shop.name,
                         shop_url: shop.url,
-                        total_sales: shop.sales,
-                        listing_count: shop.listings
+                        total_sales: String(shop.sales ?? ''),
+                        listing_count: shop.listings,
+                        revenue: shop.revenue ?? null,
+                        conv_rate: shop.convRate ?? null,
                     })
                     .select()
                     .single()

@@ -6,8 +6,16 @@ create table saved_listings (
   price numeric,
   image_url text,
   total_sales numeric,
+  revenue text,
+  competition text,
+  conv_rate text,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+
+-- Migration: add new columns if they don't exist
+-- alter table saved_listings add column if not exists revenue text;
+-- alter table saved_listings add column if not exists competition text;
+-- alter table saved_listings add column if not exists conv_rate text;
 
 -- Enable Row Level Security
 alter table saved_listings enable row level security;

@@ -188,14 +188,24 @@ export default function ShopDetailsPage() {
             else success('Listing removed', item.title);
         } else {
             setSavedIds(prev => new Set(prev).add(item.id));
-            const { data, error: err } = await supabase.from('saved_listings').insert({
+            const basePayload = {
                 user_id: user.id,
                 listing_title: item.title,
                 listing_url: `https://www.etsy.com/search?q=${encodeURIComponent(item.title)}`,
                 price: parseFloat(item.price),
                 image_url: item.image,
                 total_sales: item.orders,
+            }
+            let { data, error: err } = await supabase.from('saved_listings').insert({
+                ...basePayload,
+                revenue: (item.price && item.orders) ? `$${(parseFloat(item.price) * item.orders).toLocaleString()}` : null,
+                competition: item.competition ?? null,
+                conv_rate: item.conv_rate ?? null,
             }).select('id').single();
+            if (err) {
+                const { data: d2, error: err2 } = await supabase.from('saved_listings').insert(basePayload).select('id').single()
+                data = d2; err = err2
+            }
             if (err) { setSavedIds(prev => { const s = new Set(prev); s.delete(item.id); return s }); toastError('Failed to save listing'); }
             else { success('Listing saved!', item.title); if (data) setSavedDbIds(prev => ({ ...prev, [item.title]: data.id })); }
         }

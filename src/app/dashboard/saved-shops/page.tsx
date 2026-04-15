@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Trash2, Store, ExternalLink } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import { DashboardLayout } from '@/components/DashboardLayout'
 import { createClient } from '@/utils/supabase/client'
 import { TableSkeleton } from '@/components/TableSkeleton'
@@ -11,30 +10,39 @@ import { TableSkeleton } from '@/components/TableSkeleton'
 interface SavedShop {
     id: string
     shop_name: string
-    total_sales: number | null
+    shop_url: string | null
+    total_sales: string | null
     listing_count: number | null
+    revenue: string | null
+    conv_rate: string | null
     created_at: string
 }
 
 export default function SavedShopsPage() {
     const [savedShops, setSavedShops] = useState<SavedShop[]>([])
     const [loading, setLoading] = useState(true)
+    const [userId, setUserId] = useState<string | null>(null)
     const supabase = createClient()
     const router = useRouter()
 
     useEffect(() => {
-        fetchSavedShops()
-    }, [])
-
-    const fetchSavedShops = async () => {
-        try {
+        const init = async () => {
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) return
+            setUserId(user.id)
+            await fetchSavedShops(user.id)
+        }
+        init()
+    }, [])
 
+    const fetchSavedShops = async (uid?: string) => {
+        const resolvedUid = uid ?? userId
+        if (!resolvedUid) return
+        try {
             const { data, error } = await supabase
                 .from('saved_shops')
                 .select('*')
-                .eq('user_id', user.id)
+                .eq('user_id', resolvedUid)
                 .order('created_at', { ascending: false })
 
             if (error) throw error
@@ -48,12 +56,18 @@ export default function SavedShopsPage() {
 
     const handleDelete = async (e: React.MouseEvent, id: string) => {
         e.stopPropagation()
+        e.preventDefault()
+
         setSavedShops(prev => prev.filter(s => s.id !== id))
-        try {
-            const { error } = await supabase.from('saved_shops').delete().eq('id', id)
-            if (error) throw error
-        } catch (error) {
-            console.error('Error deleting shop:', error)
+
+        const { data, error } = await supabase
+            .from('saved_shops')
+            .delete()
+            .eq('id', id)
+            .select()
+
+        if (error || !data?.length) {
+            console.error('Delete shop failed:', error, 'rows:', data?.length)
             fetchSavedShops()
         }
     }
@@ -85,8 +99,10 @@ export default function SavedShopsPage() {
                                 <tr className="border-b border-teal-200/60 bg-teal-500/80">
                                     <th className="w-10 pl-5 pr-2 py-4" />
                                     <th className="px-3 py-4 text-sm font-medium uppercase tracking-wider text-white">Shop Name</th>
-                                    <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white">Total Sales</th>
+                                    <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white">Revenue</th>
+                                    <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white">Sales</th>
                                     <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white">Listings</th>
+                                    <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white">Conv.</th>
                                     <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white">Saved On</th>
                                     <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white text-right">Actions</th>
                                 </tr>
@@ -115,19 +131,29 @@ export default function SavedShopsPage() {
                                                     <ExternalLink className="h-3 w-3 text-slate-300 group-hover:text-teal-400 transition-colors opacity-0 group-hover:opacity-100" />
                                                 </div>
                                             </td>
-                                            {/* Total Sales */}
+                                            {/* Revenue */}
                                             <td className="px-5 py-3.5">
                                                 <span className="font-bold text-teal-600 tabular-nums">
-                                                    {item.total_sales?.toLocaleString() ?? '—'}
+                                                    {item.revenue ?? '—'}
                                                 </span>
-                                                {item.total_sales && <span className="text-xs text-slate-400 ml-1">sales</span>}
                                             </td>
-                                            {/* Listing Count */}
+                                            {/* Sales */}
+                                            <td className="px-5 py-3.5">
+                                                <span className="font-bold text-slate-700 tabular-nums">
+                                                    {item.total_sales ?? '—'}
+                                                </span>
+                                            </td>
+                                            {/* Listings */}
                                             <td className="px-5 py-3.5">
                                                 <span className="font-bold text-slate-700 tabular-nums">
                                                     {item.listing_count?.toLocaleString() ?? '—'}
                                                 </span>
-                                                {item.listing_count && <span className="text-xs text-slate-400 ml-1">listings</span>}
+                                            </td>
+                                            {/* Conv. Rate */}
+                                            <td className="px-5 py-3.5">
+                                                <span className="font-bold text-slate-700 tabular-nums">
+                                                    {item.conv_rate ?? '—'}
+                                                </span>
                                             </td>
                                             {/* Saved On */}
                                             <td className="px-5 py-3.5 text-slate-400 text-xs tabular-nums">
@@ -147,7 +173,7 @@ export default function SavedShopsPage() {
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan={6} className="px-6 py-16 text-center text-slate-400">
+                                        <td colSpan={8} className="px-6 py-16 text-center text-slate-400">
                                             No saved shops yet. Go to <span className="font-semibold text-teal-600">Shop Tracker</span> to save some!
                                         </td>
                                     </tr>

@@ -6,8 +6,14 @@ create table saved_shops (
   shop_url text,
   total_sales integer,
   listing_count integer,
+  revenue text,
+  conv_rate text,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+
+-- Migration: add revenue and conv_rate columns if they don't exist
+-- alter table saved_shops add column if not exists revenue text;
+-- alter table saved_shops add column if not exists conv_rate text;
 
 -- Enable Row Level Security (RLS)
 alter table saved_shops enable row level security;

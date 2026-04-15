@@ -463,7 +463,7 @@ export default function KeywordResearchPage() {
         router.push(`/dashboard/keyword-research/${encodeURIComponent(searchQuery)}`)
     }
 
-    const handleSave = async (keyword: string, volume?: number, competition?: string) => {
+    const handleSave = async (keyword: string, volume?: number, competition?: string, ctr?: string, trend?: string) => {
         const isSaved = savedKeywords.has(keyword)
         setSavedKeywords(prev => { const next = new Set(prev); isSaved ? next.delete(keyword) : next.add(keyword); return next })
         if (isSaved) {
@@ -475,11 +475,28 @@ export default function KeywordResearchPage() {
         if (!user) return
         try {
             if (isSaved) {
-                await supabase.from('saved_keywords').delete().eq('user_id', user.id).eq('keyword', keyword)
+                const { error } = await supabase.from('saved_keywords').delete().eq('user_id', user.id).eq('keyword', keyword)
+                if (error) throw error
             } else {
-                await supabase.from('saved_keywords').insert({ user_id: user.id, keyword, search_volume: volume || 0, competition: competition || 'Unknown' })
+                // Try with new columns first; fall back to base columns if migration hasn't run
+                const { error } = await supabase.from('saved_keywords').insert({
+                    user_id: user.id, keyword,
+                    search_volume: volume || 0,
+                    competition: competition || 'Unknown',
+                    ctr: ctr || null,
+                    trend: trend || null,
+                })
+                if (error) {
+                    const { error: fallbackError } = await supabase.from('saved_keywords').insert({
+                        user_id: user.id, keyword,
+                        search_volume: volume || 0,
+                        competition: competition || 'Unknown',
+                    })
+                    if (fallbackError) throw fallbackError
+                }
             }
-        } catch {
+        } catch (err) {
+            console.error('Failed to save keyword:', err)
             toastError('Failed to save keyword', 'Please try again.')
             setSavedKeywords(prev => { const next = new Set(prev); isSaved ? next.add(keyword) : next.delete(keyword); return next })
         }
@@ -500,7 +517,7 @@ export default function KeywordResearchPage() {
             {/* Heart / Save */}
             <td className="pl-5 pr-2 py-3.5">
                 <button
-                    onClick={(e) => { e.stopPropagation(); handleSave(item.keyword, item.volume, item.competition) }}
+                    onClick={(e) => { e.stopPropagation(); handleSave(item.keyword, item.volume, item.competition, item.ctr, item.trend) }}
                     className="p-1 rounded-full border border-transparent hover:border-rose-200 hover:bg-rose-50 transition-colors"
                 >
                     <Heart className={cn("h-4 w-4 transition-colors", savedKeywords.has(item.keyword) ? "fill-rose-500 text-rose-500" : "text-slate-300 hover:text-rose-400")} />

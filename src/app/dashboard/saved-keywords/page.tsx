@@ -1,40 +1,52 @@
 'use client'
 
+'use client'
+
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Trash2, TrendingUp, Search, ExternalLink } from 'lucide-react'
+import { Trash2, TrendingUp, TrendingDown, Minus, Search, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { DashboardLayout } from '@/components/DashboardLayout'
 import { createClient } from '@/utils/supabase/client'
 import { TableSkeleton } from '@/components/TableSkeleton'
+import { useToast } from '@/components/Toast'
 
 interface SavedKeyword {
     id: string
     keyword: string
     search_volume: number
     competition: string
+    ctr: string | null
+    trend: string | null
     created_at: string
 }
 
 export default function SavedKeywordsPage() {
     const [savedKeywords, setSavedKeywords] = useState<SavedKeyword[]>([])
     const [loading, setLoading] = useState(true)
+    const [userId, setUserId] = useState<string | null>(null)
     const supabase = createClient()
     const router = useRouter()
+    const { success, error: toastError } = useToast()
 
     useEffect(() => {
-        fetchSavedKeywords()
-    }, [])
-
-    const fetchSavedKeywords = async () => {
-        try {
+        const init = async () => {
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) return
+            setUserId(user.id)
+            await fetchSavedKeywords(user.id)
+        }
+        init()
+    }, [])
 
+    const fetchSavedKeywords = async (uid?: string) => {
+        const resolvedUid = uid ?? userId
+        if (!resolvedUid) return
+        try {
             const { data, error } = await supabase
                 .from('saved_keywords')
                 .select('*')
-                .eq('user_id', user.id)
+                .eq('user_id', resolvedUid)
                 .order('created_at', { ascending: false })
 
             if (error) throw error
@@ -48,13 +60,26 @@ export default function SavedKeywordsPage() {
 
     const handleDelete = async (e: React.MouseEvent, id: string) => {
         e.stopPropagation()
+        e.preventDefault()
+
         setSavedKeywords(prev => prev.filter(k => k.id !== id))
-        try {
-            const { error } = await supabase.from('saved_keywords').delete().eq('id', id)
-            if (error) throw error
-        } catch (error) {
-            console.error('Error deleting keyword:', error)
+
+        const { data, error } = await supabase
+            .from('saved_keywords')
+            .delete()
+            .eq('id', id)
+            .select()
+
+        if (error) {
+            console.error('Delete error:', error)
+            toastError('Failed to delete keyword', 'Please try again.')
             fetchSavedKeywords()
+        } else if (!data || data.length === 0) {
+            console.error('Delete returned 0 rows — RLS may be blocking. id:', id, 'userId:', userId)
+            toastError('Failed to delete keyword', 'Permission error — please try again.')
+            fetchSavedKeywords()
+        } else {
+            success('Keyword removed')
         }
     }
 
@@ -87,6 +112,8 @@ export default function SavedKeywordsPage() {
                                     <th className="px-3 py-4 text-sm font-medium uppercase tracking-wider text-white">Keyword</th>
                                     <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white">Search Vol</th>
                                     <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white">Competition</th>
+                                    <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white">Conv.</th>
+                                    <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white">Trend</th>
                                     <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white">Saved On</th>
                                     <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white text-right">Actions</th>
                                 </tr>
@@ -140,6 +167,19 @@ export default function SavedKeywordsPage() {
                                                     {item.competition ?? '—'}
                                                 </span>
                                             </td>
+                                            {/* Conv. */}
+                                            <td className="px-5 py-3.5">
+                                                <span className="font-semibold text-slate-700 tabular-nums text-sm">
+                                                    {item.ctr ?? '—'}
+                                                </span>
+                                            </td>
+                                            {/* Trend */}
+                                            <td className="px-5 py-3.5">
+                                                {item.trend === 'up'     && <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full"><TrendingUp className="h-3.5 w-3.5" />Rising</span>}
+                                                {item.trend === 'down'   && <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-700 bg-rose-50 border border-rose-200 px-2.5 py-1 rounded-full"><TrendingDown className="h-3.5 w-3.5" />Falling</span>}
+                                                {item.trend === 'stable' && <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-full"><Minus className="h-3.5 w-3.5" />Stable</span>}
+                                                {!item.trend && <span className="text-slate-400 text-sm">—</span>}
+                                            </td>
                                             {/* Saved On */}
                                             <td className="px-5 py-3.5 text-slate-400 text-xs tabular-nums">
                                                 {new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -158,7 +198,7 @@ export default function SavedKeywordsPage() {
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan={6} className="px-6 py-16 text-center text-slate-400">
+                                        <td colSpan={8} className="px-6 py-16 text-center text-slate-400">
                                             No saved keywords yet. Go to <span className="font-semibold text-teal-600">Keyword Research</span> to save some!
                                         </td>
                                     </tr>

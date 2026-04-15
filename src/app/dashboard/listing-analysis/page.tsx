@@ -228,14 +228,27 @@ function ListingAnalysisPageInner(): React.JSX.Element {
             }
         } else {
             setSavedNicheIds(prev => new Set(prev).add(item.niche))
-            const { data, error: err } = await supabase.from('saved_listings').insert({
+            const convRateMap: Record<string, number> = { Low: 0.052, Medium: 0.038, High: 0.024, 'Very High': 0.016 }
+            const convRateVal = convRateMap[item.competition] ?? 0.024
+            const basePayload = {
                 user_id: user.id,
                 listing_title: item.niche,
                 listing_url: `https://www.etsy.com/search?q=${encodeURIComponent(item.keyword)}`,
                 price: 0,
                 image_url: item.image,
-                total_sales: item.search_volume,
+                total_sales: item.sales,
+            }
+            let { data, error: err } = await supabase.from('saved_listings').insert({
+                ...basePayload,
+                revenue: item.revenue ?? null,
+                competition: item.competition ?? null,
+                conv_rate: `${(convRateVal * 100).toFixed(1)}%`,
             }).select('id').single()
+            if (err) {
+                // Fallback: try without new columns if migration hasn't run
+                const { data: d2, error: err2 } = await supabase.from('saved_listings').insert(basePayload).select('id').single()
+                data = d2; err = err2
+            }
             if (err) {
                 setSavedNicheIds(prev => { const s = new Set(prev); s.delete(item.niche); return s })
                 error('Failed to save listing')

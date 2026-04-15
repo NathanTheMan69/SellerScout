@@ -5,8 +5,14 @@ create table saved_keywords (
   keyword text not null,
   search_volume integer,
   competition text,
+  ctr text,
+  trend text,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+
+-- Migration: add ctr and trend columns if they don't exist
+-- alter table saved_keywords add column if not exists ctr text;
+-- alter table saved_keywords add column if not exists trend text;
 
 -- Enable Row Level Security (RLS)
 alter table saved_keywords enable row level security;
