@@ -14,7 +14,7 @@ const reviews = [
 export function RecentReviews() {
     return (
         <Card className="border-white/50 bg-white/70 backdrop-blur-md shadow-lg shadow-teal-900/5 h-full overflow-hidden">
-            <CardHeader className="bg-teal-500/80 px-5 py-3.5">
+            <CardHeader className="bg-teal-600 px-5 py-3.5">
                 <CardTitle className="text-base font-semibold text-white tracking-wide">Recent Reviews</CardTitle>
             </CardHeader>
             <CardContent className="pt-5">

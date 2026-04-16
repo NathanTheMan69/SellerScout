@@ -6,25 +6,25 @@ const FEATURES = [
     icon: Search,
     title: "Keyword Research",
     description: "Uncover high-demand, low-competition keywords that drive real traffic to your Etsy listings.",
-    color: "from-teal-500 to-emerald-500",
+    color: "from-teal-600 to-teal-500",
   },
   {
     icon: TrendingUp,
     title: "Trend Analysis",
     description: "Spot rising niches before they peak and position your shop ahead of the competition.",
-    color: "from-emerald-500 to-teal-400",
+    color: "from-teal-500 to-teal-400",
   },
   {
     icon: Store,
     title: "Shop Tracker",
     description: "Analyze top-performing competitor shops and benchmark your performance against the best.",
-    color: "from-teal-400 to-cyan-500",
+    color: "from-teal-600 to-teal-400",
   },
   {
     icon: Sparkles,
     title: "Listing Optimizer",
     description: "Get AI-powered SEO scores and actionable tips to improve every listing in your shop.",
-    color: "from-cyan-500 to-teal-500",
+    color: "from-teal-700 to-teal-500",
   },
 ]
 
@@ -52,7 +52,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
             <img src="/logo.png" alt="SellerScout" className="h-9 w-9 drop-shadow-sm" />
-            <span className="text-xl font-bold bg-gradient-to-r from-teal-600 to-emerald-500 bg-clip-text text-transparent" style={{ fontFamily: 'var(--font-raleway)' }}>
+            <span className="text-xl font-bold text-teal-600" style={{ fontFamily: 'var(--font-raleway)' }}>
               Seller Scout
             </span>
           </Link>
@@ -69,7 +69,7 @@ export default function LandingPage() {
             </Link>
             <Link
               href="/login"
-              className="px-5 py-2 text-sm font-semibold text-white bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 rounded-xl shadow-md shadow-teal-500/20 transition-all"
+              className="px-5 py-2 text-sm font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-xl shadow-md shadow-teal-500/20 transition-all"
             >
               Get Started
             </Link>
@@ -81,8 +81,8 @@ export default function LandingPage() {
       <section className="relative pt-32 pb-24 px-6 overflow-hidden">
         {/* Background blobs */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-32 -right-32 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-teal-200/40 to-emerald-200/30 blur-3xl" />
-          <div className="absolute top-1/2 -left-48 w-[500px] h-[500px] rounded-full bg-gradient-to-br from-emerald-100/50 to-teal-100/40 blur-3xl" />
+          <div className="absolute -top-32 -right-32 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-teal-200/40 to-teal-100/30 blur-3xl" />
+          <div className="absolute top-1/2 -left-48 w-[500px] h-[500px] rounded-full bg-gradient-to-br from-teal-100/50 to-teal-50/40 blur-3xl" />
         </div>
 
         <div className="relative max-w-4xl mx-auto text-center">
@@ -94,7 +94,7 @@ export default function LandingPage() {
 
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 leading-tight mb-6">
             Grow your Etsy shop{" "}
-            <span className="bg-gradient-to-r from-teal-500 to-emerald-500 bg-clip-text text-transparent">
+            <span className="text-teal-600">
               smarter
             </span>
           </h1>
@@ -106,7 +106,7 @@ export default function LandingPage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/login"
-              className="flex items-center gap-2 px-8 py-4 text-base font-bold text-white bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 rounded-2xl shadow-lg shadow-teal-500/25 transition-all hover:shadow-xl hover:shadow-teal-500/30 hover:-translate-y-0.5"
+              className="flex items-center gap-2 px-8 py-4 text-base font-bold text-white bg-teal-600 hover:bg-teal-700 rounded-2xl shadow-lg shadow-teal-500/25 transition-all hover:shadow-xl hover:shadow-teal-500/30 hover:-translate-y-0.5"
             >
               Start for free <ArrowRight className="h-4 w-4" />
             </Link>
@@ -135,7 +135,7 @@ export default function LandingPage() {
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
           {STATS.map(({ value, label }) => (
             <div key={label} className="text-center">
-              <div className="text-4xl font-extrabold bg-gradient-to-r from-teal-500 to-emerald-500 bg-clip-text text-transparent mb-1">
+              <div className="text-4xl font-extrabold text-teal-600 mb-1">
                 {value}
               </div>
               <div className="text-sm text-slate-500 font-medium">{label}</div>
@@ -180,7 +180,7 @@ export default function LandingPage() {
 
       {/* CTA Banner */}
       <section className="py-20 px-6">
-        <div className="max-w-4xl mx-auto relative overflow-hidden rounded-3xl bg-gradient-to-br from-teal-500 to-emerald-500 shadow-2xl shadow-teal-500/30 px-10 py-16 text-center">
+        <div className="max-w-4xl mx-auto relative overflow-hidden rounded-3xl bg-teal-600 shadow-2xl shadow-teal-500/30 px-10 py-16 text-center">
           {/* Decorative circles */}
           <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full bg-white/10 blur-2xl pointer-events-none" />
           <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-white/10 blur-2xl pointer-events-none" />
@@ -219,7 +219,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
             <img src="/logo.png" alt="SellerScout" className="h-7 w-7" />
-            <span className="text-base font-bold bg-gradient-to-r from-teal-600 to-emerald-500 bg-clip-text text-transparent" style={{ fontFamily: 'var(--font-raleway)' }}>
+            <span className="text-base font-bold text-teal-600" style={{ fontFamily: 'var(--font-raleway)' }}>
               Seller Scout
             </span>
           </div>

@@ -319,18 +319,18 @@ function ListingAnalysisPageInner(): React.JSX.Element {
             <div className="space-y-8">
 
                 {/* Header */}
-                <div className="flex items-center gap-4">
+                <div className="rounded-2xl bg-teal-600 px-7 py-5 flex items-center gap-5 shadow-md shadow-teal-900/20">
                     {returnTo && (
-                        <button className="mr-2 flex items-center gap-1 text-sm text-slate-500 hover:text-teal-600 transition-colors" onClick={() => router.push(returnTo)}>
+                        <button className="flex items-center gap-1 text-sm text-white/80 hover:text-white transition-colors" onClick={() => router.push(returnTo)}>
                             <ArrowLeft className="h-4 w-4" />
                         </button>
                     )}
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-500 shadow-md shadow-teal-900/20">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 flex-shrink-0">
                         <ShoppingBag className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-800">Listing Analysis</h1>
-                        <p className="text-sm text-slate-500 mt-0.5">Explore top-performing niches or analyze a specific listing.</p>
+                        <h1 className="text-2xl font-bold text-white tracking-tight">Listing Analysis</h1>
+                        <p className="text-sm text-white/75 mt-0.5">Explore top-performing niches or analyze a specific listing.</p>
                     </div>
                 </div>
 
@@ -557,7 +557,7 @@ function ListingAnalysisPageInner(): React.JSX.Element {
                         <div className="modal-card max-h-[92vh] overflow-y-auto">
 
                             {/* ── Teal Banner Header ── */}
-                            <div className="relative rounded-t-2xl bg-teal-500/80 px-6 pt-3 pb-4 text-white overflow-hidden">
+                            <div className="relative rounded-t-2xl bg-teal-600 px-6 pt-3 pb-4 text-white overflow-hidden">
 
                                 <div className="relative flex items-start justify-between gap-4">
                                     <div className="flex items-center gap-4">
@@ -744,7 +744,7 @@ function ListingAnalysisPageInner(): React.JSX.Element {
                                     <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
                                         <table className="w-full text-left text-sm">
                                             <thead>
-                                                <tr className="bg-teal-500/80 text-white text-xs font-bold uppercase tracking-wider">
+                                                <tr className="bg-teal-600 text-white text-xs font-bold uppercase tracking-wider">
                                                     <th className="px-4 py-3 w-[40%]">
                                                         <div className="flex items-center gap-2">
                                                             <Tag className="h-3.5 w-3.5 opacity-80" />
@@ -818,3 +818,4 @@ export default function ListingAnalysisPage() {
         </Suspense>
     )
 }
+

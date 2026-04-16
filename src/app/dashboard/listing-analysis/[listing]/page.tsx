@@ -233,7 +233,7 @@ export default function ListingDetailPage() {
                     <div className="flex flex-col gap-3">
 
                         {/* Teal title header */}
-                        <div className="rounded-2xl bg-teal-500/80 px-5 py-4 text-white shadow-lg shadow-teal-900/15">
+                        <div className="rounded-2xl bg-teal-600 px-5 py-4 text-white shadow-lg shadow-teal-900/15">
                             <div className="flex items-start justify-between gap-3 mb-1.5">
                                 <h1 className="text-2xl font-black tracking-tight capitalize text-white leading-snug">{niche.niche}</h1>
                                 <a href={`https://www.etsy.com/search?q=${encodeURIComponent(niche.keyword)}`} target="_blank" rel="noopener noreferrer" className="flex-shrink-0">
@@ -334,7 +334,7 @@ export default function ListingDetailPage() {
                     <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm flex flex-col gap-4">
 
                         {/* Teal header */}
-                        <div className="rounded-t-2xl bg-teal-500/80 px-5 py-4 text-white flex items-center gap-4">
+                        <div className="rounded-t-2xl bg-teal-600 px-5 py-4 text-white flex items-center gap-4">
                             <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center text-white text-2xl font-black flex-shrink-0 shadow-lg border-2 border-white/30", shopBg)}>
                                 {shopInitial}
                             </div>
@@ -428,7 +428,7 @@ export default function ListingDetailPage() {
                 <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
                     <table className="w-full text-left text-sm">
                         <thead>
-                            <tr className="bg-teal-500/80 text-white text-xs font-bold uppercase tracking-wider">
+                            <tr className="bg-teal-600 text-white text-xs font-bold uppercase tracking-wider">
                                 <th className="px-4 py-3 w-[28%]">
                                     <div className="flex items-center gap-2">
                                         <Tag className="h-3.5 w-3.5 opacity-80" /> Tags

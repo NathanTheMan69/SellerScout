@@ -12,7 +12,9 @@ export async function GET(request: Request) {
         if (!error) {
             return NextResponse.redirect(`${origin}${next}`)
         }
+        console.error('OAuth callback error:', error)
+        return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(error.message)}`)
     }
 
-    return NextResponse.redirect(`${origin}/login?error=Could not authenticate with Google`)
+    return NextResponse.redirect(`${origin}/login?error=No+auth+code+returned+from+Google`)
 }

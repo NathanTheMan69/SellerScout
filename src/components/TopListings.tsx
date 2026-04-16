@@ -38,7 +38,7 @@ export function TopListings() {
 
     return (
         <Card className="col-span-1 md:col-span-2 lg:col-span-1 border-white/50 bg-white/70 backdrop-blur-md shadow-lg shadow-teal-900/5 overflow-hidden">
-            <CardHeader className="bg-teal-500/80 px-5 py-3.5 flex flex-row items-center justify-between">
+            <CardHeader className="bg-teal-600 px-5 py-3.5 flex flex-row items-center justify-between">
                 <CardTitle className="text-base font-semibold text-white tracking-wide">Top Performing Listings</CardTitle>
                 <div ref={ref} className="relative">
                     <button

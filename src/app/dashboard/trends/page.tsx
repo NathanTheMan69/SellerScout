@@ -499,13 +499,13 @@ export default function TrendsPage() {
             <div className="space-y-10">
 
                 {/* ── Header ── */}
-                <div className="flex items-center gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-500 shadow-md shadow-teal-900/20">
+                <div className="rounded-2xl bg-teal-600 px-7 py-5 flex items-center gap-5 shadow-md shadow-teal-900/20">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 flex-shrink-0">
                         <TrendingUp className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-800">Market Trends</h1>
-                        <p className="text-sm text-slate-500 mt-0.5">Explore trending categories and rising niches across Etsy.</p>
+                        <h1 className="text-2xl font-bold text-white tracking-tight">Market Trends</h1>
+                        <p className="text-sm text-white/75 mt-0.5">Explore trending categories and rising niches across Etsy.</p>
                     </div>
                 </div>
 
@@ -978,7 +978,7 @@ export default function TrendsPage() {
                     <div className="relative z-50 w-full max-w-3xl max-h-[92vh] overflow-y-auto rounded-2xl border border-slate-200/80 bg-slate-50 shadow-2xl shadow-slate-900/20 animate-in fade-in zoom-in-95 duration-200">
 
                         {/* ── Teal Header ── */}
-                        <div className="relative rounded-t-2xl bg-teal-500/80 p-5 text-white">
+                        <div className="relative rounded-t-2xl bg-teal-600 p-5 text-white">
                             <button
                                 onClick={() => setSelectedProduct(null)}
                                 className="absolute top-3 right-3 p-1.5 hover:bg-white/20 rounded-full transition-colors text-white/70 hover:text-white"
@@ -1116,7 +1116,7 @@ export default function TrendsPage() {
                             <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
                                 <table className="w-full text-left text-sm">
                                     <thead>
-                                        <tr className="bg-teal-500/80 text-white text-xs font-bold uppercase tracking-wider">
+                                        <tr className="bg-teal-600 text-white text-xs font-bold uppercase tracking-wider">
                                             <th className="px-4 py-3 w-[40%]">
                                                 <div className="flex items-center gap-2">
                                                     <Tag className="h-3.5 w-3.5 opacity-80" />
@@ -1176,3 +1176,4 @@ export default function TrendsPage() {
         </>
     )
 }
+

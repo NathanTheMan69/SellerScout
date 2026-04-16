@@ -140,7 +140,7 @@ function ShopsGrid({ filter, categoryFilter, ageFilter, onShopClick, savedShops,
                         <CardContent className="p-3">
                             <div className="flex gap-3">
                                 {/* Avatar */}
-                                <div className="flex-shrink-0 w-[88px] h-[88px] rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-500 flex flex-col items-center justify-center text-white font-bold text-2xl shadow-lg shadow-teal-900/20">
+                                <div className="flex-shrink-0 w-[88px] h-[88px] rounded-2xl bg-teal-500 flex flex-col items-center justify-center text-white font-bold text-2xl shadow-lg shadow-teal-900/20">
                                     {shop.name.substring(0, 2).toUpperCase()}
                                     {!isTop && (
                                         <span className="mt-1.5 inline-flex items-center gap-1 text-[9px] font-bold text-emerald-700 bg-white/80 px-1.5 py-0.5 rounded-full whitespace-nowrap">
@@ -398,15 +398,13 @@ export default function ShopsPage() {
         <DashboardLayout>
             <div className="space-y-8">
                 {/* Header */}
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-500 shadow-md shadow-teal-900/20">
-                            <Store className="h-6 w-6 text-white" />
-                        </div>
-                        <div>
-                            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-800">Shop Tracker</h1>
-                            <p className="text-sm text-slate-500 mt-0.5">Search for competitors and track their performance.</p>
-                        </div>
+                <div className="rounded-2xl bg-teal-600 px-7 py-5 flex items-center gap-5 shadow-md shadow-teal-900/20">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 flex-shrink-0">
+                        <Store className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl font-bold text-white tracking-tight">Shop Tracker</h1>
+                        <p className="text-sm text-white/75 mt-0.5">Search for competitors and track their performance.</p>
                     </div>
                 </div>
 
@@ -454,7 +452,7 @@ export default function ShopsPage() {
                                     >
                                         <CardContent className="p-6 space-y-6">
                                             <div className="flex justify-between items-start">
-                                                <div className="h-16 w-16 rounded-full bg-teal-100 flex items-center justify-center text-teal-600 font-bold text-xl border-2 border-white shadow-sm">
+                                                <div className="h-16 w-16 rounded-full bg-teal-500 flex items-center justify-center text-white font-bold text-xl border-2 border-white shadow-sm">
                                                     {shop.name.substring(0, 2).toUpperCase()}
                                                 </div>
                                                 <button
@@ -662,7 +660,7 @@ export default function ShopsPage() {
                     return (
                         <div>
                             {/* ── Teal Header ── */}
-                            <div className="relative rounded-t-2xl bg-teal-500/80 p-5 text-white">
+                            <div className="relative rounded-t-2xl bg-teal-600 p-5 text-white">
                                 {/* X button — top right */}
                                 <button
                                     onClick={() => setIsModalOpen(false)}
@@ -873,7 +871,7 @@ export default function ShopsPage() {
                                     <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
                                         <table className="w-full text-left text-sm">
                                             <thead>
-                                                <tr className="bg-teal-500/80 text-white text-xs font-bold uppercase tracking-wider">
+                                                <tr className="bg-teal-600 text-white text-xs font-bold uppercase tracking-wider">
                                                     <th className="px-4 py-3 w-[40%]">
                                                         <div className="flex items-center gap-2">
                                                             <Tag className="h-3.5 w-3.5 opacity-80" />
@@ -939,3 +937,4 @@ export default function ShopsPage() {
         </DashboardLayout>
     )
 }
+

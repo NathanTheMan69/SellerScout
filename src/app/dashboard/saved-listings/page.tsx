@@ -93,13 +93,13 @@ export default function SavedListingsPage() {
         <DashboardLayout>
             <div className="space-y-8">
                 {/* Header */}
-                <div className="flex items-center gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-500 shadow-md shadow-teal-900/20">
+                <div className="rounded-2xl bg-teal-600 px-7 py-5 flex items-center gap-5 shadow-md shadow-teal-900/20">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 flex-shrink-0">
                         <ShoppingBag className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-800">Saved Listings</h1>
-                        <p className="text-sm text-slate-500 mt-0.5">Track performance of specific listings over time.</p>
+                        <h1 className="text-2xl font-bold text-white tracking-tight">Saved Listings</h1>
+                        <p className="text-sm text-white/75 mt-0.5">Track performance of specific listings over time.</p>
                     </div>
                 </div>
 
@@ -109,7 +109,7 @@ export default function SavedListingsPage() {
                     <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm shadow-teal-900/5">
                         <table className="w-full text-sm text-left">
                             <thead>
-                                <tr className="border-b border-teal-200/60 bg-teal-500/80">
+                                <tr className="border-b border-teal-200/60 bg-teal-600">
                                     <th className="w-10 pl-5 pr-2 py-4" />
                                     <th className="px-3 py-4 text-sm font-medium uppercase tracking-wider text-white">Listing</th>
                                     <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white">Revenue</th>
@@ -215,3 +215,4 @@ export default function SavedListingsPage() {
         </DashboardLayout>
     )
 }
+

@@ -231,7 +231,7 @@ export default function KeywordAnalyzerPage() {
                 </div>
 
                 {/* ── Keyword Banner ── */}
-                <div className="rounded-2xl bg-teal-500/80 p-6 text-white shadow-xl shadow-teal-900/20">
+                <div className="rounded-2xl bg-teal-600 p-6 text-white shadow-xl shadow-teal-900/20">
                     <div className="flex flex-col md:flex-row md:items-center gap-6">
                         {/* Icon + name */}
                         <div className="h-16 w-16 rounded-2xl bg-white/20 border-2 border-white/30 flex items-center justify-center flex-shrink-0 shadow-lg">
@@ -389,7 +389,7 @@ export default function KeywordAnalyzerPage() {
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left text-sm">
                                     <thead>
-                                        <tr className="bg-teal-500/80 text-white text-xs font-bold uppercase tracking-wider">
+                                        <tr className="bg-teal-600 text-white text-xs font-bold uppercase tracking-wider">
                                             <th className="w-10 pl-5 pr-2 py-4"></th>
                                             <th className="px-4 py-4 w-[28%]">Product</th>
                                             <th className="w-[12%] px-4 py-4 cursor-pointer hover:bg-teal-600/30 transition-colors" onClick={() => handleListingSort('trend')}>
@@ -515,7 +515,7 @@ export default function KeywordAnalyzerPage() {
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left text-sm">
                                     <thead>
-                                        <tr className="bg-teal-500/80 text-white text-xs font-bold uppercase tracking-wider">
+                                        <tr className="bg-teal-600 text-white text-xs font-bold uppercase tracking-wider">
                                             <th className="px-5 py-4 w-[35%]">Keyword</th>
                                             <th className="px-4 py-4">Views</th>
                                             <th className="px-4 py-4">Listings</th>

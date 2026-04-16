@@ -267,7 +267,7 @@ export default function ShopDetailsPage() {
                 </div>
 
                 {/* ── Shop Identity Banner ── */}
-                <div className="rounded-2xl bg-teal-500/80 p-6 text-white shadow-xl shadow-teal-900/20 flex flex-col md:flex-row items-start md:items-center gap-6">
+                <div className="rounded-2xl bg-teal-600 p-6 text-white shadow-xl shadow-teal-900/20 flex flex-col md:flex-row items-start md:items-center gap-6">
                     <div className="h-20 w-20 rounded-2xl bg-white/20 border-2 border-white/30 overflow-hidden flex-shrink-0 shadow-lg flex items-center justify-center">
                         <img
                             src={MOCK_SHOP.logo}
@@ -408,7 +408,7 @@ export default function ShopDetailsPage() {
                                 {/* Image */}
                                 <div className="relative aspect-[4/3] bg-slate-100 overflow-hidden flex-shrink-0">
                                     <ProductImage src={item.image} alt={item.title} />
-                                    <div className="absolute top-2 left-2 h-5 w-5 rounded-full flex items-center justify-center text-[9px] font-black text-white shadow-sm bg-teal-500/80">
+                                    <div className="absolute top-2 left-2 h-5 w-5 rounded-full flex items-center justify-center text-[9px] font-black text-white shadow-sm bg-teal-600">
                                         {i + 1}
                                     </div>
                                     <div className="absolute bottom-2 right-2 flex items-center gap-0.5 rounded-full border border-white/70 bg-white/90 px-1.5 py-0.5 text-[9px] font-semibold text-slate-700 shadow-sm backdrop-blur">
@@ -464,7 +464,7 @@ export default function ShopDetailsPage() {
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left text-sm">
                                     <thead>
-                                        <tr className="bg-teal-500/80 text-white text-xs font-bold uppercase tracking-wider">
+                                        <tr className="bg-teal-600 text-white text-xs font-bold uppercase tracking-wider">
                                             <th className="w-10 pl-5 pr-2 py-4"></th>
                                             <th className="px-4 py-4 w-[28%]">Product</th>
                                             <th className="w-[12%] px-4 py-4 cursor-pointer hover:bg-teal-600/30 transition-colors" onClick={() => handleSort('trend')}>

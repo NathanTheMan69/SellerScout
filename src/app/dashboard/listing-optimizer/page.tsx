@@ -291,7 +291,7 @@ function ListingDetailModal({ listing, onClose }: { listing: MockListing; onClos
                 <div className="modal-card max-h-[92vh] overflow-y-auto">
 
                     {/* ── Teal Banner Header ── */}
-                    <div className="relative rounded-t-2xl bg-teal-500/80 px-6 pt-3 pb-4 text-white overflow-hidden">
+                    <div className="relative rounded-t-2xl bg-teal-600 px-6 pt-3 pb-4 text-white overflow-hidden">
                         <div className="relative flex items-start justify-between gap-4">
                             <div className="flex items-center gap-4">
                                 {/* Thumbnail */}
@@ -633,13 +633,13 @@ export default function ListingOptimizerPage() {
     return (
         <DashboardLayout>
             <div className="space-y-8">
-                <div className="flex items-center gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-500 shadow-md shadow-teal-500/20">
+                <div className="rounded-2xl bg-teal-600 px-7 py-5 flex items-center gap-5 shadow-md shadow-teal-900/20">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 flex-shrink-0">
                         <Sparkles className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-800">Listing Optimizer</h1>
-                        <p className="text-sm text-slate-500 mt-0.5">Review your shop&apos;s listings and get actionable SEO improvement tips.</p>
+                        <h1 className="text-2xl font-bold text-white tracking-tight">Listing Optimizer</h1>
+                        <p className="text-sm text-white/75 mt-0.5">Review your shop&apos;s listings and get actionable SEO improvement tips.</p>
                     </div>
                 </div>
 
@@ -848,3 +848,4 @@ export default function ListingOptimizerPage() {
         </DashboardLayout>
     )
 }
+

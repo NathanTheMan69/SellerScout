@@ -503,7 +503,7 @@ export default function ListingOptimizerDetailPage() {
                     <div className="flex flex-col gap-3 h-full">
 
                         {/* Teal title header */}
-                        <div className="rounded-2xl bg-teal-500/80 px-5 py-4 text-white shadow-lg shadow-teal-900/15">
+                        <div className="rounded-2xl bg-teal-600 px-5 py-4 text-white shadow-lg shadow-teal-900/15">
                             <div className="flex items-start justify-between gap-3 mb-2">
                                 <h1 className="text-2xl font-black tracking-tight text-white leading-snug">{listing.title}</h1>
                                 <a href={`https://www.etsy.com/search?q=${encodeURIComponent(listing.title)}`} target="_blank" rel="noopener noreferrer" className="flex-shrink-0">
@@ -624,7 +624,7 @@ export default function ListingOptimizerDetailPage() {
 
                     {/* Optimization Tips */}
                     <div className="bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col">
-                        <div className="bg-teal-500/80 px-5 py-3.5 flex items-center gap-2 rounded-t-2xl overflow-hidden">
+                        <div className="bg-teal-600 px-5 py-3.5 flex items-center gap-2 rounded-t-2xl overflow-hidden">
                             <Star className="h-4 w-4 text-white/80" />
                             <h2 className="text-sm font-bold text-white uppercase tracking-wider">Optimization Tips</h2>
                             <ScoreTooltip lines={buildOverallScoreReasoning(listing)} position="bottom" align="right">
@@ -658,7 +658,7 @@ export default function ListingOptimizerDetailPage() {
 
                 {/* ── Tag Optimization ── */}
                 <div className="bg-white border border-slate-200 rounded-2xl shadow-sm">
-                    <div className="bg-teal-500/80 px-5 py-3.5 flex items-center gap-2 rounded-t-2xl overflow-hidden">
+                    <div className="bg-teal-600 px-5 py-3.5 flex items-center gap-2 rounded-t-2xl overflow-hidden">
                         <Tag className="h-4 w-4 text-white" />
                         <h2 className="text-sm font-bold text-white uppercase tracking-wider">Tag Optimization</h2>
                         <div className="ml-auto flex items-center gap-2">
@@ -748,7 +748,7 @@ export default function ListingOptimizerDetailPage() {
 
                                 {/* Listing Title */}
                                 <div className="bg-white border border-slate-200 rounded-2xl shadow-sm">
-                                    <div className="bg-teal-500/80 px-5 py-3.5 flex items-center gap-2 rounded-t-2xl overflow-hidden">
+                                    <div className="bg-teal-600 px-5 py-3.5 flex items-center gap-2 rounded-t-2xl overflow-hidden">
                                         <TrendingUp className="h-4 w-4 text-white/80" />
                                         <h2 className="text-sm font-bold text-white uppercase tracking-wider">Listing Title</h2>
                                         <ScoreTooltip lines={buildTitleScoreReasoning(listing)} position="top" align="right">
@@ -789,7 +789,7 @@ export default function ListingOptimizerDetailPage() {
 
                                 {/* Pricing Breakdown */}
                                 <div className="bg-white border border-slate-200 rounded-2xl shadow-sm flex-1">
-                                    <div className="bg-teal-500/80 px-5 py-3.5 flex items-center gap-2 rounded-t-2xl overflow-hidden">
+                                    <div className="bg-teal-600 px-5 py-3.5 flex items-center gap-2 rounded-t-2xl overflow-hidden">
                                         <DollarSign className="h-4 w-4 text-white/80" />
                                         <h2 className="text-sm font-bold text-white uppercase tracking-wider">Pricing Breakdown</h2>
                                         <span className="ml-auto text-xs font-semibold text-white/80">
@@ -830,7 +830,7 @@ export default function ListingOptimizerDetailPage() {
 
                             {/* Right column: Listing Description */}
                             <div className="bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col">
-                                <div className="bg-teal-500/80 px-5 py-3.5 flex items-center gap-2 rounded-t-2xl overflow-hidden">
+                                <div className="bg-teal-600 px-5 py-3.5 flex items-center gap-2 rounded-t-2xl overflow-hidden">
                                     <TrendingUp className="h-4 w-4 text-white/80" />
                                     <h2 className="text-sm font-bold text-white uppercase tracking-wider">Listing Description</h2>
                                     <ScoreTooltip lines={buildDescScoreReasoning(listing)} position="top" align="right">

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, use } from 'react'
 import { login, signup } from './actions'
 import { Button } from '@/components/Button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/Card'
@@ -11,8 +11,9 @@ import { createClient } from '@/utils/supabase/client'
 export default function LoginPage({
     searchParams,
 }: {
-    searchParams: { message: string; error: string }
+    searchParams: Promise<{ message: string; error: string }>
 }) {
+    const resolvedSearchParams = use(searchParams)
     const [mode, setMode] = useState<'signin' | 'signup'>('signin')
     const [isSignupSuccess, setIsSignupSuccess] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
@@ -132,9 +133,9 @@ export default function LoginPage({
                                     />
                                 </div>
 
-                                {(searchParams?.error || clientError) && (
+                                {(resolvedSearchParams?.error || clientError) && (
                                     <div className="text-sm text-rose-600 bg-rose-50 p-2.5 rounded-lg border border-rose-200 text-center">
-                                        {clientError || searchParams.error}
+                                        {clientError || resolvedSearchParams.error}
                                     </div>
                                 )}
 

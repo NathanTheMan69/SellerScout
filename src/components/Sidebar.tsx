@@ -82,8 +82,8 @@ export function Sidebar() {
                 className={cn(
                     "fixed inset-y-0 left-0 z-40 w-64 transform transition-transform duration-200 ease-in-out",
                     "h-full rounded-none border-r border-slate-200/60 overflow-hidden",
-                    "bg-gradient-to-b from-white via-white to-teal-50/40",
-                    "shadow-xl shadow-teal-900/5 backdrop-blur-md",
+                    "bg-gradient-to-b from-white via-white to-teal-50",
+                    "shadow-xl shadow-teal-900/5",
                     "md:m-4 md:h-[calc(100vh-2rem)] md:rounded-2xl md:border md:translate-x-0",
                     isOpen ? "translate-x-0" : "-translate-x-full"
                 )}
@@ -110,7 +110,7 @@ export function Sidebar() {
                                     className={cn(
                                         "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150",
                                         isActive
-                                            ? "bg-teal-500/80 text-white shadow-md shadow-teal-500/25"
+                                            ? "bg-teal-600 text-white shadow-md shadow-teal-500/25"
                                             : "text-slate-500 hover:bg-teal-50 hover:text-teal-700"
                                     )}
                                 >
@@ -147,7 +147,7 @@ export function Sidebar() {
                                         className={cn(
                                             "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150",
                                             isActive
-                                                ? "bg-teal-500/80 text-white shadow-md shadow-teal-500/25"
+                                                ? "bg-teal-600 text-white shadow-md shadow-teal-500/25"
                                                 : "text-slate-500 hover:bg-teal-50 hover:text-teal-700"
                                         )}
                                     >
@@ -174,7 +174,7 @@ export function Sidebar() {
                                     className={cn(
                                         "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150",
                                         isActive
-                                            ? "bg-teal-500/80 text-white shadow-md shadow-teal-500/25"
+                                            ? "bg-teal-600 text-white shadow-md shadow-teal-500/25"
                                             : "text-slate-500 hover:bg-teal-50 hover:text-teal-700"
                                     )}
                                 >
