@@ -38,14 +38,15 @@ export function TopListings() {
 
     return (
         <Card className="col-span-1 md:col-span-2 lg:col-span-1 border-white/50 bg-white/70 backdrop-blur-md shadow-lg shadow-teal-900/5 overflow-hidden">
-            <CardHeader className="bg-teal-600 px-5 py-3.5 flex flex-row items-center justify-between">
-                <CardTitle className="text-base font-semibold text-white tracking-wide">Top Performing Listings</CardTitle>
-                <div ref={ref} className="relative">
+            <CardHeader className="bg-teal-600 px-4 md:px-5 py-3 md:py-3.5 flex flex-row items-center justify-between gap-2">
+                <CardTitle className="text-sm md:text-base font-semibold text-white tracking-wide truncate">Top Performing Listings</CardTitle>
+                <div ref={ref} className="relative flex-shrink-0">
                     <button
                         onClick={() => setOpen(v => !v)}
-                        className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 transition-colors text-white text-xs font-medium px-2.5 py-1 rounded-md"
+                        className="flex items-center gap-1 md:gap-1.5 bg-white/20 hover:bg-white/30 transition-colors text-white text-[11px] md:text-xs font-medium px-2 md:px-2.5 py-1 rounded-md"
                     >
-                        {selectedLabel}
+                        <span className="hidden sm:inline">{selectedLabel}</span>
+                        <span className="sm:hidden">{selectedLabel.replace("Last ", "")}</span>
                         <ChevronDown className={cn("h-3 w-3 transition-transform", open && "rotate-180")} />
                     </button>
                     {open && (
@@ -68,18 +69,18 @@ export function TopListings() {
                     )}
                 </div>
             </CardHeader>
-            <CardContent className="pt-5">
-                <div className="space-y-6">
+            <CardContent className="p-4 md:p-6 pt-4 md:pt-5">
+                <div className="space-y-4 md:space-y-6">
                     {topListings.map((listing) => (
-                        <div key={listing.id} className="flex items-center gap-4">
-                            <div className="h-12 w-12 rounded-lg bg-teal-50 flex items-center justify-center border border-teal-100">
-                                <ImageIcon className="h-6 w-6 text-teal-300" />
+                        <div key={listing.id} className="flex items-center gap-3 md:gap-4">
+                            <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-teal-50 flex items-center justify-center border border-teal-100 flex-shrink-0">
+                                <ImageIcon className="h-5 w-5 md:h-6 md:w-6 text-teal-300" />
                             </div>
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium text-slate-800 truncate">{listing.title}</p>
                                 <p className="text-xs text-slate-500">{listing.sales} sales</p>
                             </div>
-                            <div className="font-semibold text-slate-800">
+                            <div className="font-semibold text-slate-800 text-sm md:text-base flex-shrink-0 tabular-nums">
                                 {listing.revenue}
                             </div>
                         </div>

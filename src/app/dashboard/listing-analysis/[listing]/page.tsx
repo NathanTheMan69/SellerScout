@@ -65,10 +65,10 @@ const NICHES = [
 
 
 const compColor = (c: string) => {
-    if (c === 'Low')       return 'text-emerald-700 bg-emerald-50 border-emerald-200'
-    if (c === 'Medium')    return 'text-amber-700   bg-amber-50   border-amber-200'
-    if (c === 'High')      return 'text-rose-700    bg-rose-50    border-rose-200'
-    if (c === 'Very High') return 'text-purple-700  bg-purple-50  border-purple-200'
+    if (c === 'Low')       return 'text-emerald-700 bg-white border-emerald-200'
+    if (c === 'Medium')    return 'text-amber-700   bg-white border-amber-200'
+    if (c === 'High')      return 'text-rose-700    bg-white border-rose-200'
+    if (c === 'Very High') return 'text-purple-700  bg-white border-purple-200'
     return 'text-slate-600 bg-slate-50 border-slate-200'
 }
 

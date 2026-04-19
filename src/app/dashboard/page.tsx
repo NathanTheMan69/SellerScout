@@ -9,9 +9,9 @@ import { DollarSign, ShoppingBag, Eye, Star } from "lucide-react"
 export default function Home() {
   return (
     <DashboardLayout>
-      <div className="flex flex-col gap-8 pb-20">
+      <div className="flex flex-col gap-4 md:gap-8 pb-12 md:pb-20">
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-3 md:gap-4 grid-cols-2 lg:grid-cols-4">
           <StatsCard
             title="Total Revenue"
             value="$45,231.89"
@@ -38,12 +38,12 @@ export default function Home() {
           />
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-3 md:gap-4 md:grid-cols-2 lg:grid-cols-4">
           <SalesChart />
           <TopListings />
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-3 md:gap-4 md:grid-cols-2">
           <RecentReviews />
           <ScoutInsights />
         </div>

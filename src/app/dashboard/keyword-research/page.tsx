@@ -168,11 +168,11 @@ function KeywordDetailModal({ item, onClose }: KeywordDetailPanelProps) {
     )))
 
     const compColor = (c: string) => {
-        if (c === 'Low')       return 'text-emerald-700 bg-emerald-50 border-emerald-200'
-        if (c === 'Medium')    return 'text-amber-700   bg-amber-50   border-amber-200'
-        if (c === 'High')      return 'text-rose-700    bg-rose-50    border-rose-200'
-        if (c === 'Very High') return 'text-purple-700  bg-purple-50  border-purple-200'
-        return 'text-slate-600 bg-slate-50 border-slate-200'
+        if (c === 'Low')       return 'text-emerald-700 bg-white border-emerald-200'
+        if (c === 'Medium')    return 'text-amber-700   bg-white border-amber-200'
+        if (c === 'High')      return 'text-rose-700    bg-white border-rose-200'
+        if (c === 'Very High') return 'text-purple-700  bg-white border-purple-200'
+        return 'text-slate-600 bg-white border-slate-200'
     }
 
     const relatedTags = [item.keyword.toLowerCase(), ...item.keyword.toLowerCase().split(' '), 'handmade', 'gift', 'etsy', 'custom']
@@ -194,92 +194,93 @@ function KeywordDetailModal({ item, onClose }: KeywordDetailPanelProps) {
     const monthlyRev = Math.round(baseRev)
 
     return (
-        <div className="modal-backdrop fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm" onClick={onClose}>
+        <div className="modal-backdrop fixed inset-0 z-[70] flex items-center justify-center p-2 sm:p-4 bg-slate-900/50 backdrop-blur-sm" onClick={onClose}>
             <div className="w-full max-w-3xl rounded-2xl bg-white shadow-2xl shadow-slate-900/25 border border-slate-200/60 overflow-hidden" onClick={e => e.stopPropagation()}>
-            <div className="modal-card max-h-[92vh] overflow-y-auto">
+            <div className="modal-card max-h-[94vh] sm:max-h-[92vh] overflow-y-auto">
 
                 {/* ── Teal Banner ── */}
-                <div className="relative rounded-t-2xl bg-teal-600 px-6 pt-3 pb-4 text-white overflow-hidden">
-                    <div className="flex items-start justify-between gap-4">
-                        <div className="flex items-center gap-4">
-                            <div className="h-14 w-14 rounded-xl bg-white/20 border-2 border-white/30 flex-shrink-0 shadow-md flex items-center justify-center">
-                                <Search className="h-6 w-6 text-white/80" />
+                <div className="relative rounded-t-2xl bg-teal-600 px-4 sm:px-6 pt-3 pb-4 text-white overflow-hidden">
+                    <div className="flex items-start justify-between gap-3 sm:gap-4">
+                        <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+                            <div className="h-11 w-11 sm:h-14 sm:w-14 rounded-xl bg-white/20 border-2 border-white/30 flex-shrink-0 shadow-md flex items-center justify-center">
+                                <Search className="h-5 w-5 sm:h-6 sm:w-6 text-white/80" />
                             </div>
-                            <div>
-                                <h2 className="text-2xl font-black tracking-normal leading-tight capitalize">{item.keyword}</h2>
-                                <div className="flex items-center gap-2 mt-1.5">
-                                    <span className="text-xs font-semibold bg-black/25 text-white/90 px-2.5 py-0.5 rounded-full">
+                            <div className="min-w-0 flex-1">
+                                <h2 className="text-lg sm:text-2xl font-black tracking-normal leading-tight capitalize truncate">{item.keyword}</h2>
+                                <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                                    <span className="text-[10px] sm:text-xs font-semibold bg-black/25 text-white/90 px-2 py-0.5 rounded-full">
                                         {item.category}
                                     </span>
-                                    <span className="text-sm text-white/80 font-semibold">{item.volume.toLocaleString()} searches/mo</span>
+                                    <span className="text-xs sm:text-sm text-white/80 font-semibold">{item.volume.toLocaleString()} searches/mo</span>
                                 </div>
-                                <div className="flex items-center gap-2.5 mt-2.5">
-                                    <span className="text-white/80 text-xs font-semibold uppercase tracking-wider">Keyword Score</span>
+                                <div className="flex items-center gap-2 sm:gap-2.5 mt-2.5">
+                                    <span className="text-white/80 text-[10px] sm:text-xs font-semibold uppercase tracking-wider">Keyword Score</span>
                                     <div className="flex items-center gap-2">
-                                        <div className="w-28 h-2 bg-white/20 rounded-full overflow-hidden">
+                                        <div className="w-20 sm:w-28 h-2 bg-white/20 rounded-full overflow-hidden">
                                             <div className="h-full bg-white rounded-full transition-all duration-700" style={{ width: `${kwScore}%` }} />
                                         </div>
-                                        <span className="font-black text-white text-lg leading-none">{kwScore}</span>
+                                        <span className="font-black text-white text-base sm:text-lg leading-none">{kwScore}</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div className="flex items-center gap-2 flex-shrink-0">
-                            <a href={`https://www.etsy.com/search?q=${encodeURIComponent(item.keyword)}`} target="_blank" rel="noopener noreferrer"
-                                className="flex items-center gap-1.5 text-sm font-semibold bg-white/20 hover:bg-white/30 border border-white/30 px-4 py-2 rounded-lg transition-colors">
-                                <ExternalLink className="h-4 w-4" /> Search Etsy
-                            </a>
-                            <button onClick={() => router.push(`/dashboard/keyword-research/${encodeURIComponent(item.keyword)}`)}
-                                className="flex items-center gap-1.5 text-sm font-semibold bg-white text-teal-700 hover:bg-white/90 px-4 py-2 rounded-lg transition-colors shadow-sm">
-                                <TrendingUp className="h-4 w-4" /> Full Analysis
-                            </button>
-                            <button onClick={onClose} className="p-1.5 hover:bg-white/20 rounded-full transition-colors text-white/70 hover:text-white">
-                                <X className="h-4 w-4" />
-                            </button>
-                        </div>
+                        <button onClick={onClose} className="p-1.5 hover:bg-white/20 rounded-full transition-colors text-white/70 hover:text-white flex-shrink-0">
+                            <X className="h-4 w-4" />
+                        </button>
+                    </div>
+                    {/* Action buttons — stacked row under header on mobile, inline on desktop */}
+                    <div className="flex items-center gap-2 mt-3 sm:absolute sm:top-3 sm:right-12 sm:mt-0">
+                        <a href={`https://www.etsy.com/search?q=${encodeURIComponent(item.keyword)}`} target="_blank" rel="noopener noreferrer"
+                            className="flex items-center justify-center gap-1.5 text-xs sm:text-sm font-semibold bg-white/20 hover:bg-white/30 border border-white/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-colors flex-1 sm:flex-none">
+                            <ExternalLink className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> Search Etsy
+                        </a>
+                        <button onClick={() => router.push(`/dashboard/keyword-research/${encodeURIComponent(item.keyword)}`)}
+                            className="flex items-center justify-center gap-1.5 text-xs sm:text-sm font-semibold bg-white text-teal-700 hover:bg-white/90 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-colors shadow-sm flex-1 sm:flex-none">
+                            <TrendingUp className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> Full Analysis
+                        </button>
                     </div>
                 </div>
 
                 {/* ── Body ── */}
-                <div className="p-5 space-y-5 bg-slate-50 rounded-b-2xl">
+                <div className="p-3 sm:p-5 space-y-4 sm:space-y-5 bg-slate-50 rounded-b-2xl">
 
                     {/* Stat Cards */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 items-stretch">
-                        <div className="rounded-xl border border-teal-200 bg-white p-4">
-                            <div className="flex items-center justify-between mb-2">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3 items-stretch">
+                        <div className="rounded-xl border border-teal-200 bg-white p-3 sm:p-4">
+                            <div className="flex items-center justify-between mb-1.5 sm:mb-2">
                                 <span className="text-[10px] font-bold uppercase tracking-wider text-teal-600">Revenue</span>
                                 <DollarSign className="h-4 w-4 text-teal-400 opacity-70" />
                             </div>
-                            <p className="text-2xl font-black text-teal-900">
+                            <p className="text-xl sm:text-2xl font-black text-teal-900">
                                 {monthlyRev >= 1000000 ? `$${(monthlyRev/1000000).toFixed(1)}M` : monthlyRev >= 1000 ? `$${(monthlyRev/1000).toFixed(0)}k` : `$${monthlyRev}`}
                             </p>
-                            <p className="text-xs text-teal-500 mt-0.5">est. monthly</p>
+                            <p className="text-[10px] sm:text-xs text-teal-500 mt-0.5">est. monthly</p>
                         </div>
-                        <div className={cn("rounded-xl border p-4 bg-white", growthPct > 0 ? "border-emerald-200" : growthPct < 0 ? "border-rose-200" : "border-slate-200")}>
-                            <div className="flex items-center justify-between mb-2">
+                        <div className={cn("rounded-xl border p-3 sm:p-4 bg-white", growthPct > 0 ? "border-emerald-200" : growthPct < 0 ? "border-rose-200" : "border-slate-200")}>
+                            <div className="flex items-center justify-between mb-1.5 sm:mb-2">
                                 <span className={cn("text-[10px] font-bold uppercase tracking-wider", growthPct > 0 ? "text-emerald-600" : growthPct < 0 ? "text-rose-600" : "text-slate-500")}>Growth</span>
                                 {growthPct > 0 ? <TrendingUp className="h-4 w-4 text-emerald-400 opacity-70" /> : growthPct < 0 ? <TrendingDown className="h-4 w-4 text-rose-400 opacity-70" /> : <Minus className="h-4 w-4 text-slate-400 opacity-70" />}
                             </div>
-                            <p className={cn("text-2xl font-black", growthPct > 0 ? "text-emerald-800" : growthPct < 0 ? "text-rose-800" : "text-slate-700")}>
+                            <p className={cn("text-xl sm:text-2xl font-black", growthPct > 0 ? "text-emerald-800" : growthPct < 0 ? "text-rose-800" : "text-slate-700")}>
                                 {growthPct > 0 ? `+${growthPct}%` : `${growthPct}%`}
                             </p>
-                            <p className={cn("text-xs mt-0.5", growthPct > 0 ? "text-emerald-500" : growthPct < 0 ? "text-rose-400" : "text-slate-400")}>over 12 months</p>
+                            <p className={cn("text-[10px] sm:text-xs mt-0.5", growthPct > 0 ? "text-emerald-500" : growthPct < 0 ? "text-rose-400" : "text-slate-400")}>over 12 months</p>
                         </div>
-                        <div className={cn("rounded-xl border p-4 bg-white", compColor(item.competition).replace(/bg-\S+/g, ''))}>
-                            <div className="flex items-center justify-between mb-2">
+                        <div className={cn("rounded-xl border p-3 sm:p-4 bg-white", compColor(item.competition).replace(/bg-\S+/g, ''))}>
+                            <div className="flex items-center justify-between mb-1.5 sm:mb-2">
                                 <span className="text-[10px] font-bold uppercase tracking-wider">Competition</span>
                                 <Tag className="h-4 w-4 opacity-40" />
                             </div>
-                            <p className="text-xl font-black whitespace-nowrap">{item.competition}</p>
-                            <p className="text-xs mt-0.5 opacity-60">seller density</p>
+                            <p className="text-lg sm:text-xl font-black whitespace-nowrap">{item.competition}</p>
+                            <p className="text-[10px] sm:text-xs mt-0.5 opacity-60">seller density</p>
                         </div>
-                        <div className="rounded-xl border border-violet-200 bg-white p-4">
-                            <div className="flex items-center justify-between mb-2">
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-violet-600">Conversion Rate</span>
+                        <div className="rounded-xl border border-violet-200 bg-white p-3 sm:p-4">
+                            <div className="flex items-center justify-between mb-1.5 sm:mb-2">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-violet-600">Conversion</span>
                                 <TrendingUp className="h-4 w-4 text-violet-400 opacity-70" />
                             </div>
-                            <p className="text-2xl font-black text-violet-900">{item.ctr}</p>
-                            <p className="text-xs text-violet-500 mt-0.5 opacity-60">avg. estimate</p>
+                            <p className="text-xl sm:text-2xl font-black text-violet-900">{item.ctr}</p>
+                            <p className="text-[10px] sm:text-xs text-violet-500 mt-0.5 opacity-60">avg. estimate</p>
                         </div>
                     </div>
 
@@ -318,8 +319,8 @@ function KeywordDetailModal({ item, onClose }: KeywordDetailPanelProps) {
                     </div>
 
                     {/* Related Keywords Table */}
-                    <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
-                        <table className="w-full text-left text-sm">
+                    <div className="rounded-xl border border-slate-200 bg-white overflow-hidden overflow-x-auto">
+                        <table className="w-full min-w-[500px] text-left text-sm">
                             <thead>
                                 <tr className="bg-teal-600 text-white text-xs font-bold uppercase tracking-wider">
                                     <th className="px-4 py-3 w-[40%]">
@@ -375,16 +376,16 @@ function KeywordDetailModal({ item, onClose }: KeywordDetailPanelProps) {
 
 function ViewAllModal({ title, data, onClose, onSave, savedKeywords, onExpand }: { title: string, data: any[], onClose: () => void, onSave: (k: string, v?: number, c?: string) => void, savedKeywords: Set<string>, onExpand: (id: number) => void }) {
     return (
-        <div className="modal-backdrop fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm" onClick={onClose}>
-            <div className="modal-card w-full max-w-4xl max-h-[90vh] flex flex-col rounded-2xl border border-slate-200/80 bg-white shadow-2xl shadow-slate-900/20" onClick={e => e.stopPropagation()}>
-                <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-                    <h3 className="font-bold text-slate-800 text-xl">{title}</h3>
-                    <button onClick={onClose} className="p-1.5 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600">
+        <div className="modal-backdrop fixed inset-0 z-[60] flex items-center justify-center p-2 sm:p-4 bg-slate-900/40 backdrop-blur-sm" onClick={onClose}>
+            <div className="modal-card w-full max-w-4xl max-h-[94vh] sm:max-h-[90vh] flex flex-col rounded-2xl border border-slate-200/80 bg-white shadow-2xl shadow-slate-900/20" onClick={e => e.stopPropagation()}>
+                <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-100">
+                    <h3 className="font-bold text-slate-800 text-lg sm:text-xl truncate pr-2">{title}</h3>
+                    <button onClick={onClose} className="p-1.5 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600 flex-shrink-0">
                         <X className="h-5 w-5" />
                     </button>
                 </div>
-                <div className="p-0 overflow-y-auto">
-                    <table className="w-full text-left text-sm text-slate-600">
+                <div className="p-0 overflow-y-auto overflow-x-auto">
+                    <table className="w-full min-w-[640px] text-left text-sm text-slate-600">
                         <thead className="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] tracking-wider sticky top-0 z-10 shadow-sm border-b border-slate-100">
                             <tr>
                                 <th className="px-6 py-3">Keyword</th>
@@ -402,10 +403,10 @@ function ViewAllModal({ title, data, onClose, onSave, savedKeywords, onExpand }:
                                     <td className="px-6 py-4 font-medium text-teal-600">{item.volume.toLocaleString()}</td>
                                     <td className="px-6 py-4">
                                         <span className={cn("text-[9px] font-bold px-2 py-0.5 rounded border w-fit",
-                                            item.competition === 'Low'       && "bg-emerald-50 text-emerald-700 border-emerald-200",
-                                            item.competition === 'Medium'    && "bg-amber-50 text-amber-700 border-amber-200",
-                                            item.competition === 'High'      && "bg-rose-50 text-rose-700 border-rose-200",
-                                            item.competition === 'Very High' && "bg-purple-50 text-purple-700 border-purple-200"
+                                            item.competition === 'Low'       && "bg-white text-emerald-700 border-emerald-200",
+                                            item.competition === 'Medium'    && "bg-white text-amber-700 border-amber-200",
+                                            item.competition === 'High'      && "bg-white text-rose-700 border-rose-200",
+                                            item.competition === 'Very High' && "bg-white text-purple-700 border-purple-200"
                                         )}>{item.competition}</span>
                                     </td>
                                     <td className="px-6 py-4 font-bold text-slate-700">{item.ctr}</td>
@@ -540,10 +541,10 @@ export default function KeywordResearchPage() {
             {/* Competition */}
             <td className="px-5 py-3.5 text-center">
                 <span className={cn("inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border",
-                    item.competition === 'Low'       && "bg-emerald-50 text-emerald-700 border-emerald-200",
-                    item.competition === 'Medium'    && "bg-amber-50 text-amber-700 border-amber-200",
-                    item.competition === 'High'      && "bg-rose-50 text-rose-700 border-rose-200",
-                    item.competition === 'Very High' && "bg-purple-50 text-purple-700 border-purple-200"
+                    item.competition === 'Low'       && "bg-white text-emerald-700 border-emerald-200",
+                    item.competition === 'Medium'    && "bg-white text-amber-700 border-amber-200",
+                    item.competition === 'High'      && "bg-white text-rose-700 border-rose-200",
+                    item.competition === 'Very High' && "bg-white text-purple-700 border-purple-200"
                 )}>
                     <span className={cn("h-1.5 w-1.5 rounded-full",
                         item.competition === 'Low'       && "bg-emerald-500",
@@ -577,58 +578,119 @@ export default function KeywordResearchPage() {
         )
     }
 
+    // Mobile-only compact card for a keyword row (3 per row on mobile)
+    const renderKeywordMobileCard = (item: any, i: number) => {
+        const score = Math.max(10, Math.min(95, 30 + Math.round(
+            (item.competition === 'Low' ? 25 : item.competition === 'Medium' ? 15 : item.competition === 'High' ? 5 : -5) +
+            Math.min(item.volume / 1500, 22)
+        )))
+        const compBorder = item.competition === 'Low' ? 'border-emerald-200 text-emerald-700' :
+                           item.competition === 'Medium' ? 'border-amber-200 text-amber-700' :
+                           item.competition === 'High' ? 'border-rose-200 text-rose-700' :
+                           'border-purple-200 text-purple-700'
+        const compDot = item.competition === 'Low' ? 'bg-emerald-500' :
+                        item.competition === 'Medium' ? 'bg-amber-500' :
+                        item.competition === 'High' ? 'bg-rose-500' : 'bg-purple-500'
+        const compShort = item.competition === 'Very High' ? 'V.High' : item.competition
+        const volLabel = item.volume >= 1000 ? `${(item.volume / 1000).toFixed(item.volume >= 10000 ? 0 : 1)}k` : item.volume
+        return (
+            <div key={`m-${item.id ?? i}`} onClick={() => toggleExpand(item.id)}
+                className="relative rounded-xl border border-slate-200 bg-white p-2.5 cursor-pointer active:bg-teal-50/50 transition-colors flex flex-col">
+                {/* Heart in top-right corner */}
+                <button
+                    onClick={(e) => { e.stopPropagation(); handleSave(item.keyword, item.volume, item.competition, item.ctr, item.trend) }}
+                    className="absolute top-1.5 right-1.5 p-1 rounded-full hover:bg-rose-50 transition-colors"
+                >
+                    <Heart className={cn("h-3.5 w-3.5 transition-colors", savedKeywords.has(item.keyword) ? "fill-rose-500 text-rose-500" : "text-slate-300")} />
+                </button>
+
+                {/* Keyword name (up to 2 lines) */}
+                <div className="pr-6 mb-2">
+                    <p className="font-semibold text-slate-800 text-[13px] leading-tight line-clamp-2 min-h-[2.1em]">{item.keyword}</p>
+                </div>
+
+                {/* Volume */}
+                <div className="flex items-baseline gap-1 mb-2">
+                    <span className="font-bold text-teal-600 text-sm tabular-nums">{volLabel}</span>
+                    <span className="text-[10px] text-slate-400 font-medium">/mo</span>
+                </div>
+
+                {/* Competition pill */}
+                <span className={cn("inline-flex items-center justify-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full border bg-white w-fit mb-2", compBorder)}>
+                    <span className={cn("h-1 w-1 rounded-full", compDot)} />
+                    {compShort}
+                </span>
+
+                {/* Score bar with number */}
+                <div className="flex items-center gap-1.5 mt-auto pt-2 border-t border-slate-100">
+                    <div className="flex-1 h-1 bg-slate-100 rounded-full overflow-hidden">
+                        <div className="h-full bg-teal-500 rounded-full" style={{ width: `${score}%` }} />
+                    </div>
+                    <span className="font-bold text-slate-700 text-[11px] tabular-nums">{score}</span>
+                </div>
+            </div>
+        )
+    }
+
     const renderKeywordTable = (data: any[]) => (
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm shadow-teal-900/5">
-            <table className="w-full text-sm text-left table-fixed">
-                <colgroup>
-                    <col className="w-[4%]" />
-                    <col className="w-[20%]" />
-                    <col className="w-[13%]" />
-                    <col className="w-[15%]" />
-                    <col className="w-[15%]" />
-                    <col className="w-[15%]" />
-                    <col className="w-[18%]" />
-                </colgroup>
-                <thead>
-                    <tr className="border-b border-teal-200/60 bg-teal-600">
-                        <th className="pl-5 pr-2 py-4" />
-                        <th className="px-3 py-4 text-sm font-medium uppercase tracking-wider text-white text-left">Keyword</th>
-                        <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white text-left">Search Vol</th>
-                        <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white text-center">Competition</th>
-                        <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white text-center">Conversion</th>
-                        <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white text-center">Trend</th>
-                        <th className="pl-14 pr-5 py-4 text-sm font-medium uppercase tracking-wider text-white text-left">Score</th>
-                    </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                    {data.map((item, i) => renderKeywordRow(item, i))}
-                </tbody>
-            </table>
-        </div>
+        <>
+            {/* Desktop table */}
+            <div className="hidden md:block overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm shadow-teal-900/5">
+                <table className="w-full text-sm text-left table-fixed">
+                    <colgroup>
+                        <col className="w-[4%]" />
+                        <col className="w-[20%]" />
+                        <col className="w-[13%]" />
+                        <col className="w-[15%]" />
+                        <col className="w-[15%]" />
+                        <col className="w-[15%]" />
+                        <col className="w-[18%]" />
+                    </colgroup>
+                    <thead>
+                        <tr className="border-b border-teal-200/60 bg-teal-600">
+                            <th className="pl-5 pr-2 py-4" />
+                            <th className="px-3 py-4 text-sm font-medium uppercase tracking-wider text-white text-left">Keyword</th>
+                            <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white text-left">Search Vol</th>
+                            <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white text-center">Competition</th>
+                            <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white text-center">Conversion</th>
+                            <th className="px-5 py-4 text-sm font-medium uppercase tracking-wider text-white text-center">Trend</th>
+                            <th className="pl-14 pr-5 py-4 text-sm font-medium uppercase tracking-wider text-white text-left">Score</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                        {data.map((item, i) => renderKeywordRow(item, i))}
+                    </tbody>
+                </table>
+            </div>
+            {/* Mobile grid: 3 cards per row */}
+            <div className="md:hidden grid grid-cols-3 gap-2">
+                {data.map((item, i) => renderKeywordMobileCard(item, i))}
+            </div>
+        </>
     )
 
     return (
         <DashboardLayout>
             <div className="space-y-8">
                 {/* Header */}
-                <div className="rounded-2xl bg-teal-600 px-7 py-5 flex items-center gap-5 shadow-md shadow-teal-900/20">
+                <div className="rounded-2xl bg-teal-600 px-5 sm:px-7 py-5 flex items-center gap-4 sm:gap-5 shadow-md shadow-teal-900/20">
                     <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 flex-shrink-0">
                         <Search className="h-6 w-6 text-white" />
                     </div>
-                    <div>
-                        <h1 className="text-2xl font-bold text-white tracking-tight">Keyword Research</h1>
-                        <p className="text-sm text-white/75 mt-0.5">Analyze search volume and competition to find your next bestseller.</p>
+                    <div className="min-w-0">
+                        <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">Keyword Research</h1>
+                        <p className="text-xs sm:text-sm text-white/75 mt-0.5">Analyze search volume and competition to find your next bestseller.</p>
                     </div>
                 </div>
 
                 {/* Search */}
-                <form onSubmit={handleSearch} className="flex items-center gap-3">
-                    <div className="relative flex-1">
+                <form onSubmit={handleSearch} className="flex items-center gap-2 sm:gap-3">
+                    <div className="relative flex-1 min-w-0">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none" />
                         <input
                             type="text"
-                            placeholder="Discover your next bestseller (e.g. 'Silver Ring')..."
-                            className="h-14 w-full pl-12 pr-5 rounded-xl border border-slate-200 bg-white text-lg font-medium text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent shadow-sm"
+                            placeholder="Discover your next bestseller..."
+                            className="h-12 sm:h-14 w-full pl-11 sm:pl-12 pr-5 rounded-xl border border-slate-200 bg-white text-base sm:text-lg font-medium text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent shadow-sm"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -642,8 +704,8 @@ export default function KeywordResearchPage() {
                             </button>
                         )}
                     </div>
-                    <Button type="submit" disabled={isLoading} className="h-14 min-w-[120px] bg-teal-600 hover:bg-teal-700 text-white px-8 rounded-xl text-base font-semibold shadow-sm disabled:opacity-50">
-                        {isLoading ? 'Analyzing...' : 'Explore'}
+                    <Button type="submit" disabled={isLoading} className="h-12 sm:h-14 flex-shrink-0 bg-teal-600 hover:bg-teal-700 text-white px-4 sm:px-8 rounded-xl text-sm sm:text-base font-semibold shadow-sm disabled:opacity-50">
+                        {isLoading ? '...' : 'Explore'}
                     </Button>
                 </form>
 

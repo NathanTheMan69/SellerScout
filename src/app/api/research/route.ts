@@ -1,46 +1,44 @@
-import { NextResponse } from 'next/server';
-import { searchEtsyListings } from '@/lib/etsy';
-import { analyzeSearchResults } from '@/lib/analyzer';
+import { NextResponse } from 'next/server'
+import { searchEtsyListings } from '@/lib/etsy'
+import { scrapeEtsySearch } from '@/lib/etsy-scraper'
+import { analyzeSearchResults } from '@/lib/analyzer'
 
 export async function POST(request: Request) {
     try {
-        const body = await request.json();
-        const { keyword } = body;
+        const { keyword } = await request.json()
 
         if (!keyword) {
-            return NextResponse.json(
-                { error: 'Keyword is required' },
-                { status: 400 }
-            );
+            return NextResponse.json({ error: 'Keyword is required' }, { status: 400 })
         }
 
-        // 1. Fetch raw data from Etsy
-        const etsyData = await searchEtsyListings(keyword);
-
-        // Check if we have results
-        if (!etsyData.results || etsyData.results.length === 0) {
-            return NextResponse.json(
-                { message: 'No listings found for this keyword.' },
-                { status: 404 }
-            );
+        // ── Try official API first ───────────────────────────────────────────────
+        const apiKey = process.env.ETSY_API_KEY
+        if (apiKey) {
+            try {
+                const etsyData = await searchEtsyListings(keyword)
+                if (etsyData.results?.length) {
+                    const analysis = analyzeSearchResults(etsyData.results, keyword)
+                    return NextResponse.json({ ...analysis, _source: 'api' })
+                }
+            } catch { /* fall through to scraper */ }
         }
 
-        // 2. Analyze the data
-        const analysis = analyzeSearchResults(etsyData.results, keyword);
+        // ── Scraper fallback ─────────────────────────────────────────────────────
+        const listings = await scrapeEtsySearch(keyword, 24)
+        if (!listings.length) {
+            return NextResponse.json(
+                { error: 'No listings found for this keyword.' },
+                { status: 404 },
+            )
+        }
 
-        // 3. Return the analyzed result
-        return NextResponse.json(analysis);
+        const analysis = analyzeSearchResults(listings, keyword)
+        return NextResponse.json({ ...analysis, _source: 'scraper' })
 
-    } catch (error: any) {
-        console.error('Research API Error:', error);
-
-        // Handle specific Etsy API errors if possible, otherwise generic 500
-        const status = error.message?.includes('403') ? 403 : 500;
-        const message = error.message || 'Internal Server Error';
-
-        return NextResponse.json(
-            { error: message },
-            { status: status }
-        );
+    } catch (error: unknown) {
+        const msg = error instanceof Error ? error.message : 'Internal Server Error'
+        const status = msg.includes('403') ? 403 : 500
+        console.error('Research API error:', msg)
+        return NextResponse.json({ error: msg }, { status })
     }
 }

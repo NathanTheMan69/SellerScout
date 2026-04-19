@@ -50,11 +50,8 @@ export default function LandingPage() {
       {/* Navbar */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
-            <img src="/logo.png" alt="SellerScout" className="h-9 w-9 drop-shadow-sm" />
-            <span className="text-xl font-bold text-teal-600" style={{ fontFamily: 'var(--font-raleway)' }}>
-              Seller Scout
-            </span>
+          <Link href="/" className="flex items-center">
+            <img src="/logo-text.png" alt="SellerScout" className="h-9 object-contain object-left" />
           </Link>
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
             <a href="#features" className="hover:text-teal-600 transition-colors">Features</a>
@@ -217,11 +214,8 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="bg-white border-t border-slate-100 py-10 px-6">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5">
-            <img src="/logo.png" alt="SellerScout" className="h-7 w-7" />
-            <span className="text-base font-bold text-teal-600" style={{ fontFamily: 'var(--font-raleway)' }}>
-              Seller Scout
-            </span>
+          <div className="flex items-center">
+            <img src="/logo-text.png" alt="SellerScout" className="h-7 object-contain object-left" />
           </div>
           <p className="text-sm text-slate-400">© {new Date().getFullYear()} Seller Scout. All rights reserved.</p>
           <div className="flex items-center gap-6 text-sm text-slate-500">

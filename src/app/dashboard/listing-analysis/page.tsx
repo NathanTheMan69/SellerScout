@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, Suspense } from 'react'
-import { Search, ShoppingBag, AlertCircle, ImageOff, ArrowLeft, TrendingUp, TrendingDown, Tag, X, Filter, BarChart2, DollarSign, Zap, ExternalLink, Copy, Check, Star, Heart, Calendar, Layers, ShieldCheck, ChevronDown } from 'lucide-react'
+import { Search, ShoppingBag, AlertCircle, ArrowLeft, TrendingUp, TrendingDown, Tag, X, Filter, BarChart2, DollarSign, Zap, ExternalLink, Copy, Check, Star, Heart, Calendar, Layers, ShieldCheck, ChevronDown } from 'lucide-react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { DashboardLayout } from '@/components/DashboardLayout'
 import { Button } from '@/components/Button'
@@ -76,10 +76,10 @@ const NICHES: NicheData[] = [
 const ITEMS_PER_PAGE = 30
 
 const competitionColor = (level: string) => {
-    if (level === 'Low')       return 'text-emerald-700 bg-emerald-50 border-emerald-200'
-    if (level === 'Medium')    return 'text-amber-700   bg-amber-50   border-amber-200'
-    if (level === 'High')      return 'text-rose-700    bg-rose-50    border-rose-200'
-    if (level === 'Very High') return 'text-purple-700  bg-purple-50  border-purple-200'
+    if (level === 'Low')       return 'text-emerald-700 bg-white border-emerald-200'
+    if (level === 'Medium')    return 'text-amber-700   bg-white border-amber-200'
+    if (level === 'High')      return 'text-rose-700    bg-white border-rose-200'
+    if (level === 'Very High') return 'text-purple-700  bg-white border-purple-200'
     return 'text-slate-600 bg-slate-50 border-slate-200'
 }
 
@@ -93,21 +93,58 @@ function generateTags(keyword: string, category: string) {
     ].filter((v, i, a) => a.indexOf(v) === i && v.length > 0).slice(0, 8)
 }
 
+const CATEGORY_GRADIENTS: Record<string, string> = {
+    'Jewelry':      'from-amber-100 via-yellow-50 to-orange-100',
+    'Digital':      'from-blue-100 via-sky-50 to-cyan-100',
+    'Home Decor':   'from-emerald-100 via-teal-50 to-green-100',
+    'Clothing':     'from-violet-100 via-purple-50 to-fuchsia-100',
+    'Gifts':        'from-rose-100 via-pink-50 to-red-100',
+    'Wedding':      'from-pink-100 via-rose-50 to-fuchsia-100',
+    'Art':          'from-orange-100 via-amber-50 to-yellow-100',
+    'Stationery':   'from-teal-100 via-cyan-50 to-sky-100',
+    'Baby':         'from-yellow-100 via-lime-50 to-green-100',
+    'Accessories':  'from-indigo-100 via-blue-50 to-violet-100',
+    'Pet Supplies': 'from-lime-100 via-green-50 to-emerald-100',
+    'Wellness':     'from-purple-100 via-violet-50 to-indigo-100',
+}
+
 function NicheCard({ item, onClick, isSaved, onSave }: { item: NicheData; onClick: () => void; isSaved: boolean; onSave: (e: React.MouseEvent) => void }) {
     const [imgError, setImgError] = useState(false)
     const isRising = item.growth > 0
+    const gradientClass = CATEGORY_GRADIENTS[item.category] ?? 'from-slate-100 via-slate-50 to-slate-100'
 
     return (
         <div
             onClick={onClick}
             className="group cursor-pointer rounded-xl border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-1 hover:border-teal-300 hover:shadow-md hover:shadow-teal-900/10 overflow-hidden flex flex-col"
         >
-            <div className="relative aspect-square bg-slate-100 overflow-hidden shrink-0">
+            <div className="relative aspect-square overflow-hidden shrink-0">
                 {item.image && !imgError ? (
-                    <img src={item.image} alt={item.niche} className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" onError={() => setImgError(true)} />
+                    <img
+                        src={item.image}
+                        alt={item.niche}
+                        referrerPolicy="no-referrer"
+                        crossOrigin="anonymous"
+                        className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        onError={() => setImgError(true)}
+                    />
                 ) : (
-                    <div className="h-full w-full flex items-center justify-center">
-                        <ImageOff className="h-8 w-8 text-slate-300" />
+                    <div className={cn("h-full w-full flex flex-col items-center justify-center gap-2 bg-gradient-to-br", gradientClass)}>
+                        <span className="text-4xl select-none">{
+                            item.category === 'Jewelry'      ? '💍' :
+                            item.category === 'Digital'      ? '💻' :
+                            item.category === 'Home Decor'   ? '🏡' :
+                            item.category === 'Clothing'     ? '👕' :
+                            item.category === 'Gifts'        ? '🎁' :
+                            item.category === 'Wedding'      ? '💐' :
+                            item.category === 'Art'          ? '🎨' :
+                            item.category === 'Stationery'   ? '📝' :
+                            item.category === 'Baby'         ? '🍼' :
+                            item.category === 'Accessories'  ? '👜' :
+                            item.category === 'Pet Supplies' ? '🐾' :
+                            item.category === 'Wellness'     ? '✨' : '🛍️'
+                        }</span>
+                        <span className="text-xs font-semibold text-slate-500">{item.niche}</span>
                     </div>
                 )}
                 <div className={cn(
@@ -178,6 +215,8 @@ function ListingAnalysisPageInner(): React.JSX.Element {
     const [ageOpen, setAgeOpen] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
     const [selectedNiche, setSelectedNiche] = useState<NicheData | null>(null)
+    const [niches, setNiches] = useState<NicheData[]>(NICHES)
+    const [nichesLoading, setNichesLoading] = useState(true)
     const [urlQuery, setUrlQuery] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [apiError, setApiError] = useState<string | null>(null)
@@ -209,6 +248,32 @@ function ListingAnalysisPageInner(): React.JSX.Element {
             }
         }
         fetchSaved()
+    }, [])
+
+    // Fetch real Etsy images + prices for each niche card
+    React.useEffect(() => {
+        const fetchRealNiches = async () => {
+            try {
+                const res = await fetch('/api/niches')
+                if (!res.ok) return
+                const enriched: Record<string, { imageUrl: string | null; avgPrice: string | null; totalFavorers: number }> = await res.json()
+                setNiches(prev => prev.map(n => {
+                    const real = enriched[n.id]
+                    if (!real) return n
+                    return {
+                        ...n,
+                        image: real.imageUrl ?? n.image,
+                        avgPrice: real.avgPrice ?? n.avgPrice,
+                        sales: real.totalFavorers > 0 ? real.totalFavorers : n.sales,
+                    }
+                }))
+            } catch {
+                // silently keep fallback data
+            } finally {
+                setNichesLoading(false)
+            }
+        }
+        fetchRealNiches()
     }, [])
 
     const handleSaveNiche = async (e: React.MouseEvent, item: NicheData) => {
@@ -267,7 +332,7 @@ function ListingAnalysisPageInner(): React.JSX.Element {
         return y + m / 12
     }
 
-    const filtered = NICHES
+    const filtered = niches
         .filter(item => {
             if (categoryFilter !== 'All' && item.category !== categoryFilter) return false
             if (ageFilter !== 'All') {
@@ -735,10 +800,10 @@ function ListingAnalysisPageInner(): React.JSX.Element {
                                         return { tag, volume: baseVol, comp, kwScore }
                                     })
                                     const compColor = (c: string) => {
-                                        if (c === 'Low')       return 'text-emerald-700 bg-emerald-50 border-emerald-200'
-                                        if (c === 'Medium')    return 'text-amber-700   bg-amber-50   border-amber-200'
-                                        if (c === 'High')      return 'text-rose-700    bg-rose-50    border-rose-200'
-                                        return                         'text-purple-700  bg-purple-50  border-purple-200'
+                                        if (c === 'Low')       return 'text-emerald-700 bg-white border-emerald-200'
+                                        if (c === 'Medium')    return 'text-amber-700   bg-white border-amber-200'
+                                        if (c === 'High')      return 'text-rose-700    bg-white border-rose-200'
+                                        return                         'text-purple-700  bg-white border-purple-200'
                                     }
                                     return (
                                     <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">

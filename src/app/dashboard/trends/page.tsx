@@ -117,10 +117,10 @@ function generateMockTags(keyword: string, category: string) {
 }
 
 const competitionColor = (level: string) => {
-    if (level === 'Low')       return 'text-emerald-700 bg-emerald-50 border-emerald-200'
-    if (level === 'Medium')    return 'text-amber-700   bg-amber-50   border-amber-200'
-    if (level === 'High')      return 'text-rose-700    bg-rose-50    border-rose-200'
-    if (level === 'Very High') return 'text-purple-700  bg-purple-50  border-purple-200'
+    if (level === 'Low')       return 'text-emerald-700 bg-white border-emerald-200'
+    if (level === 'Medium')    return 'text-amber-700   bg-white border-amber-200'
+    if (level === 'High')      return 'text-rose-700    bg-white border-rose-200'
+    if (level === 'Very High') return 'text-purple-700  bg-white border-purple-200'
     return 'text-slate-600 bg-slate-50 border-slate-200'
 }
 
@@ -218,12 +218,15 @@ function ProductTrendCard({ product, adjGrowth, adjSearches, score, scoreColor, 
             onClick={onClick}
         >
             <div className="relative aspect-square bg-slate-100 overflow-hidden flex-shrink-0">
-                <div className="absolute inset-0 flex items-center justify-center">
-                    <ImageOff className="h-14 w-14 text-slate-300" />
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-teal-50 via-cyan-50 to-sky-100">
+                    <span className="text-4xl select-none">🛍️</span>
+                    <span className="text-xs font-semibold text-slate-500">{product.name}</span>
                 </div>
                 <img
                     src={product.image}
                     alt={product.name}
+                    referrerPolicy="no-referrer"
+                    crossOrigin="anonymous"
                     className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
                     onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
                 />
@@ -341,19 +344,44 @@ function CategoryTrendCard({ cat, isRising, catImage, barWidth, onClick }: {
     )
 }
 
+const TREND_CATEGORY_GRADIENTS: Record<string, { gradient: string; emoji: string }> = {
+    'Digital':      { gradient: 'from-blue-100 via-sky-50 to-cyan-100',       emoji: '💻' },
+    'Gifts':        { gradient: 'from-rose-100 via-pink-50 to-red-100',        emoji: '🎁' },
+    'Home Decor':   { gradient: 'from-emerald-100 via-teal-50 to-green-100',   emoji: '🏡' },
+    'Jewelry':      { gradient: 'from-amber-100 via-yellow-50 to-orange-100',  emoji: '💍' },
+    'Wedding':      { gradient: 'from-pink-100 via-rose-50 to-fuchsia-100',    emoji: '💐' },
+    'Art':          { gradient: 'from-orange-100 via-amber-50 to-yellow-100',  emoji: '🎨' },
+    'Stationery':   { gradient: 'from-teal-100 via-cyan-50 to-sky-100',        emoji: '📝' },
+    'Baby':         { gradient: 'from-yellow-100 via-lime-50 to-green-100',    emoji: '🍼' },
+    'Accessories':  { gradient: 'from-indigo-100 via-blue-50 to-violet-100',   emoji: '👜' },
+    'Pet Supplies': { gradient: 'from-lime-100 via-green-50 to-emerald-100',   emoji: '🐾' },
+    'Wellness':     { gradient: 'from-purple-100 via-violet-50 to-indigo-100', emoji: '✨' },
+}
+
 function TrendCard({ item, onClick }: { item: TrendData; onClick: () => void }) {
     const [imgError, setImgError] = useState(false)
     const isRising = item.growth > 0
+    const catStyle = TREND_CATEGORY_GRADIENTS[item.category] ?? { gradient: 'from-slate-100 via-slate-50 to-slate-100', emoji: '🛍️' }
     return (
         <div
             onClick={onClick}
             className="group cursor-pointer rounded-xl border border-slate-200 bg-white transition-all hover:-translate-y-1 hover:border-teal-300 overflow-hidden flex flex-col"
         >
-            <div className={cn("relative aspect-square overflow-hidden shrink-0", item.image && !imgError ? "bg-white" : "bg-slate-100")}>
+            <div className="relative aspect-square overflow-hidden shrink-0">
                 {item.image && !imgError ? (
-                    <img src={item.image} alt={item.keyword} className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" onError={() => setImgError(true)} />
+                    <img
+                        src={item.image}
+                        alt={item.keyword}
+                        referrerPolicy="no-referrer"
+                        crossOrigin="anonymous"
+                        className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        onError={() => setImgError(true)}
+                    />
                 ) : (
-                    <div className="h-full w-full flex items-center justify-center"><ImageOff className="h-14 w-14 text-slate-300" /></div>
+                    <div className={cn("h-full w-full flex flex-col items-center justify-center gap-2 bg-gradient-to-br", catStyle.gradient)}>
+                        <span className="text-4xl select-none">{catStyle.emoji}</span>
+                        <span className="text-xs font-semibold text-slate-500 text-center px-2 line-clamp-2">{item.keyword}</span>
+                    </div>
                 )}
                 <div className={cn("absolute top-2 left-2 flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full backdrop-blur-md", isRising ? "bg-emerald-600/80 text-white" : "bg-rose-600/80 text-white")}>
                     {isRising ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
@@ -410,7 +438,10 @@ export default function TrendsPage() {
 
     const supabase = createClient()
 
-    useEffect(() => { fetchTrends() }, [])
+    useEffect(() => {
+        fetchTrends()
+        enrichTrendImages()
+    }, [])
 
     const fetchTrends = async () => {
         try {
@@ -424,6 +455,21 @@ export default function TrendsPage() {
             console.error('Error fetching trends:', error)
         } finally {
             setLoading(false)
+        }
+    }
+
+    const enrichTrendImages = async () => {
+        try {
+            const res = await fetch('/api/trends-enrich')
+            if (!res.ok) return
+            const enriched: Record<string, { imageUrl: string | null; avg_price: string | null }> = await res.json()
+            setTrends(prev => prev.map(t => {
+                const real = enriched[t.id]
+                if (!real?.imageUrl) return t
+                return { ...t, image: real.imageUrl, avg_price: real.avg_price ?? t.avg_price }
+            }))
+        } catch {
+            // silently keep fallback images
         }
     }
 

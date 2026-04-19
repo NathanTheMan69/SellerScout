@@ -1,9 +1,7 @@
 'use client'
 
-import { useEffect, useState } from "react"
-import { Sparkles, AlertTriangle, TrendingUp, Lightbulb, RefreshCw } from "lucide-react"
+import { Sparkles, AlertTriangle, TrendingUp, Lightbulb } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/Card"
-import { Button } from "@/components/Button"
 import { cn } from "@/lib/utils"
 
 interface Insight {
@@ -11,6 +9,24 @@ interface Insight {
     title: string
     message: string
 }
+
+const DEFAULT_INSIGHTS: Insight[] = [
+    {
+        type: 'warning',
+        title: 'Low Stock Alert',
+        message: 'Several of your top-selling listings have fewer than 3 units remaining. Restock soon to avoid lost sales during peak traffic.',
+    },
+    {
+        type: 'opportunity',
+        title: 'Rising Keyword Trend',
+        message: '"Personalized gift" searches are up 42% this month. Consider adding this phrase to your top listing titles and tags.',
+    },
+    {
+        type: 'tip',
+        title: 'Boost Your Photos',
+        message: 'Listings with 5+ photos convert 30% better on average. Try adding lifestyle shots or size-reference images to underperforming listings.',
+    },
+]
 
 const typeConfig = {
     warning: {
@@ -52,92 +68,43 @@ function SkeletonInsight() {
 }
 
 export function ScoutInsights() {
-    const [insights, setInsights] = useState<Insight[]>([])
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState(false)
-
-    const fetchInsights = async () => {
-        setLoading(true)
-        setError(false)
-        try {
-            const res = await fetch('/api/insights')
-            if (!res.ok) throw new Error('Failed')
-            const data = await res.json()
-            setInsights(data.insights || [])
-        } catch {
-            setError(true)
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    useEffect(() => {
-        fetchInsights()
-    }, [])
-
     return (
         <Card className="border-teal-200 bg-white/70 backdrop-blur-md shadow-lg shadow-teal-900/10 h-full relative overflow-hidden">
-            <CardHeader className="bg-teal-600 px-5 py-3.5">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <Sparkles className="h-4 w-4 text-white/80" />
-                        <CardTitle className="text-base font-semibold text-white tracking-wide">Scout AI Insights</CardTitle>
+            <CardHeader className="bg-teal-600 px-4 md:px-5 py-3 md:py-3.5">
+                <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                        <Sparkles className="h-4 w-4 text-white/80 flex-shrink-0" />
+                        <CardTitle className="text-sm md:text-base font-semibold text-white tracking-wide truncate">Scout AI Insights</CardTitle>
                     </div>
-                    {!loading && (
-                        <button
-                            onClick={fetchInsights}
-                            className="text-white/70 hover:text-white transition-colors"
-                            title="Refresh insights"
-                        >
-                            <RefreshCw className="h-3.5 w-3.5" />
-                        </button>
-                    )}
+                    <span className="text-[10px] font-semibold bg-white/20 text-white/80 px-2 py-0.5 rounded-full flex-shrink-0">Demo</span>
                 </div>
             </CardHeader>
-            <CardContent className="relative z-10 pt-4">
-                <div className="space-y-3">
-                    {loading ? (
-                        <>
-                            <SkeletonInsight />
-                            <SkeletonInsight />
-                            <SkeletonInsight />
-                        </>
-                    ) : error ? (
-                        <div className="text-center py-6 space-y-3">
-                            <p className="text-sm text-slate-500">Could not load insights right now.</p>
-                            <Button
-                                onClick={fetchInsights}
-                                className="bg-teal-600 hover:bg-teal-700 text-white text-sm px-4 py-1.5"
+            <CardContent className="relative z-10 p-4 md:p-6 pt-3 md:pt-4">
+                <div className="space-y-2.5 md:space-y-3">
+                    {DEFAULT_INSIGHTS.map((insight, i) => {
+                        const config = typeConfig[insight.type] ?? typeConfig.tip
+                        const Icon = config.icon
+                        return (
+                            <div
+                                key={i}
+                                className={cn(
+                                    "rounded-lg p-3 md:p-3.5 border",
+                                    config.bg,
+                                    config.border
+                                )}
                             >
-                                Try Again
-                            </Button>
-                        </div>
-                    ) : (
-                        insights.map((insight, i) => {
-                            const config = typeConfig[insight.type] ?? typeConfig.tip
-                            const Icon = config.icon
-                            return (
-                                <div
-                                    key={i}
-                                    className={cn(
-                                        "rounded-lg p-3.5 border",
-                                        config.bg,
-                                        config.border
-                                    )}
-                                >
-                                    <div className="flex items-center gap-2 mb-1">
-                                        <Icon className={cn("h-4 w-4 flex-shrink-0", config.iconColor)} />
-                                        <span className={cn("text-sm font-semibold", config.titleColor)}>
-                                            {insight.title}
-                                        </span>
-                                    </div>
-                                    <p className="text-sm text-slate-600 leading-relaxed">
-                                        {insight.message}
-                                    </p>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <Icon className={cn("h-4 w-4 flex-shrink-0", config.iconColor)} />
+                                    <span className={cn("text-sm font-semibold", config.titleColor)}>
+                                        {insight.title}
+                                    </span>
                                 </div>
-                            )
-                        })
-                    )}
+                                <p className="text-[13px] md:text-sm text-slate-600 leading-relaxed">
+                                    {insight.message}
+                                </p>
+                            </div>
+                        )
+                    })}
                 </div>
             </CardContent>
         </Card>

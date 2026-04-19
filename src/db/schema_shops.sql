@@ -4,7 +4,7 @@ create table saved_shops (
   user_id uuid references auth.users(id) on delete cascade not null,
   shop_name text not null,
   shop_url text,
-  total_sales integer,
+  total_sales text,
   listing_count integer,
   revenue text,
   conv_rate text,

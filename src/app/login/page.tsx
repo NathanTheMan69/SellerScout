@@ -63,11 +63,8 @@ export default function LoginPage({
 
     return (
         <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 p-4">
-            <div className="mb-8 flex items-center gap-4 text-teal-700">
-                <img src="/logo.png" alt="SellerScout" className="h-20 w-20 object-contain drop-shadow-md" />
-                <span className="text-5xl font-extrabold tracking-tight bg-gradient-to-r from-teal-600 to-emerald-500 bg-clip-text text-transparent" style={{ fontFamily: 'var(--font-raleway)' }}>
-                    Seller Scout
-                </span>
+            <div className="mb-8 flex items-center">
+                <img src="/logo-text.png" alt="SellerScout" className="h-16 object-contain object-left" />
             </div>
 
             <Card className="w-full max-w-lg border-slate-200 bg-white shadow-2xl shadow-slate-300/60 ring-1 ring-slate-100">

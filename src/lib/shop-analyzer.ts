@@ -1,4 +1,5 @@
 import { findShopByName, getShopListings } from './etsy';
+import { scrapeEtsyShop } from './etsy-scraper';
 
 export interface ShopReport {
     details: {
@@ -79,12 +80,27 @@ const MOCK_SHOP_REPORT: ShopReport = {
 };
 
 export async function analyzeCompetitorShop(shopName: string): Promise<ShopReport | null> {
+    // ── Try official Etsy API if key is present ────────────────────────────────
+    const apiKey = process.env.ETSY_API_KEY;
+    if (!apiKey) {
+        // No API key — go straight to scraper
+        console.log(`[shop-analyzer] No API key — scraping ${shopName}`);
+        const scraped = await scrapeEtsyShop(shopName);
+        if (scraped) return scraped as ShopReport;
+        // Full fallback to mock if scrape also failed (e.g. blocked)
+        console.warn(`[shop-analyzer] Scrape failed for ${shopName} — using mock data`);
+        return { ...MOCK_SHOP_REPORT, details: { ...MOCK_SHOP_REPORT.details, shop_name: shopName } };
+    }
+
     try {
         // 1. Fetch Shop Details
         const shop = await findShopByName(shopName);
 
         if (!shop) {
-            console.warn(`Shop not found: ${shopName}, returning mock data.`);
+            // API returned nothing — try scraper before giving up
+            console.warn(`[shop-analyzer] API: shop not found — trying scraper for ${shopName}`);
+            const scraped = await scrapeEtsyShop(shopName);
+            if (scraped) return scraped as ShopReport;
             return { ...MOCK_SHOP_REPORT, details: { ...MOCK_SHOP_REPORT.details, shop_name: shopName } };
         }
 
@@ -158,9 +174,12 @@ export async function analyzeCompetitorShop(shopName: string): Promise<ShopRepor
             }
         };
 
-    } catch (error: any) {
-        console.error("Failed to analyze shop:", error);
-        console.warn("Returning mock data as fallback.");
+    } catch (error: unknown) {
+        const msg = error instanceof Error ? error.message : String(error);
+        console.error('[shop-analyzer] API error:', msg, '— trying scraper');
+        const scraped = await scrapeEtsyShop(shopName).catch(() => null);
+        if (scraped) return scraped as ShopReport;
+        console.warn('[shop-analyzer] Scraper also failed — using mock data');
         return MOCK_SHOP_REPORT;
     }
 }

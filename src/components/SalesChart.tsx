@@ -79,15 +79,15 @@ export function SalesChart() {
 
     return (
         <Card className="col-span-1 md:col-span-2 lg:col-span-3 overflow-hidden flex flex-col">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 px-5 pt-5">
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 space-y-0 pb-3 md:pb-4 px-4 md:px-5 pt-4 md:pt-5">
                 <CardTitle className="text-sm font-semibold text-slate-700 tracking-wide">Sales Trend</CardTitle>
-                <div className="flex items-center gap-1 bg-slate-100/50 p-1 rounded-lg">
+                <div className="flex items-center gap-0.5 md:gap-1 bg-slate-100/50 p-0.5 md:p-1 rounded-lg self-start sm:self-auto">
                     {["7D", "30D", "6M", "1Y", "All"].map((range) => (
                         <button
                             key={range}
                             onClick={() => setTimeRange(range)}
                             className={cn(
-                                "px-3 py-1 text-xs font-medium rounded-md transition-all",
+                                "px-2 md:px-3 py-1 text-[11px] md:text-xs font-medium rounded-md transition-all",
                                 timeRange === range
                                     ? "bg-white text-teal-700 shadow-sm"
                                     : "text-slate-500 hover:bg-slate-200/50 hover:text-slate-700"
@@ -98,9 +98,8 @@ export function SalesChart() {
                     ))}
                 </div>
             </CardHeader>
-            <div className="flex-1 pr-3 pb-4">
-                <div className="h-full w-full">
-                    <ResponsiveContainer width="100%" height="100%">
+            <div className="pr-2 md:pr-3 pb-3 md:pb-4 w-full h-[240px] md:h-[280px]">
+                <ResponsiveContainer width="100%" height="100%">
                         <AreaChart
                             data={filteredData}
                             margin={{
@@ -153,7 +152,6 @@ export function SalesChart() {
                             />
                         </AreaChart>
                     </ResponsiveContainer>
-                </div>
             </div>
         </Card>
     )
