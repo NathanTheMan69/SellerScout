@@ -199,8 +199,8 @@ export default function ShopDetailsPage() {
             let { data, error: err } = await supabase.from('saved_listings').insert({
                 ...basePayload,
                 revenue: (item.price && item.orders) ? `$${(parseFloat(item.price) * item.orders).toLocaleString()}` : null,
-                competition: item.competition ?? null,
-                conv_rate: item.conv_rate ?? null,
+                competition: null,
+                conv_rate: null,
             }).select('id').single();
             if (err) {
                 const { data: d2, error: err2 } = await supabase.from('saved_listings').insert(basePayload).select('id').single()
