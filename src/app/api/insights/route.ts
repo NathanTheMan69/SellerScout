@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { findAllUserShops, getShopListings } from '@/lib/etsy';
 
-const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 const MOCK_LISTINGS = [
     { title: "Handmade Leather Wallet - Minimalist Design", price: 45, tags: ["leather", "wallet", "handmade", "gift"], num_sales: 12, quantity: 3, days_listed: 5 },
@@ -15,6 +16,12 @@ const MOCK_LISTINGS = [
 
 export async function GET() {
     try {
+        const apiKey = process.env.OPENAI_API_KEY;
+        if (!apiKey) {
+            return NextResponse.json({ error: 'OpenAI API key not configured' }, { status: 500 });
+        }
+        const client = new OpenAI({ apiKey });
+
         let listings: any[] = [];
 
         try {
